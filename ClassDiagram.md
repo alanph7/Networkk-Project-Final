@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
     class User {
         +String id
@@ -55,3 +56,4 @@ classDiagram
     ServiceProvider "1" --> "many" Service : offers
     Customer "1" --> "many" Service : books
     Service --> Payment : processes
+```
