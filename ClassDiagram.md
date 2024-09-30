@@ -3,60 +3,91 @@ classDiagram
     direction LR
 
     class User {
-        +String id
+        +Integer user_id
         +String name
         +String email
         +String password
+        +String phone
+        +String address
+        +String locality
+        +String profile_pic_url
+        +String status
         +login()
         +register()
     }
 
-    class Customer {
-        +searchService()
-        +bookService()
-        +makePayment()
-        +leaveReview()
-    }
-
     class ServiceProvider {
-        +String skills
-        +String availability
-        +String pricing
+        +Integer provider_id
+        +String name
+        +String email
+        +String password
+        +String phone
+        +String address
+        +String locality
+        +String profile_pic_url
+        +String police_clearance_cert_url
+        +String status
         +createServiceListing()
         +acceptBooking()
         +manageSchedule()
         +viewReviews()
     }
 
-    class Admin {
-        +reviewServiceListing()
-        +approveListing()
-        +rejectListing()
-        +manageBookings()
-        +overseeTransactions()
-    }
-
     class Service {
-        +String title
-        +String description
-        +String price
-        +String availability
+        +Integer service_id
+        +Integer provider_id
+        +String service_name
+        +Text description
+        +String category
+        +Decimal base_price
+        +JSON available_dates
+        +Integer no_of_workers
+        +String status
         +createListing()
         +updateListing()
     }
 
+    class Booking {
+        +Integer booking_id
+        +Integer customer_id
+        +Integer service_id
+        +Date booking_date
+        +String address
+        +Text description
+        +Decimal total_price
+        +String payment_status
+        +String booking_status
+        +view_bookings()
+        +accept_booking()
+        +reject_booking()
+    }
+
     class Payment {
-        +String transactionId
-        +Double amount
+        +Integer payment_id
+        +Integer booking_id
+        +Decimal amount
+        +String payment_method
+        +Date payment_date
+        +String status
         +makePayment()
         +confirmPayment()
     }
 
-    User <|-- Customer
-    User <|-- ServiceProvider
-    User <|-- Admin
+    class Review {
+        +Integer review_id
+        +Integer booking_id
+        +Integer customer_id
+        +Integer rating
+        +Text review_text
+        +Date review_date
+        +leaveReview()
+        +leaveRating()
+    }
+
+    User "1" --> "many" Booking : makes
     ServiceProvider "1" --> "many" Service : offers
-    Customer "1" --> "many" Service : books
-    Service --> Payment : processes
+    Booking "1" --> "1" Payment : processes
+    Service "1" --> "many" Booking : booked by
+    Booking --> Review : has
 
 ```
