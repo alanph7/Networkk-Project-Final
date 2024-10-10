@@ -13,16 +13,16 @@ const Home = () => {
         </p>
         <div className="space-x-4">
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/user-login")}
             className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-300"
           >
-            Log In
+            User
           </button>
           <button
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/seller-login")}
             className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition duration-300"
           >
-            Sign Up
+            Seller
           </button>
         </div>
       </div>
