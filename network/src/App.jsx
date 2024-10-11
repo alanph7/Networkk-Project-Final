@@ -7,6 +7,8 @@ import LogIn from "./pages/LogIn";
 import UserLog from "./pages/User/UserLog";
 import AdminLog from "./pages/Admin/AdminLog";
 import SellerLog from "./pages/Seller/SellerLog";
+import SellerAuth from "./pages/Seller/SellerAuth";
+
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
         <Route path="/user-login" element={<UserLog />} />
         <Route path="/admin-login" element={<AdminLog />} />
         <Route path="/seller-login" element={<SellerLog />} />
+        <Route path="/seller-auth" element={<SellerAuth />} />
       </Routes>
     </Router>
   );

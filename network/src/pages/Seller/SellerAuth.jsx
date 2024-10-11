@@ -1,19 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function SellerSignUp() {
+export default function SellerAuth() {
+  const [isLogin, setIsLogin] = useState(true);
+
+  const toggleView = () => {
+    setIsLogin(!isLogin);
+  };
+
   return (
-    <section className="h-screen">
-      <div className="h-full px-12 py-12 lg:px-16">
-        {/* <!-- Container with reversed order --> */}
+    <section className="h-screen overflow-hidden">
+      <div className="h-full px-12 py-12 lg:px-16 relative">
         <div className="g-6 flex h-full flex-wrap items-center justify-center lg:justify-between">
-          {/* <!-- Left column container (formerly right) --> */}
-          <div className="mb-12 md:mb-0 md:w-8/12 lg:w-5/12 xl:w-5/12">
-            <form>
+          {/* Image container */}
+          <div
+            className={`shrink-1 mb-12 grow-0 basis-auto md:mb-0 md:w-9/12 md:shrink-0 lg:w-6/12 xl:w-6/12 transition-all duration-500 ease-in-out absolute z-20 ${
+              isLogin ? "left-[calc(0%+32px)]" : "left-[calc(50%-32px)]"
+            }`}
+          >
+            <img
+              src="https://tecdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+              className="w-full"
+              alt="Sample image"
+            />
+          </div>
+
+          {/* Form container */}
+          <div
+            className={`mb-12 md:mb-0 md:w-8/12 lg:w-5/12 xl:w-5/12 transition-all duration-500 ease-in-out absolute z-10 ${
+              isLogin ? "left-[calc(50%+48px)]" : "left-[calc(0%+80px)]"
+            }`}
+          >
+            <form className="bg-white p-8 rounded-lg shadow-lg">
+              {/* Sign in/up section */}
               <div className="flex flex-col items-center justify-center mb-6">
-                <p className="mb-4 text-lg">Sign up with</p>
+                <p className="mb-4 text-lg">
+                  {isLogin ? "Sign in with" : "Sign up with"}
+                </p>
                 <div className="flex flex-row">
-                  {/* <!-- Facebook button--> */}
+                  {/* Social media buttons */}
+                  {/* Facebook button */}
                   <button
                     type="button"
                     className="mx-1 h-9 w-9 rounded-full bg-[#3b5998] uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-[#3b5998]/90 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-[#3b5998]/90 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-[#3b5998]/90 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
@@ -28,7 +54,7 @@ export default function SellerSignUp() {
                     </svg>
                   </button>
 
-                  {/* <!-- Twitter button --> */}
+                  {/* Twitter button */}
                   <button
                     type="button"
                     className="mx-1 h-9 w-9 rounded-full bg-[#1da1f2] uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#1da1f2] transition duration-150 ease-in-out hover:bg-[#1da1f2]/90 hover:shadow-[0_8px_9px_-4px_rgba(29,161,242,0.3),0_4px_18px_0_rgba(29,161,242,0.2)] focus:bg-[#1da1f2]/90 focus:shadow-[0_8px_9px_-4px_rgba(29,161,242,0.3),0_4px_18px_0_rgba(29,161,242,0.2)] focus:outline-none focus:ring-0 active:bg-[#1da1f2]/90 active:shadow-[0_8px_9px_-4px_rgba(29,161,242,0.3),0_4px_18px_0_rgba(29,161,242,0.2)]"
@@ -43,7 +69,7 @@ export default function SellerSignUp() {
                     </svg>
                   </button>
 
-                  {/* <!-- Linkedin button --> */}
+                  {/* LinkedIn button */}
                   <button
                     type="button"
                     className="mx-1 h-9 w-9 rounded-full bg-[#0077b5] uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#0077b5] transition duration-150 ease-in-out hover:bg-[#0077b5]/90 hover:shadow-[0_8px_9px_-4px_rgba(0,119,181,0.3),0_4px_18px_0_rgba(0,119,181,0.2)] focus:bg-[#0077b5]/90 focus:shadow-[0_8px_9px_-4px_rgba(0,119,181,0.3),0_4px_18px_0_rgba(0,119,181,0.2)] focus:outline-none focus:ring-0 active:bg-[#0077b5]/90 active:shadow-[0_8px_9px_-4px_rgba(0,119,181,0.3),0_4px_18px_0_rgba(0,119,181,0.2)]"
@@ -60,30 +86,32 @@ export default function SellerSignUp() {
                 </div>
               </div>
 
-              {/* <!-- Separator between social media sign in and email/password sign in --> */}
+              {/* Separator */}
               <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
                 <p className="mx-4 mb-0 text-center font-semibold dark:text-white">
                   Or
                 </p>
               </div>
 
-              {/* <!-- Business Name input --> */}
-              <div className="relative mb-6">
-                <input
-                  type="text"
-                  id="UserName"
-                  className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=" "
-                />
-                <label
-                  htmlFor="UserName"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-                >
-                  User Name
-                </label>
-              </div>
+              {/* Username input (only for signup) */}
+              {!isLogin && (
+                <div className="relative mb-6">
+                  <input
+                    type="text"
+                    id="UserName"
+                    className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                  />
+                  <label
+                    htmlFor="UserName"
+                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
+                  >
+                    User Name
+                  </label>
+                </div>
+              )}
 
-              {/* <!-- Email input --> */}
+              {/* Email input */}
               <div className="relative mb-6">
                 <input
                   type="email"
@@ -99,7 +127,7 @@ export default function SellerSignUp() {
                 </label>
               </div>
 
-              {/* <!--Password input--> */}
+              {/* Password input */}
               <div className="relative mb-6">
                 <input
                   type="password"
@@ -115,36 +143,55 @@ export default function SellerSignUp() {
                 </label>
               </div>
 
-              {/* <!-- Sign Up button and Login link --> */}
+              {/* Remember me and Forgot password (only for login) */}
+              {isLogin && (
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center">
+                    <input
+                      id="remember-me"
+                      type="checkbox"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor="remember-me"
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      Remember me
+                    </label>
+                  </div>
+                  <a
+                    href="#!"
+                    className="text-blue-600 hover:text-blue-700 focus:text-blue-700 active:text-blue-800 duration-200 transition ease-in-out"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+              )}
+
+              {/* Submit button */}
               <div className="flex flex-col items-center justify-center mt-6">
                 <button
                   type="button"
                   className="inline-block rounded bg-blue-600 px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-blue-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
                 >
-                  Sign Up
+                  {isLogin ? "Login" : "Sign Up"}
                 </button>
 
-                {/* <!-- Login link --> */}
+                {/* Toggle link */}
                 <p className="mb-0 mt-4 pt-1 text-sm font-semibold">
-                  Already have an account?{" "}
-                  <Link
-                    to="/seller-login"
+                  {isLogin
+                    ? "Don't have an account?"
+                    : "Already have an account?"}{" "}
+                  <a
+                    href="#!"
+                    onClick={toggleView}
                     className="text-red-600 transition duration-150 ease-in-out hover:text-red-700 focus:text-red-700 active:text-red-800"
                   >
-                    Login
-                  </Link>
+                    {isLogin ? "Register" : "Login"}
+                  </a>
                 </p>
               </div>
             </form>
-          </div>
-
-          {/* <!-- Right column container with background (formerly left)--> */}
-          <div className="shrink-1 mb-12 grow-0 basis-auto md:mb-0 md:w-9/12 md:shrink-0 lg:w-6/12 xl:w-6/12">
-            <img
-              src="https://tecdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-              className="w-full"
-              alt="Sample image"
-            />
           </div>
         </div>
       </div>
