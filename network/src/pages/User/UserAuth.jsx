@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function UserAuth() {
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
 
   const toggleView = () => {
     setIsLogin(!isLogin);
@@ -32,6 +33,15 @@ export default function UserAuth() {
             }`}
           >
             <form className="bg-white p-8 rounded-lg shadow-lg">
+              {/* Updated "Log in as Seller" button */}
+              <button
+                type="button"
+                onClick={() => navigate('/seller-auth')}
+                className="w-full mb-4 py-2.5 px-7 text-sm font-medium uppercase leading-normal text-white bg-blue-600 rounded shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-blue-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
+              >
+                Log in as Seller
+              </button>
+
               {/* Sign in/up section */}
               <div className="flex flex-col items-center justify-center mb-6">
                 <p className="mb-4 text-lg">
