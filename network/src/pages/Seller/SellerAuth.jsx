@@ -4,8 +4,21 @@ import { Link } from "react-router-dom";
 export default function SellerAuth() {
   const [isLogin, setIsLogin] = useState(true);
 
+  // Separate state for signin and signup
+  const [signinEmail, setSigninEmail] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupUsername, setSignupUsername] = useState("");
+
   const toggleView = () => {
     setIsLogin(!isLogin);
+    // Reset form fields when toggling
+    setSigninEmail("");
+    setSigninPassword("");
+    setSignupEmail("");
+    setSignupPassword("");
+    setSignupUsername("");
   };
 
   return (
@@ -93,29 +106,13 @@ export default function SellerAuth() {
                 </p>
               </div>
 
-              {/* Username input (only for signup) */}
-              {!isLogin && (
-                <div className="relative mb-6">
-                  <input
-                    type="text"
-                    id="UserName"
-                    className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    placeholder=" "
-                  />
-                  <label
-                    htmlFor="UserName"
-                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-                  >
-                    User Name
-                  </label>
-                </div>
-              )}
-
               {/* Email input */}
               <div className="relative mb-6">
                 <input
                   type="email"
                   id="email"
+                  value={isLogin ? signinEmail : signupEmail}
+                  onChange={(e) => isLogin ? setSigninEmail(e.target.value) : setSignupEmail(e.target.value)}
                   className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   placeholder=" "
                 />
@@ -132,6 +129,8 @@ export default function SellerAuth() {
                 <input
                   type="password"
                   id="password"
+                  value={isLogin ? signinPassword : signupPassword}
+                  onChange={(e) => isLogin ? setSigninPassword(e.target.value) : setSignupPassword(e.target.value)}
                   className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   placeholder=" "
                 />
@@ -142,6 +141,26 @@ export default function SellerAuth() {
                   Password
                 </label>
               </div>
+
+              {/* Username input (only for signup) */}
+              {!isLogin && (
+                <div className="relative mb-6">
+                  <input
+                    type="text"
+                    id="UserName"
+                    value={signupUsername}
+                    onChange={(e) => setSignupUsername(e.target.value)}
+                    className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                  />
+                  <label
+                    htmlFor="UserName"
+                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
+                  >
+                    User Name
+                  </label>
+                </div>
+              )}
 
               {/* Remember me and Forgot password (only for login) */}
               {isLogin && (

@@ -5,8 +5,21 @@ export default function UserAuth() {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
 
+  // Separate state for signin and signup
+  const [signinEmail, setSigninEmail] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupUsername, setSignupUsername] = useState("");
+
   const toggleView = () => {
     setIsLogin(!isLogin);
+    // Reset form fields when toggling
+    setSigninEmail("");
+    setSigninPassword("");
+    setSignupEmail("");
+    setSignupPassword("");
+    setSignupUsername("");
   };
 
   return (
@@ -109,6 +122,8 @@ export default function UserAuth() {
                   <input
                     type="text"
                     id="UserName"
+                    value={signupUsername}
+                    onChange={(e) => setSignupUsername(e.target.value)}
                     className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                     placeholder=" "
                   />
@@ -126,6 +141,8 @@ export default function UserAuth() {
                 <input
                   type="email"
                   id="email"
+                  value={isLogin ? signinEmail : signupEmail}
+                  onChange={(e) => isLogin ? setSigninEmail(e.target.value) : setSignupEmail(e.target.value)}
                   className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   placeholder=" "
                 />
@@ -142,6 +159,8 @@ export default function UserAuth() {
                 <input
                   type="password"
                   id="password"
+                  value={isLogin ? signinPassword : signupPassword}
+                  onChange={(e) => isLogin ? setSigninPassword(e.target.value) : setSignupPassword(e.target.value)}
                   className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   placeholder=" "
                 />
