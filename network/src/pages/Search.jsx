@@ -59,12 +59,14 @@ export default function Search() {
   const [filters, setFilters] = useState({
     date: "",
     type: "",
-    sortBy: "price",
-    sortOrder: "asc",
+    sortBy: "rating",
+    sortOrder: "desc",
     minPrice: "",
     maxPrice: "",
     maxDistance: "",
     minRating: "",
+    name: "",
+    minWorkers: "", // New filter for minimum number of workers
   });
 
   const [filteredProviders, setFilteredProviders] = useState(
@@ -86,13 +88,15 @@ export default function Search() {
 
     let filtered = dummyServiceProviders.filter((provider) => {
       return (
-        provider.availableDate >= filters.date &&
         provider.type.toLowerCase().includes(filters.type.toLowerCase()) &&
         (!filters.minPrice || provider.price >= parseInt(filters.minPrice)) &&
         (!filters.maxPrice || provider.price <= parseInt(filters.maxPrice)) &&
         (!filters.maxDistance ||
           provider.distance <= parseInt(filters.maxDistance)) &&
-        (!filters.minRating || provider.rating >= parseFloat(filters.minRating))
+        (!filters.minRating || provider.rating >= parseFloat(filters.minRating)) &&
+        (!filters.name ||
+          provider.name.toLowerCase().includes(filters.name.toLowerCase())) &&
+        (!filters.minWorkers || provider.workers >= parseInt(filters.minWorkers))
       );
     });
 
@@ -102,6 +106,12 @@ export default function Search() {
         return filters.sortOrder === "asc"
           ? a.price - b.price
           : b.price - a.price;
+      } else if (filters.sortBy === "rating") {
+        return b.rating - a.rating; // Always sort ratings in descending order
+      } else if (filters.sortBy === "distance") {
+        return filters.sortOrder === "asc"
+          ? a.distance - b.distance
+          : b.distance - a.distance;
       }
       return 0;
     });
@@ -167,21 +177,66 @@ export default function Search() {
               />
             </div>
           </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Search by Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={filters.name}
+              onChange={handleFilterChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Provider name"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Minimum Number of Workers
+            </label>
+            <input
+              type="number"
+              name="minWorkers"
+              value={filters.minWorkers}
+              onChange={handleFilterChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Min workers"
+              min="1"
+            />
+          </div>
           {/* Add more filter options here */}
         </div>
 
         <div className="w-3/4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Services</h2>
-            <select
-              name="sortBy"
-              value={filters.sortBy}
-              onChange={handleFilterChange}
-              className="border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="price">Sort by Price</option>
-              <option value="rating">Sort by Rating</option>
-            </select>
+            <div className="flex items-center">
+              <select
+                name="sortBy"
+                value={filters.sortBy}
+                onChange={handleFilterChange}
+                className="border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mr-2"
+              >
+                <option value="rating">Sort by Rating</option>
+                <option value="price">Sort by Price</option>
+                <option value="distance">Sort by Distance</option>
+              </select>
+              {filters.sortBy !== "rating" && (
+                <select
+                  name="sortOrder"
+                  value={filters.sortOrder}
+                  onChange={handleFilterChange}
+                  className="border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option value="asc">
+                    {filters.sortBy === "price" ? "Low to High" : "Near to Far"}
+                  </option>
+                  <option value="desc">
+                    {filters.sortBy === "price" ? "High to Low" : "Far to Near"}
+                  </option>
+                </select>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -206,6 +261,10 @@ export default function Search() {
                     <span>{provider.distance} km</span>
                   </div>
                   <p className="font-bold text-lg">${provider.price}/hr</p>
+                  <p className="text-sm text-gray-600">Workers: {provider.workers}</p>
+                  {provider.availableDate < filters.date && (
+                    <p className="text-red-500 font-semibold mt-2">Unavailable on selected date</p>
+                  )}
                 </div>
               </div>
             ))}
