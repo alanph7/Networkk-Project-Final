@@ -65,8 +65,7 @@ export default function Search() {
     maxPrice: "",
     maxDistance: "",
     minRating: "",
-    name: "",
-    minWorkers: "", // New filter for minimum number of workers
+    name: "", // New filter for searching by name
   });
 
   const [filteredProviders, setFilteredProviders] = useState(
@@ -93,10 +92,10 @@ export default function Search() {
         (!filters.maxPrice || provider.price <= parseInt(filters.maxPrice)) &&
         (!filters.maxDistance ||
           provider.distance <= parseInt(filters.maxDistance)) &&
-        (!filters.minRating || provider.rating >= parseFloat(filters.minRating)) &&
+        (!filters.minRating ||
+          provider.rating >= parseFloat(filters.minRating)) &&
         (!filters.name ||
-          provider.name.toLowerCase().includes(filters.name.toLowerCase())) &&
-        (!filters.minWorkers || provider.workers >= parseInt(filters.minWorkers))
+          provider.name.toLowerCase().includes(filters.name.toLowerCase()))
       );
     });
 
@@ -190,20 +189,6 @@ export default function Search() {
               placeholder="Provider name"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Minimum Number of Workers
-            </label>
-            <input
-              type="number"
-              name="minWorkers"
-              value={filters.minWorkers}
-              onChange={handleFilterChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Min workers"
-              min="1"
-            />
-          </div>
           {/* Add more filter options here */}
         </div>
 
@@ -261,9 +246,10 @@ export default function Search() {
                     <span>{provider.distance} km</span>
                   </div>
                   <p className="font-bold text-lg">${provider.price}/hr</p>
-                  <p className="text-sm text-gray-600">Workers: {provider.workers}</p>
                   {provider.availableDate < filters.date && (
-                    <p className="text-red-500 font-semibold mt-2">Unavailable on selected date</p>
+                    <p className="text-red-500 font-semibold mt-2">
+                      Unavailable on selected date
+                    </p>
                   )}
                 </div>
               </div>
