@@ -5,19 +5,22 @@ import AdminLog from "./pages/Admin/AdminLog";
 import SellerAuth from "./pages/Seller/SellerAuth";
 import UserAuth from "./pages/User/UserAuth";
 import Search from "./pages/Search";
+import Navbar from "./components/nav";
 import ServiceDetails from "./pages/ServiceDetails";
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/admin-login" element={<AdminLog />} />
-        <Route path="/seller-auth" element={<SellerAuth />} />
-        <Route path="/user-auth" element={<UserAuth />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/service" element={<ServiceDetails />} />
-      </Routes>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin-login" element={<AdminLog />} />
+          <Route path="/seller-auth" element={<SellerAuth />} />
+          <Route path="/user-auth" element={<UserAuth />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/service" element={<ServiceDetails />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
