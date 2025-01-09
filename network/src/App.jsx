@@ -7,6 +7,8 @@ import UserAuth from "./pages/User/UserAuth";
 import Search from "./pages/Search";
 import Navbar from "./components/nav";
 import ServiceDetails from "./pages/ServiceDetails";
+import BookingsPage from "./pages/User/BookingPage";
+import Booking from "./pages/User/Booking";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
           <Route path="/user-auth" element={<UserAuth />} />
           <Route path="/search" element={<Search />} />
           <Route path="/service" element={<ServiceDetails />} />
+          <Route path="/user-booking-status" element={<BookingsPage />} />
+          <Route path="/user-booking" element={<Booking />} />
         </Routes>
       </div>
     </Router>
