@@ -9,6 +9,7 @@ import Navbar from "./components/nav";
 import ServiceDetails from "./pages/ServiceDetails";
 import BookingsPage from "./pages/User/BookingPage";
 import Booking from "./pages/User/Booking";
+import Payment from "./pages/User/Payment";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/service" element={<ServiceDetails />} />
           <Route path="/user-booking-status" element={<BookingsPage />} />
           <Route path="/user-booking" element={<Booking />} />
+          <Route path="/payment" element={<Payment />} />
         </Routes>
       </div>
     </Router>
