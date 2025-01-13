@@ -1,8 +1,58 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axios";  // Import Axios instance
 import { Link } from "react-router-dom";
 
 export default function SellerAuth() {
   const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const navigate = useNavigate();
+
+ 
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    try {
+      if (isLogin) {
+        // Login request
+        const response = await axiosInstance.post('/serviceProviders/signin', {
+          email: formData.email,
+          password: formData.password,
+        });
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
+      } else {
+        // Signup request
+        const response = await axiosInstance.post('/serviceProviders/signup', {
+          email: formData.email,
+          password: formData.password,
+        });
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
+      }
+    } catch (error) {
+      // Handle error properly
+      if (error.response) {
+        console.error('Error during authentication:', error.response.data);
+      } else if (error.request) {
+        console.error('No response from server:', error.request);
+      } else {
+        console.error('Error setting up request:', error.message);
+      }
+    }
+  };
 
   // Separate state for signin and signup
   const [signinEmail, setSigninEmail] = useState("");

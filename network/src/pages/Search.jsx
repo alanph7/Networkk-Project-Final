@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaSearch, FaStar, FaMapMarkerAlt } from "react-icons/fa";
+import axiosInstance from "../utils/axios";
 
 // Dummy data for service providers
 const dummyServiceProviders = [
@@ -54,6 +55,8 @@ const dummyServiceProviders = [
     workers: 2,
   },
 ];
+
+
 
 export default function Search() {
   const [filters, setFilters] = useState({
