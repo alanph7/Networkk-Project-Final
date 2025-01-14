@@ -27,6 +27,15 @@
 
 // export default Home;
 
+import freelancerImg from '../images/Freelance-worker.jpg';
+import brickwork from '../images/brickwork.png';
+import carpenter from '../images/carpenter.jpg';
+import carpentericon from '../images/carpentericon.png';
+import freelance from '../images/Freelance-worker.jpg';
+import homerepair from '../images/home repair icon.png';
+import painter from '../images/Painter.jpg';
+import voltmeter from '../images/voltmeter.png';
+import plumbericon from '../images/plumbericon.png';
 
 
 import React, { useState, useEffect } from 'react';
@@ -93,7 +102,7 @@ const Home = () => {
           </h1>
           <div className="btn flex">
             <button className="px-8 py-4 bg-black text-white rounded-lg mr-4">
-              <a href="/signup">Get Started</a>
+              <a href="/user-auth">Get Started</a>
             </button>
             <button className="px-8 py-4 bg-white border-2 border-blue-gray-700 text-black rounded-lg hover:bg-gray-200 ml-4">
               Learn more
@@ -200,7 +209,7 @@ const Home = () => {
                 </h4>
                 <p>
                   Discover job opportunities in your area and connect with
-                  employers seeking your skills.
+                  employers seeking your skill.
                 </p>
               </div>
             </div>
@@ -208,7 +217,7 @@ const Home = () => {
           <div className="lg:w-1/2 lg:pr-4">
             <img
               className="freelancer-img lg:float-right"
-              //src={require("../images/Freelance-worker.jpg")}
+              src={freelancerImg}
               alt="Freelance-Workers-img"
             />
           </div>
@@ -238,7 +247,7 @@ const Home = () => {
                 <div className="text-center">
                   <img
                     className="mx-auto mb-2 w-8 h-auto"
-                    //src={require("../images/carpentericon.png")}
+                    src={carpentericon}
                     alt="carpentryicon"
                   />
                   <h4 className="text-lg font-semibold mb-2">Carpentry Work</h4>
@@ -251,7 +260,7 @@ const Home = () => {
                 <div className="text-center mt-8">
                   <img
                     className="mx-auto mb-2 w-8 h-auto"
-                    //src={require("../images/home repair icon.png")}
+                    src={homerepair}
                     alt="carpentryicon"
                   />
                   <h4 className="text-lg font-semibold mb-2">
@@ -268,7 +277,7 @@ const Home = () => {
                 <div className="text-center">
                   <img
                     className="mx-auto mb-4"
-                    //src={require("../images/carpenter.jpg")}
+                    src={carpenter}
                     alt="carpentryicon"
                   />
                 </div>
@@ -278,7 +287,7 @@ const Home = () => {
                 <div className="text-center">
                   <img
                     className="mx-auto mb-2 w-8 h-auto"
-                    //src={require("../images/voltmeter.png")}
+                    src={voltmeter}
                     alt="carpentryicon"
                   />
                   <h4 className="text-lg font-semibold mb-2">
@@ -293,7 +302,7 @@ const Home = () => {
                 <div className="text-center mt-8">
                   <img
                     className="mx-auto mb-2 w-8 h-auto"
-                    //src={require("../images/brickwork.png")}
+                    src={brickwork}
                     alt="carpentryicon"
                   />
                   <h4 className="text-lg font-semibold mb-2">Masonry Work</h4>
@@ -337,7 +346,7 @@ const Home = () => {
           <img
             className="freelancer-img mb-4 lg:mb-0"
             alt="Freelance-Workers-img"
-            //src={require("../images/Painter.jpg")}
+            src={painter}
           />
         </div>
         <div className="mb-8 mt-10 flex justify-center py-8">

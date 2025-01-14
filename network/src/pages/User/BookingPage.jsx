@@ -5,7 +5,7 @@ import Collapsible from '@edonec/collapsible';
 import '@edonec/collapsible/build/index.css';
 import '@edonec/collapsible/build/icons.css';
 const BookingsPage = () => {
-  const { user } = useUser();
+  //const { user } = useUser();
   const [pendingBookings, setPendingBookings] = useState([]);
   const [acceptedBookings, setAcceptedBookings] = useState([]);
   const [rejectedBookings, setRejectedBookings] = useState([]);
@@ -15,21 +15,15 @@ const BookingsPage = () => {
 
   
 
-  const fade = useSpring({
-    from: { opacity: 0 },
-    to: { opacity: 1 },
-  });
+  // const fade = useSpring({
+  //   from: { opacity: 0 },
+  //   to: { opacity: 1 },
+  // });
 
   return (
     <div className="BookingsPage">
   
-      <div className="mt-24 px-4 md:px-8">
-        {loading ? (
-          <div className="flex justify-center items-center h-screen">
-            
-          </div>
-        ) : (
-          <div style={fade}>
+          <div>
             <Collapsible open header={<div className="flex items-center"><FiClock className="mr-2" />Pending Bookings</div>}>
               <div className="section bg-white p-4 shadow-md rounded-md mb-4">
                 {pendingBookings.length > 0 ? (
@@ -91,9 +85,9 @@ const BookingsPage = () => {
               </div>
             </Collapsible>
           </div>
-        )}
+        
       </div>
-    </div>
+    
   );
 };
 
