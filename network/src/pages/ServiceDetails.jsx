@@ -9,7 +9,7 @@ const serviceData = {
   rating: 4.9,
   reviewCount: 189,
   ordersInQueue: 12,
-  price: 50,
+  price: 500,
   description: "As an experienced carpenter with over 10 years in the field, I offer top-notch carpentry services for your home. From custom furniture to intricate woodwork, I ensure quality craftsmanship and attention to detail in every project.",
   sellerName: "JohnDoeWoodworks",
   sellerAvatar: "https://randomuser.me/api/portraits/men/1.jpg",
@@ -103,19 +103,19 @@ export default function ServiceDetails() {
         </div>
         <div className="lg:col-span-1">
           <div className="sticky top-4 bg-white p-6 border rounded-lg shadow-lg">
-            <h2 className="text-3xl font-bold mb-4">${service.price}</h2>
+            <h2 className="text-3xl font-bold mb-4">Rs {service.price}</h2>
             <p className="text-gray-600 mb-6">{service.description.substring(0, 100)}...</p>
             <div className="flex justify-between mb-6 text-sm">
               <span className="flex items-center"><FaClock className="mr-2 text-gray-500" /> {service.responseTime} response time</span>
               <span className="flex items-center"><FaRedo className="mr-2 text-gray-500" /> {service.lastDelivery}</span>
             </div>
             <ul className="mb-6">
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-green-500" /> Custom designs</li>
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-green-500" /> High-quality materials</li>
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-green-500" /> Revisions if needed</li>
+              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-500" /> Custom designs</li>
+              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-500" /> High-quality materials</li>
+              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-500" /> Revisions if needed</li>
             </ul>
-            <button className="w-full bg-green-500 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-600 transition duration-300 mb-4">
-              Continue (${service.price})
+            <button className="w-full bg-sky-500 text-white py-3 rounded-lg font-bold text-lg hover:bg-sky-600 transition duration-300 mb-4">
+              Continue (Rs {service.price})
             </button>
             <button className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-bold text-lg hover:bg-gray-300 transition duration-300">
               Contact Seller

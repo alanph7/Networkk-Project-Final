@@ -134,7 +134,7 @@ export default function Search() {
         />
         <button
           onClick={applyFilters}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg ml-2 hover:bg-green-600"
+          className="bg-sky-500 text-white px-4 py-2 rounded-lg ml-2 hover:bg-sky-600"
         >
           <FaSearch />
         </button>
