@@ -1,17 +1,21 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 import Home from "./pages/Home";
+import Search from "./pages/Search";
+import ServiceDetails from "./pages/ServiceDetails";
+import Navbar from "./components/nav";
+
 import AdminLog from "./pages/Admin/AdminLog";
 
 import SellerAuth from "./pages/Seller/SellerAuth";
+import GigCreate from "./pages/Seller/GigCreate";
+
 import UserAuth from "./pages/User/UserAuth";
-import Search from "./pages/Search";
-import Navbar from "./components/nav";
-import ServiceDetails from "./pages/ServiceDetails";
 import BookingsPage from "./pages/User/BookingPage";
 import Booking from "./pages/User/Booking";
 import Payment from "./pages/User/Payment";
-import GigCreate from "./pages/Seller/GigCreate";
+
 
 function App() {
   return (
