@@ -37,7 +37,7 @@ const BookingsPage = () => {
               onClick={() => setActiveSection(key)}
               className={`px-4 py-2 rounded-full whitespace-nowrap ${
                 activeSection === key
-                ? 'bg-sky-500 text-white'
+                ? 'bg-sky-700 text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >

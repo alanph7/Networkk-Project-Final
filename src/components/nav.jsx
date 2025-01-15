@@ -34,7 +34,7 @@ const Navbar = () => {
               />
               <FaSearch className="absolute right-3 top-3 text-gray-400" />
             </div>
-            <Link to="/signin" className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/" className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-indigo-600 hover:text-indigo-500">
               Sign In
             </Link>
             <Link to="/join" className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500">
