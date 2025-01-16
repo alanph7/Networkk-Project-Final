@@ -3,6 +3,7 @@ import { DollarSign, Users, List, Search, User2Icon, Wallet } from 'lucide-react
 import UserSideBar from '../components/UserSideBar';
 import { useDashboard } from '../context/DashboardContext';
 import StatCard from '../components/StatCard';
+import axiosInstance from '../utils/axios';
 
 const UserDashboard = () => {
   const [activePage, setActivePage] = useState('overview');
@@ -11,13 +12,29 @@ const UserDashboard = () => {
   
   // For demo purposes, assuming the user data is fetched from login
   const [user, setUser] = useState(null); // Replace with actual user data fetch logic
+  const [error, setError] = useState(null);
   const COLORS = ['#4c51bf', '#f6ad55', '#38b2ac'];
 
   useEffect(() => {
-    // Simulate fetching user data after login
-    const fetchedUser = { name: "Alan" }; // Replace with actual fetch logic
-    setUser(fetchedUser);
+    const fetchUser = async () => {
+      try {
+        const response = await axiosInstance.get('/users/');
+        setUser(response.data);
+      } catch (error) {
+        setError(error.response?.data?.error || 'Failed to fetch user details');
+      }
+    };
+
+    fetchUser();
   }, []);
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
+  if (!user) {
+    return <p>Loading...</p>;
+  }
 
   // Ongoing tasks example data
   const ongoingTasks = [
@@ -67,7 +84,7 @@ const UserDashboard = () => {
             </div>
             {user && (
               <div className="text-gray-700 font-medium text-lg">
-                Welcome back, {user.name+"!"}
+                <p>Welcome back, {user.fname}</p>
               </div>
             )}
           </div>

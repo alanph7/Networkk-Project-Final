@@ -19,6 +19,7 @@ import Booking from "./pages/User/Booking";
 import Payment from "./pages/User/Payment";
 import Dashboard from "./pages/SellerDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import UserDetailsForm from "./pages/User/UserDetails";
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/gigcreate" element={<GigCreate />} />
           <Route path="/seller-dash" element={<Dashboard />} />
           <Route path="/user-dash" element={<UserDashboard />} />
+          <Route path="/user-details" element={<UserDetailsForm />} />
         </Routes>
       </div>
     </Router>
