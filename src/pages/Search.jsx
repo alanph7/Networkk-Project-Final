@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { FaSearch, FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import axiosInstance from "../utils/axios";
 
+// Add this helper function at the top level
+const formatDate = (date) => {
+  return date ? new Date(date).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).split('/').join('-') : '';
+};
+
 export default function Search() {
   const [filters, setFilters] = useState({
     date: "",
@@ -34,6 +43,15 @@ export default function Search() {
 
   const applyFilters = () => {
     let results = [...originalProviders];
+
+    // Filter out providers who have holiday on selected date
+    if (filters.date) {
+      const formattedSelectedDate = formatDate(filters.date);
+      results = results.filter(provider => {
+        const holidays = provider.holidays?.dates || [];
+        return !holidays.includes(formattedSelectedDate);
+      });
+    }
 
     // Apply category filter
     if (filters.type) {
