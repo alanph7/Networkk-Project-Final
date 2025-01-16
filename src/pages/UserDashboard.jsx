@@ -15,26 +15,26 @@ const UserDashboard = () => {
   const [error, setError] = useState(null);
   const COLORS = ['#4c51bf', '#f6ad55', '#38b2ac'];
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axiosInstance.get('/users/');
-        setUser(response.data);
-      } catch (error) {
-        setError(error.response?.data?.error || 'Failed to fetch user details');
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const response = await axiosInstance.get('/users/UR10');
+  //       setUser(response.data);
+  //     } catch (error) {
+  //       setError(error.response?.data?.error || 'Failed to fetch user details');
+  //     }
+  //   };
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, []);
 
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
+  // if (error) {
+  //   return <p className="text-red-500">{error}</p>;
+  // }
 
-  if (!user) {
-    return <p>Loading...</p>;
-  }
+  // if (!user) {
+  //   return <p>Loading...</p>;
+  // }
 
   // Ongoing tasks example data
   const ongoingTasks = [

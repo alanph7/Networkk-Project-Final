@@ -20,6 +20,7 @@ import Payment from "./pages/User/Payment";
 import Dashboard from "./pages/SellerDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import UserDetailsForm from "./pages/User/UserDetails";
+import Test from "./pages/test";
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Route path="/seller-dash" element={<Dashboard />} />
           <Route path="/user-dash" element={<UserDashboard />} />
           <Route path="/user-details" element={<UserDetailsForm />} />
+          <Route path="/test" element={<Test />} />
         </Routes>
       </div>
     </Router>
