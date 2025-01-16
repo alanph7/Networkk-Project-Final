@@ -225,7 +225,13 @@ export default function Search() {
                   <h3 className="font-bold text-lg mb-2">
                     {provider.serviceProvider.fname} {provider.serviceProvider.lname}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-2">{provider.category}</p>
+                  <p className="text-sm font-bold  text-gray-600 mb-2">{provider.category}</p>
+                  
+                  {/* Add description with truncation */}
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {provider.description || "No description available"}
+                  </p>
+
                   <div className="flex items-center mb-2">
                     <FaStar className="text-yellow-400 mr-1" />
                     <span>{provider.avgRating}</span>
