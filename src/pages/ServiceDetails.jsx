@@ -9,7 +9,7 @@ const serviceData = {
   rating: 4.9,
   reviewCount: 189,
   ordersInQueue: 12,
-  price: 500,
+  price: 2000,
   description: "As an experienced carpenter with over 10 years in the field, I offer top-notch carpentry services for your home. From custom furniture to intricate woodwork, I ensure quality craftsmanship and attention to detail in every project.",
   sellerName: "JohnDoeWoodworks",
   sellerAvatar: "https://randomuser.me/api/portraits/men/1.jpg",
@@ -65,7 +65,7 @@ export default function ServiceDetails() {
               <div>
                 <p className="font-semibold text-lg">{service.sellerName}</p>
                 <p className="text-gray-600 mb-2">{service.sellerLevel}</p>
-                <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">Contact Me</button>
+                <button className="bg-sky-700 text-white py-2 px-4 rounded hover:bg-sky-800 transition">Contact Me</button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-6 mt-6">
@@ -84,7 +84,7 @@ export default function ServiceDetails() {
             {service.reviews.map(review => (
               <div key={review.id} className="mb-6 p-6 bg-white rounded-lg shadow-md">
                 <div className="flex items-center mb-2">
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                  <div className="w-10 h-10 bg-sky-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
                     {review.user[0]}
                   </div>
                   <div>
@@ -110,11 +110,11 @@ export default function ServiceDetails() {
               <span className="flex items-center"><FaRedo className="mr-2 text-gray-500" /> {service.lastDelivery}</span>
             </div>
             <ul className="mb-6">
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-500" /> Custom designs</li>
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-500" /> High-quality materials</li>
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-500" /> Revisions if needed</li>
+              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-700" /> Custom designs</li>
+              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-700" /> High-quality materials</li>
+              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-700" /> Revisions if needed</li>
             </ul>
-            <button className="w-full bg-sky-500 text-white py-3 rounded-lg font-bold text-lg hover:bg-sky-600 transition duration-300 mb-4">
+            <button className="w-full bg-sky-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-sky-600 transition duration-300 mb-4">
               Continue (Rs {service.price})
             </button>
             <button className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-bold text-lg hover:bg-gray-300 transition duration-300">

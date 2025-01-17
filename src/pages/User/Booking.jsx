@@ -39,9 +39,9 @@ const Booking = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [pricing, setPricing] = useState({
-    basePrice: 100,
+    basePrice: 1000,
     serviceFee: 10,
-    total: 110,
+    total: 1010,
   });
 
   // Time slots generation
@@ -308,19 +308,18 @@ const Booking = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-2" />
                         Base Price
                       </span>
-                      <span>${pricing.basePrice}</span>
+                      <span>Rs {pricing.basePrice}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
                       <span>Service Fee</span>
-                      <span>${pricing.serviceFee}</span>
+                      <span>Rs {pricing.serviceFee}</span>
                     </div>
                     <div className="border-t pt-4">
                       <div className="flex justify-between font-bold">
                         <span>Total</span>
-                        <span>${pricing.total}</span>
+                        <span>Rs {pricing.total}</span>
                       </div>
                     </div>
 
