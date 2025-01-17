@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function UserAuth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +11,7 @@ export default function UserAuth() {
   });
 
   const navigate = useNavigate();
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,6 +25,7 @@ export default function UserAuth() {
       const endpoint = isLogin ? '/users/signin' : '/users/signup';
       const response = await axiosInstance.post(endpoint, formData);
       localStorage.setItem('token', response.data.token);
+      setIsAuthenticated(true);
       navigate('/');
     } catch (error) {
       if (error.response) {
