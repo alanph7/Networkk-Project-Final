@@ -6,13 +6,17 @@ import { AuthContext } from '../context/AuthContext';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, userEmail } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     navigate('/');
+  };
+
+  const getInitial = (email) => {
+    return email ? email[0].toUpperCase() : 'U';
   };
 
   return (
@@ -54,11 +58,11 @@ const Navbar = () => {
               <div className="ml-4 relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="bg-indigo-600 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="bg-sky-600 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
-                    <FaUser />
+                  <div className="h-8 w-8 rounded-full bg-sky-600 flex items-center justify-center text-white font-medium">
+                    {getInitial(userEmail)}
                   </div>
                 </button>
                 

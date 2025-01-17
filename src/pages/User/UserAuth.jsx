@@ -11,7 +11,7 @@ export default function UserAuth() {
   });
 
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated, setUserEmail } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({
@@ -25,7 +25,9 @@ export default function UserAuth() {
       const endpoint = isLogin ? '/users/signin' : '/users/signup';
       const response = await axiosInstance.post(endpoint, formData);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userEmail', formData.email); // Store email
       setIsAuthenticated(true);
+      setUserEmail(formData.email); // Set email in context
       navigate('/');
     } catch (error) {
       if (error.response) {
