@@ -20,32 +20,36 @@ import Booking from "./pages/User/Booking";
 import Payment from "./pages/User/Payment";
 import Dashboard from "./pages/SellerDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import UserDetailsForm from "./pages/User/UserDetails";
+import Test from "./pages/test";
 
 
 function App() {
   return (
-    <AuthProvider>
-      <DashboardProvider>
-        <Router>
-          <div className="App">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/admin-login" element={<AdminLog />} />
-              <Route path="/seller-auth" element={<SellerAuth />} />
-              <Route path="/user-auth" element={<UserAuth />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/service" element={<ServiceDetails />} />
-              <Route path="/user-booking-status" element={<BookingsPage />} />
-              <Route path="/user-booking" element={<Booking />} />
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/gigcreate" element={<GigCreate />} />
-              <Route path="/seller-dash" element={<Dashboard />} />
-              <Route path="/user-dash" element={<UserDashboard />} />
-            </Routes>
-          </div>
-        </Router>
-      </DashboardProvider>
-    </AuthProvider>
+<AuthProvider>
+    <DashboardProvider>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin-login" element={<AdminLog />} />
+          <Route path="/seller-auth" element={<SellerAuth />} />
+          <Route path="/user-auth" element={<UserAuth />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/service" element={<ServiceDetails />} />
+          <Route path="/user-booking-status" element={<BookingsPage />} />
+          <Route path="/user-booking" element={<Booking />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/gigcreate" element={<GigCreate />} />
+          <Route path="/seller-dash" element={<Dashboard />} />
+          <Route path="/user-dash" element={<UserDashboard />} />
+          <Route path="/user-details" element={<UserDetailsForm />} />
+          <Route path="/test" element={<Test />} />
+        </Routes>
+      </div>
+    </Router>
+    </DashboardProvider>
+</AuthProvider>
   );
 }
 
