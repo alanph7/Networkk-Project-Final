@@ -11,7 +11,7 @@ import axiosInstance from "../utils/axios";
     useEffect(() => {
         const fetchUser = async () => {
           try {
-            const response = await axiosInstance.get('/users/');
+            const response = await axiosInstance.get('/users/d/me');
             setUser(response.data);
           } catch (error) {
             setError(error.response?.data?.error || 'Failed to fetch user details');
