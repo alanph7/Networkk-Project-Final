@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import ServiceDetails from "./pages/ServiceDetails";
+import Service1 from "./pages/Service1";
 import Navbar from "./components/nav";
 
 import AdminLog from "./pages/Admin/AdminLog";
@@ -36,7 +37,8 @@ function App() {
           <Route path="/seller-auth" element={<SellerAuth />} />
           <Route path="/user-auth" element={<UserAuth />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/service" element={<ServiceDetails />} />
+          <Route path="/service/:id" element={<ServiceDetails />} />
+          <Route path="/service1" element={<Service1 />} />
           <Route path="/user-booking-status" element={<BookingsPage />} />
           <Route path="/user-booking" element={<Booking />} />
           <Route path="/payment" element={<Payment />} />
