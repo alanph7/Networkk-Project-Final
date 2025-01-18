@@ -35,18 +35,30 @@ export default function ServiceDetails() {
         <div className="lg:col-span-2">
           <h1 className="text-3xl font-bold mb-4">{service.title}</h1>
           <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-sky-700 rounded-full flex items-center justify-center text-white font-bold mr-4">
+              {service.serviceProvider.fname?.[0]}
+            </div>
             <div>
               <p className="font-semibold">
-                {service.serviceProvider.username} 
+                {service.serviceProvider.fname} {service.serviceProvider.lname}
               </p>
               <div className="flex items-center">
                 <div className="flex items-center">
                   <FaStar className="text-yellow-400 mr-1" />
-                  <span className="font-semibold">{service.avgRating}</span>
-                  <span className="text-gray-600 ml-1">({service.reviewCount})</span>
+                  <span className="font-semibold">{service.avgRating || 0}</span>
+                  <span className="text-gray-600 ml-1">({service.reviewCount || 0})</span>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="mb-8 relative">
+            <img 
+              src={`https://picsum.photos/seed/${service.serviceId}/800/400`} 
+              alt={service.title} 
+              className="w-full rounded-lg shadow-lg"
+            />
+
           </div>
 
           <div className="mb-8">
@@ -57,13 +69,18 @@ export default function ServiceDetails() {
           <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-4">About The Provider</h2>
             <div className="flex items-center mb-4">
+              <div className="w-24 h-24 bg-sky-700 rounded-full flex items-center justify-center text-white text-3xl font-bold mr-6">
+                {service.serviceProvider.fname?.[0]}
+              </div>
               <div>
                 <p className="font-semibold text-lg">
                   {service.serviceProvider.fname} {service.serviceProvider.lname}
                 </p>
-                <p className="text-gray-600 mb-2">{service.serviceProvider.email}</p>
-                <p className="text-gray-600 mb-2">{service.serviceProvider.phone}</p>
-                <p className="text-gray-600">{service.serviceProvider.locality}</p>
+                <p className="text-gray-600">{service.serviceProvider.email}</p>
+                <p className="text-gray-600 mb-2">{service.serviceProvider.locality}</p>
+                <button className="bg-sky-700 text-white py-2 px-4 rounded hover:bg-sky-800 transition">
+                  Contact Me
+                </button>
               </div>
             </div>
           </div>
