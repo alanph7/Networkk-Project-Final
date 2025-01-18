@@ -239,7 +239,7 @@ export default function Search() {
                     <FaMapMarkerAlt className="text-gray-400 mr-1" />
                     <span>{provider.locality}</span>
                   </div>
-                  <p className="font-bold text-lg">Rs {provider.basePrice}/hr</p>
+                  <p className="font-bold text-lg">Rs {provider.basePrice}</p>
                 </div>
               </div>
             ))}

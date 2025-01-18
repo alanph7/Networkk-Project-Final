@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import { DashboardProvider } from './context/DashboardContext';
+import { AuthProvider } from './context/AuthContext';
 
 import Home from "./pages/Home";
 import Search from "./pages/Search";
@@ -25,6 +26,7 @@ import Test from "./pages/test";
 
 function App() {
   return (
+<AuthProvider>
     <DashboardProvider>
     <Router>
       <div className="App">
@@ -47,6 +49,7 @@ function App() {
       </div>
     </Router>
     </DashboardProvider>
+</AuthProvider>
   );
 }
 

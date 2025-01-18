@@ -1,32 +1,3 @@
-// import React from "react";
-// import { useNavigate } from "react-router-dom";
-
-// const Home = () => {
-//   const navigate = useNavigate();
-
-//   return (
-//     <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-//       <div className="bg-white p-8 rounded-lg shadow-md text-center">
-//         <h1 className="text-3xl font-bold mb-4">Welcome to Our Website</h1>
-//         <p className="text-gray-700 mb-6">
-//           Discover amazing features and services!
-//         </p>
-//         <div className="space-x-4">
-//           <button
-//             onClick={() => navigate("/search")}
-//             className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-300"
-//           >
-//            Search
-//           </button>
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Home;
-
 import freelancerImg from '../images/Freelance-worker.jpg';
 import brickwork from '../images/brickwork.png';
 import carpenter from '../images/carpenter.jpg';
@@ -37,60 +8,15 @@ import painter from '../images/Painter.jpg';
 import voltmeter from '../images/voltmeter.png';
 import plumbericon from '../images/plumbericon.png';
 
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SiAntdesign, SiLinkedin } from "react-icons/si";
 import { BsFacebook, BsGithub, BsGlobe, BsInstagram, BsTwitterX, BsYoutube } from "react-icons/bs";
 import { SlArrowDown } from "react-icons/sl";
-//import HeroSection from "../components/hero-section";
 import { toast } from 'react-toastify';
+import Navbar from '../components/nav';
 
 const Home = () => {
-  // const navigate = useNavigate();
-  // const { user } = useUser();
-  // const [categories, setCategories] = useState([]);
-  // const [searchText, setSearchText] = useState('');
-
-  // const fetchCategories = async () => {
-  //   try {
-  //     const db = getFirestore();
-  //     const gigsCollection = collection(db, 'services');
-  //     const gigsSnapshot = await getDocs(gigsCollection);
-  //     const gigsData = gigsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-  //     // Extract unique categories from gigs data
-  //     const uniqueCategories = [...new Set(gigsData.map(gig => gig.category))];
-  //     setCategories(uniqueCategories);
-  //     console.log("Fetched categories: ", uniqueCategories);
-  //   } catch (error) {
-  //     console.error("Error fetching categories: ", error);
-  //     toast.error("Failed to fetch categories. Please try again later.");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchCategories();
-  // }, []);
-
-  // const handleSearchChange = (e) => {
-  //   setSearchText(e.target.value);
-  // };
-
-  // const handleCategorySelect = (category) => {
-  //   setSearchText(category);
-  //   navigate('/searches', { state: { category } });
-  // };
-
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   if (searchText.trim() === '') {
-  //     toast.error("Please enter a search term.");
-  //     return;
-  //   }
-  //   navigate('/searches', { state: { category: searchText } });
-  // };
-
   const TwoColumnSection = () => {
     return (
       <div className="flex flex-wrap justify-between items-center mb-20 mt-20 p-5 lg:pl-20">
@@ -590,14 +516,7 @@ const Home = () => {
 
   return (
     <div className="home bg-offwhite">
-      {/* <Navbar /> */}
-      {/* <HeroSection
-        searchText={searchText}
-        handleSearchChange={handleSearchChange}
-        handleCategorySelect={handleCategorySelect}
-        handleSearch={handleSearch}
-        categories={categories}
-      /> */}
+      <Navbar />
       <TwoColumnSection />
       <Two />
     </div>
