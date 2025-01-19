@@ -14,6 +14,7 @@ import AdminLog from "./pages/Admin/AdminLog";
 
 import SellerAuth from "./pages/Seller/SellerAuth";
 import GigCreate from "./pages/Seller/GigCreate";
+import Create from "./pages/Seller/Create";
 
 import UserAuth from "./pages/User/UserAuth";
 import BookingsPage from "./pages/User/BookingPage";
@@ -43,6 +44,7 @@ function App() {
           <Route path="/user-booking" element={<Booking />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/gigcreate" element={<GigCreate />} />
+          <Route path="/create" element={<Create />} />
           <Route path="/seller-dash" element={<Dashboard />} />
           <Route path="/user-dash" element={<UserDashboard />} />
           <Route path="/user-details" element={<UserDetailsForm />} />
