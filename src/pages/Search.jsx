@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaSearch, FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import axiosInstance from "../utils/axios";
-
+import { Link } from 'react-router-dom';
 // Add this helper function at the top level
 const formatDate = (date) => {
   return date ? new Date(date).toLocaleDateString('en-GB', {
@@ -210,40 +210,42 @@ export default function Search() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProviders.map((provider) => (
-              <div
-                key={provider.serviceId}
-                className="border rounded-lg overflow-hidden shadow-lg"
-              >
-                <img
-                  src={`https://picsum.photos/seed/${provider.serviceId}/300/200`}
-                  alt={provider.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">
-                    {provider.serviceProvider.fname} {provider.serviceProvider.lname}
-                  </h3>
-                  <p className="text-sm font-bold  text-gray-600 mb-2">{provider.category}</p>
-                  
-                  {/* Add description with truncation */}
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                    {provider.description || "No description available"}
-                  </p>
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {filteredProviders.map((provider) => (
+    <Link 
+      to={`/service/${provider.serviceId}`} 
+      key={provider.serviceId}
+      className="block transition duration-300 ease-in-out transform hover:-translate-y-1"
+    >
+      <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl bg-white">
+        <img
+          src={`https://picsum.photos/seed/${provider.serviceId}/300/200`}
+          alt={provider.title}
+          className="w-full h-48 object-cover"
+        />
+        <div className="p-4">
+          <h3 className="font-bold text-lg mb-2">
+            {provider.serviceProvider.fname} {provider.serviceProvider.lname}
+          </h3>
+          <p className="text-sm font-bold text-gray-600 mb-2">{provider.category}</p>
+          
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+            {provider.description || "No description available"}
+          </p>
 
-                  <div className="flex items-center mb-2">
-                    <FaStar className="text-yellow-400 mr-1" />
-                    <span>{provider.avgRating}</span>
-                    <span className="mx-2">|</span>
-                    <FaMapMarkerAlt className="text-gray-400 mr-1" />
-                    <span>{provider.locality}</span>
-                  </div>
-                  <p className="font-bold text-lg">Rs {provider.basePrice}</p>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center mb-2">
+            <FaStar className="text-yellow-400 mr-1" />
+            <span>{provider.avgRating}</span>
+            <span className="mx-2">|</span>
+            <FaMapMarkerAlt className="text-gray-400 mr-1" />
+            <span>{provider.locality}</span>
           </div>
+          <p className="font-bold text-lg text-sky-600">Rs {provider.basePrice}</p>
+        </div>
+      </div>
+    </Link>
+  ))}
+</div>
         </div>
       </div>
     </div>

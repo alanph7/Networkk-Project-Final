@@ -1,33 +1,33 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { FaStar, FaCheck, FaClock, FaRedo, FaThumbsUp, FaHeart } from "react-icons/fa";
-
-// Dummy data for the service
-const serviceData = {
-  id: 1,
-  title: "I will do professional carpentry work for your home",
-  rating: 4.9,
-  reviewCount: 189,
-  ordersInQueue: 12,
-  price: 2000,
-  description: "As an experienced carpenter with over 10 years in the field, I offer top-notch carpentry services for your home. From custom furniture to intricate woodwork, I ensure quality craftsmanship and attention to detail in every project.",
-  sellerName: "JohnDoeWoodworks",
-  sellerAvatar: "https://randomuser.me/api/portraits/men/1.jpg",
-  sellerLevel: "Level 2 Seller",
-  responseTime: "1 hour",
-  lastDelivery: "about 2 hours",
-  languages: ["English", "Spanish"],
-  skills: ["Woodworking", "Furniture Design", "Home Improvement"],
-  reviews: [
-    { id: 1, user: "Alice", rating: 5, comment: "Excellent work! Very professional and timely." },
-    { id: 2, user: "Bob", rating: 4, comment: "Good quality, but took a bit longer than expected." },
-  ]
-};
+import axiosInstance from "../utils/axios";
 
 export default function ServiceDetails() {
   const { id } = useParams();
-  // In a real app, you'd fetch the service data based on the id
-  const service = serviceData;
+  const navigate = useNavigate();
+  const [service, setService] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchServiceDetails = async () => {
+      try {
+        const response = await axiosInstance.get(`/services/${id}`);
+        setService(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceDetails();
+  }, [id]);
+
+  if (loading) return <div className="text-center p-8">Loading...</div>;
+  if (error) return <div className="text-center p-8 text-red-500">Error: {error}</div>;
+  if (!service) return <div className="text-center p-8">Service not found</div>;
 
   return (
     <div className="container mx-auto p-4 max-w-6xl">
@@ -35,92 +35,108 @@ export default function ServiceDetails() {
         <div className="lg:col-span-2">
           <h1 className="text-3xl font-bold mb-4">{service.title}</h1>
           <div className="flex items-center mb-6">
-            <img src={service.sellerAvatar} alt={service.sellerName} className="w-12 h-12 rounded-full mr-4" />
+            <div className="w-12 h-12 bg-sky-700 rounded-full flex items-center justify-center text-white font-bold mr-4">
+              {service.serviceProvider.fname?.[0]}
+            </div>
             <div>
-              <p className="font-semibold">{service.sellerName}</p>
+              <p className="font-semibold">
+                {service.serviceProvider.fname} {service.serviceProvider.lname}
+              </p>
               <div className="flex items-center">
-                <p className="text-sm text-gray-600 mr-2">{service.sellerLevel}</p>
                 <div className="flex items-center">
                   <FaStar className="text-yellow-400 mr-1" />
-                  <span className="font-semibold">{service.rating}</span>
-                  <span className="text-gray-600 ml-1">({service.reviewCount})</span>
+                  <span className="font-semibold">{service.avgRating || 0}</span>
+                  <span className="text-gray-600 ml-1">({service.reviewCount || 0})</span>
                 </div>
               </div>
             </div>
           </div>
+
           <div className="mb-8 relative">
-            <img src="https://picsum.photos/seed/carpentry/800/400" alt="Service" className="w-full rounded-lg shadow-lg" />
-            <button className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition">
-              <FaHeart className="text-red-500" />
-            </button>
+            <img 
+              src={`https://picsum.photos/seed/${service.serviceId}/800/400`} 
+              alt={service.title} 
+              className="w-full rounded-lg shadow-lg"
+            />
+
           </div>
+
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">About This Gig</h2>
+            <h2 className="text-2xl font-bold mb-4">About This Service</h2>
             <p className="text-gray-700 leading-relaxed">{service.description}</p>
           </div>
+
           <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4">About The Seller</h2>
+            <h2 className="text-2xl font-bold mb-4">About The Provider</h2>
             <div className="flex items-center mb-4">
-              <img src={service.sellerAvatar} alt={service.sellerName} className="w-24 h-24 rounded-full mr-6" />
-              <div>
-                <p className="font-semibold text-lg">{service.sellerName}</p>
-                <p className="text-gray-600 mb-2">{service.sellerLevel}</p>
-                <button className="bg-sky-700 text-white py-2 px-4 rounded hover:bg-sky-800 transition">Contact Me</button>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-6 mt-6">
-              <div>
-                <p className="font-semibold mb-2">Languages</p>
-                <p className="text-gray-700">{service.languages.join(", ")}</p>
+              <div className="w-24 h-24 bg-sky-700 rounded-full flex items-center justify-center text-white text-3xl font-bold mr-6">
+                {service.serviceProvider.fname?.[0]}
               </div>
               <div>
-                <p className="font-semibold mb-2">Skills</p>
-                <p className="text-gray-700">{service.skills.join(", ")}</p>
+                <p className="font-semibold text-lg">
+                  {service.serviceProvider.fname} {service.serviceProvider.lname}
+                </p>
+                <p className="text-gray-600">{service.serviceProvider.email}</p>
+                <p className="text-gray-600 mb-2">{service.serviceProvider.locality}</p>
+                <button className="bg-sky-700 text-white py-2 px-4 rounded hover:bg-sky-800 transition">
+                  Contact Me
+                </button>
               </div>
             </div>
           </div>
+
+          {/* Reviews Section */}
           <div>
             <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-            {service.reviews.map(review => (
-              <div key={review.id} className="mb-6 p-6 bg-white rounded-lg shadow-md">
+            {service.Reviews?.map(review => (
+              <div key={review.reviewId} className="mb-6 p-6 bg-white rounded-lg shadow-md">
                 <div className="flex items-center mb-2">
                   <div className="w-10 h-10 bg-sky-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    {review.user[0]}
+                    {review.user?.fname?.[0]}
                   </div>
                   <div>
-                    <p className="font-semibold">{review.user}</p>
+                    <p className="font-semibold">{review.user?.fname}</p>
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-300"} />
+                        <FaStar 
+                          key={i} 
+                          className={i < review.rating ? "text-yellow-400" : "text-gray-300"} 
+                        />
                       ))}
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-700">{review.comment}</p>
+                <p className="text-gray-700">{review.description}</p>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Booking Section */}
         <div className="lg:col-span-1">
           <div className="sticky top-4 bg-white p-6 border rounded-lg shadow-lg">
-            <h2 className="text-3xl font-bold mb-4">Rs {service.price}</h2>
+            <h2 className="text-3xl font-bold mb-4">Rs {service.basePrice}</h2>
             <p className="text-gray-600 mb-6">{service.description.substring(0, 100)}...</p>
-            <div className="flex justify-between mb-6 text-sm">
-              <span className="flex items-center"><FaClock className="mr-2 text-gray-500" /> {service.responseTime} response time</span>
-              <span className="flex items-center"><FaRedo className="mr-2 text-gray-500" /> {service.lastDelivery}</span>
-            </div>
+            
             <ul className="mb-6">
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-700" /> Custom designs</li>
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-700" /> High-quality materials</li>
-              <li className="flex items-center mb-3"><FaCheck className="mr-3 text-sky-700" /> Revisions if needed</li>
+              <li className="flex items-center mb-3">
+                <FaCheck className="mr-3 text-sky-700" /> Available
+              </li>
+              <li className="flex items-center mb-3">
+                <FaCheck className="mr-3 text-sky-700" /> {service.category}
+              </li>
+              <li className="flex items-center mb-3">
+                <FaCheck className="mr-3 text-sky-700" /> {service.locality}
+              </li>
             </ul>
+
             <button className="w-full bg-sky-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-sky-600 transition duration-300 mb-4">
-              Continue (Rs {service.price})
+              Book Now (Rs {service.basePrice})
             </button>
-            <button className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-bold text-lg hover:bg-gray-300 transition duration-300">
-              Contact Seller
-            </button>
-            <p className="text-center mt-4 text-sm text-gray-600">You won't be charged yet</p>
+            
+            <p className="text-center mt-4 text-sm text-gray-600">
+              You won't be charged yet
+            </p>
           </div>
         </div>
       </div>
