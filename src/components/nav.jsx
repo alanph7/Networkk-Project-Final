@@ -6,12 +6,13 @@ import { AuthContext } from '../context/AuthContext';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { isAuthenticated, setIsAuthenticated, userEmail } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, userEmail, userType } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userType');
     setIsAuthenticated(false);
     navigate('/');
   };
@@ -55,7 +56,16 @@ const Navbar = () => {
               <FaSearch className="absolute right-3 top-3 text-gray-400" />
             </div>
 
-            {isAuthenticated ? (
+            {!isAuthenticated ? (
+              <>
+                <Link to="/user-auth" className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                  Sign In
+                </Link>
+                <Link to="/seller-auth" className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700">
+                  Become a Seller
+                </Link>
+              </>
+            ) : (
               <div className="ml-4 relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -70,7 +80,7 @@ const Navbar = () => {
                 {/* Profile dropdown */}
                 {isProfileOpen && (
                   <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</Link>
+                    <Link to={userType === 'seller' ? "/seller/profile" : "/profile"} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</Link>
                     <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</Link>
                     <button
                       onClick={handleLogout}
@@ -81,15 +91,6 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
-            ) : (
-              <>
-                <Link to="/user-auth" className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                  Sign In
-                </Link>
-                <Link to="/user-auth" className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500">
-                  Join
-                </Link>
-              </>
             )}
           </div>
 

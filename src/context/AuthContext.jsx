@@ -4,25 +4,29 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
   const [userEmail, setUserEmail] = useState('');
+  const [userType, setUserType] = useState(null); // 'user' or 'seller'
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const storedUserType = localStorage.getItem('userType');
+    const email = localStorage.getItem('userEmail');
+    
     if (token) {
       setIsAuthenticated(true);
-      // Fetch user details here if needed
+      setUserType(storedUserType);
+      setUserEmail(email);
     }
   }, []);
 
   return (
     <AuthContext.Provider value={{ 
       isAuthenticated, 
-      setIsAuthenticated, 
-      user, 
-      setUser,
+      setIsAuthenticated,
       userEmail, 
-      setUserEmail 
+      setUserEmail,
+      userType,
+      setUserType
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function SellerAuth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +11,7 @@ export default function SellerAuth() {
   });
 
   const navigate = useNavigate();
+  const { setIsAuthenticated, setUserEmail, setUserType } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,6 +25,11 @@ export default function SellerAuth() {
       const endpoint = isLogin ? '/serviceProviders/signin' : '/serviceProviders/signup';
       const response = await axiosInstance.post(endpoint, formData);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userEmail', formData.email);
+      localStorage.setItem('userType', 'seller');
+      setIsAuthenticated(true);
+      setUserEmail(formData.email);
+      setUserType('seller');
       navigate('/');
     } catch (error) {
       if (error.response) {
