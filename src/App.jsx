@@ -29,6 +29,7 @@ import AdminHome from "./pages/Admin/AdminHome";
 import GigAdminDashboard from "./pages/Admin/GigsRequest";
 
 
+
 function App() {
   return (
 <AuthProvider>
@@ -55,6 +56,7 @@ function App() {
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-dash" element={<GigAdminDashboard />} />
           <Route path="/test" element={<Test />} />
+          
         </Routes>
       </div>
     </Router>
