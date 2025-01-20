@@ -24,6 +24,10 @@ import Dashboard from "./pages/SellerDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import UserDetailsForm from "./pages/User/UserDetails";
 import Test from "./pages/test";
+import SellerDetailsForm from "./pages/Seller/SellerDetails";
+import AdminHome from "./pages/Admin/AdminHome";
+import GigAdminDashboard from "./pages/Admin/GigsRequest";
+
 
 
 function App() {
@@ -48,7 +52,11 @@ function App() {
           <Route path="/seller-dash" element={<Dashboard />} />
           <Route path="/user-dash" element={<UserDashboard />} />
           <Route path="/user-details" element={<UserDetailsForm />} />
+          <Route path="/seller-details" element={<SellerDetailsForm />} />
+          <Route path="/admin-home" element={<AdminHome />} />
+          <Route path="/admin-dash" element={<GigAdminDashboard />} />
           <Route path="/test" element={<Test />} />
+          
         </Routes>
       </div>
     </Router>
