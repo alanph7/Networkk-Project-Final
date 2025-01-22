@@ -12,10 +12,15 @@ export default function SellerDetailsForm() {
     phone: "",
     username: "",
     aadhaar: "",
+    languages: [],
+    skills: [],
+    experience: "",
   });
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const [newLanguage, setNewLanguage] = useState('');
+  const [newSkill, setNewSkill] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +47,19 @@ export default function SellerDetailsForm() {
       newErrors.latitude = "Latitude must be a number.";
     if (formData.longitude && isNaN(parseFloat(formData.longitude)))
       newErrors.longitude = "Longitude must be a number.";
+    if (!formData.languages || formData.languages.length === 0) {
+      newErrors.languages = "Please select at least one language";
+    }
+    
+    if (!formData.skills || formData.skills.length === 0) {
+      newErrors.skills = "Please select at least one skill";
+    }
+    
+    if (!formData.experience) {
+      newErrors.experience = "Experience is required";
+    } else if (isNaN(formData.experience) || formData.experience < 0) {
+      newErrors.experience = "Experience must be a positive number";
+    }
   
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -200,7 +218,118 @@ export default function SellerDetailsForm() {
           {errors.aadhaar && <p className="text-red-500 text-sm mt-1">{errors.aadhaar}</p>}
         </div>
 
-        
+        {/* Languages Known */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">Languages Known</label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {formData.languages.map((lang, index) => (
+              <span key={index} className="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm flex items-center">
+                {lang}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      languages: prev.languages.filter((_, i) => i !== index)
+                    }))
+                  }}
+                  className="ml-2 text-sky-600 hover:text-sky-800"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newLanguage}
+              onChange={(e) => setNewLanguage(e.target.value)}
+              className="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-sky-500"
+              placeholder="Add a language"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (newLanguage.trim()) {
+                  setFormData(prev => ({
+                    ...prev,
+                    languages: [...prev.languages, newLanguage.trim()]
+                  }));
+                  setNewLanguage('');
+                }
+              }}
+              className="bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700"
+            >
+              Add
+            </button>
+          </div>
+          {errors.languages && <p className="text-red-500 text-sm mt-1">{errors.languages}</p>}
+        </div>
+
+        {/* Skills */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">Skills</label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {formData.skills.map((skill, index) => (
+              <span key={index} className="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm flex items-center">
+                {skill}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      skills: prev.skills.filter((_, i) => i !== index)
+                    }))
+                  }}
+                  className="ml-2 text-sky-600 hover:text-sky-800"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newSkill}
+              onChange={(e) => setNewSkill(e.target.value)}
+              className="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-sky-500"
+              placeholder="Add a skill"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (newSkill.trim()) {
+                  setFormData(prev => ({
+                    ...prev,
+                    skills: [...prev.skills, newSkill.trim()]
+                  }));
+                  setNewSkill('');
+                }
+              }}
+              className="bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700"
+            >
+              Add
+            </button>
+          </div>
+          {errors.skills && <p className="text-red-500 text-sm mt-1">{errors.skills}</p>}
+        </div>
+
+        {/* Years of Experience */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">Years of Experience</label>
+          <input
+            type="number"
+            name="experience"
+            value={formData.experience}
+            onChange={handleInputChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+            placeholder="Enter years of experience"
+            min="0"
+          />
+          {errors.experience && <p className="text-red-500 text-sm mt-1">{errors.experience}</p>}
+        </div>
 
         <button
           type="submit"
@@ -213,5 +342,3 @@ export default function SellerDetailsForm() {
     </div>
   );
 }
-
-
