@@ -3,7 +3,6 @@ import { DollarSign, Users, List, Search, User2Icon, Wallet } from 'lucide-react
 import UserSideBar from '../components/UserSideBar';
 import { useDashboard } from '../context/DashboardContext';
 import StatCard from '../components/StatCard';
-import axiosInstance from '../utils/axios';
 
 const UserDashboard = () => {
   const [activePage, setActivePage] = useState('overview');
@@ -12,27 +11,15 @@ const UserDashboard = () => {
   
   // For demo purposes, assuming the user data is fetched from login
   const [user, setUser] = useState(null); // Replace with actual user data fetch logic
-  const [error, setError] = useState(null);
-  const [review, setReview] = useState("");
-  const [rating, setRating] = useState(5);
-
   const COLORS = ['#4c51bf', '#f6ad55', '#38b2ac'];
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axiosInstance.get('/users/d/me');
-        setUser(response.data);
-      } catch (error) {
-        setError(error.response?.data?.error || 'Failed to fetch user details');
-      }
-    };
-
-    fetchUser();
+    // Simulate fetching user data after login
+    const fetchedUser = { name: "Alan" }; // Replace with actual fetch logic
+    setUser(fetchedUser);
   }, []);
 
-
-  //Ongoing tasks example data
+  // Ongoing tasks example data
   const ongoingTasks = [
     { id: 1, taskName: "House Renovation", status: "In Progress", progress: 60 },
     { id: 2, taskName: "Door Fix", status: "In Progress", progress: 30 },
@@ -43,6 +30,8 @@ const UserDashboard = () => {
   const completedTasks = ongoingTasks.filter(task => task.status === "Completed");
   const lastCompletedTask = completedTasks.length > 0 ? completedTasks[completedTasks.length - 1] : null;
 
+  const [review, setReview] = useState("");
+  const [rating, setRating] = useState(5);
 
   const handleReviewChange = (event) => {
     setReview(event.target.value);
@@ -57,16 +46,6 @@ const UserDashboard = () => {
     // Handle the review submission logic (e.g., send it to the server)
     console.log("Review Submitted:", review, "Rating:", rating);
   };
-
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
-
-  if (!user) {
-    return <p>Loading...</p>;
-  } 
-
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -88,7 +67,7 @@ const UserDashboard = () => {
             </div>
             {user && (
               <div className="text-gray-700 font-medium text-lg">
-                <p>Welcome back, {user.fname}</p>
+                Welcome back, {user.name+"!"}
               </div>
             )}
           </div>
