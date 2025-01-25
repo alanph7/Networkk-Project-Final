@@ -56,7 +56,7 @@ function App() {
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-dash" element={<GigAdminDashboard />} />
           <Route path="/test" element={<Test />} />
-          
+
         </Routes>
       </div>
     </Router>

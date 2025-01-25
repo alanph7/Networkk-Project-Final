@@ -16,6 +16,7 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
+import { useLocation } from 'react-router-dom';
 
 // Create theme for MUI components
 const theme = createTheme({
@@ -27,6 +28,9 @@ const theme = createTheme({
 });
 
 const Booking = () => {
+  const location = useLocation();
+  const serviceDetails = location.state || { basePrice: 1000 }; // Default fallback
+
   const [formData, setFormData] = useState({
     date: null,
     time: "",
@@ -39,9 +43,9 @@ const Booking = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [pricing, setPricing] = useState({
-    basePrice: 1000,
-    serviceFee: 10,
-    total: 1010,
+    basePrice: serviceDetails.basePrice,
+    serviceFee: serviceDetails.basePrice * 0.1,
+    total: serviceDetails.basePrice * 1.1
   });
 
   // Time slots generation
@@ -93,7 +97,9 @@ const Booking = () => {
 
   useEffect(() => {
     const calculatePrice = () => {
-      const base = formData.serviceType === "premium" ? 150 : 100;
+      const base = formData.serviceType === "premium" 
+        ? serviceDetails.basePrice * 1.5 
+        : serviceDetails.basePrice;
       const fee = base * 0.1;
       setPricing({
         basePrice: base,
@@ -102,7 +108,7 @@ const Booking = () => {
       });
     };
     calculatePrice();
-  }, [formData.serviceType]);
+  }, [formData.serviceType, serviceDetails.basePrice]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
