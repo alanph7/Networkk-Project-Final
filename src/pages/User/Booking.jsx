@@ -16,7 +16,8 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axiosInstance from "../../utils/axios";
 
 // Create theme for MUI components
 const theme = createTheme({
@@ -29,6 +30,7 @@ const theme = createTheme({
 
 const Booking = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const serviceDetails = location.state || { basePrice: 1000 }; // Default fallback
 
   const [formData, setFormData] = useState({
@@ -116,15 +118,37 @@ const Booking = () => {
 
     setLoading(true);
     try {
-      // Simulated API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Booking submitted:", {
-        ...formData,
-        date: formData.date ? formData.date.format("YYYY-MM-DD") : null,
-      });
-      // Add your API call here
+      const bookingData = {
+        bookingStatus: "pending",
+        paymentStatus: "pending",
+        basePayment: pricing.basePrice,
+        description: formData.description,
+        extraPayment: 0,
+        isReview: false,
+        serviceId: serviceDetails.serviceId,
+        userId: "UR01", // Replace with actual user ID from auth
+        serviceProviderId: "SP01", // Replace with actual provider ID
+        bookingDate: formData.date.format("YYYY-MM-DD"),
+        bookingTime: formData.time.format("HH:mm:00")
+      };
+
+      console.log('Sending booking data:', bookingData); // Debug log
+
+      const response = await axiosInstance.post('/bookings/create', bookingData);
+      
+      if (response.data?.booking) {
+        navigate('/payment', { 
+          state: { 
+            bookingId: response.data.booking.bookingId,
+            amount: pricing.total
+          }
+        });
+      }
     } catch (error) {
-      setErrors({ submit: "Failed to submit booking. Please try again." });
+      console.error('Booking error:', error); // Debug log
+      setErrors({ 
+        submit: error.response?.data?.error || "Failed to submit booking. Please try again." 
+      });
     } finally {
       setLoading(false);
     }
