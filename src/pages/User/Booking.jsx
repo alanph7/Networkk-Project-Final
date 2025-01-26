@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   MapPin,
   FileText,
@@ -18,6 +18,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from "../../utils/axios";
+import { AuthContext } from '../../context/AuthContext';
 
 // Create theme for MUI components
 const theme = createTheme({
@@ -32,6 +33,7 @@ const Booking = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const serviceDetails = location.state || { basePrice: 1000 }; // Default fallback
+  const { userEmail } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     date: null,
@@ -118,6 +120,10 @@ const Booking = () => {
 
     setLoading(true);
     try {
+      // First get the user ID for the logged in user
+      const userResponse = await axiosInstance.get('/users/d/me');
+      const userId = userResponse.data.userId;
+
       const bookingData = {
         bookingStatus: "pending",
         paymentStatus: "pending",
@@ -126,8 +132,8 @@ const Booking = () => {
         extraPayment: 0,
         isReview: false,
         serviceId: serviceDetails.serviceId,
-        userId: "UR01", // Replace with actual user ID from auth
-        serviceProviderId: "SP01", // Replace with actual provider ID
+        userId: userId, // Use actual user ID
+        serviceProviderId: serviceDetails.serviceProviderId, // Use provider ID from service
         bookingDate: formData.date.format("YYYY-MM-DD"),
         bookingTime: formData.time.format("HH:mm:00")
       };
