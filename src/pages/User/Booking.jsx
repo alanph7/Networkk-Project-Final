@@ -146,7 +146,7 @@ const Booking = () => {
         navigate('/payment', { 
           state: { 
             bookingId: response.data.booking.bookingId,
-            amount: pricing.total
+            amount: pricing.total  // This passes the total amount (including service fee)
           }
         });
       }

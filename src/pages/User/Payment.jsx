@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { CreditCard, Clock, Shield, X } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const PaymentPage = () => {
+  const location = useLocation();
+  const { bookingId, amount } = location.state || { amount: 0 };
   const [paymentMethod, setPaymentMethod] = useState('');
   const [showModal, setShowModal] = useState(false);
 
   const service = {
-    title: "Door Fixing Service",
-    description: "Bathroom door was fixed ",
-    price: 500
+    title: "Service Booking",
+    description: "Booking payment",
+    price: amount // Use the amount passed from Booking page
   };
 
   const handlePaymentSubmit = (e) => {
