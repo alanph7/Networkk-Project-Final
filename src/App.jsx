@@ -27,6 +27,7 @@ import Test from "./pages/test";
 import SellerDetailsForm from "./pages/Seller/SellerDetails";
 import AdminHome from "./pages/Admin/AdminHome";
 import GigAdminDashboard from "./pages/Admin/GigsRequest";
+import MyGigs from "./pages/Seller/MyGigs";
 
 
 
@@ -56,7 +57,7 @@ function App() {
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-dash" element={<GigAdminDashboard />} />
           <Route path="/test" element={<Test />} />
-
+          <Route path="/my-gigs" element={<MyGigs />} />
         </Routes>
       </div>
     </Router>

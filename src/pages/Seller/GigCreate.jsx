@@ -50,17 +50,14 @@ export default function GigCreate() {
     try {
       const serviceData = {
         ...formData,
-        serviceProviderId: provider.serviceProviderId,
-        locality: provider.locality,
-        address: provider.address,
-        latitude: provider.latitude,
-        longitude: provider.longitude
+        serviceProviderId: provider.serviceProviderId
       };
 
       await axiosInstance.post('/services/create', serviceData);
-      navigate('/');
+      navigate('/my-gigs');
     } catch (error) {
       console.error('Error creating service:', error);
+      // Show error to user
     }
   };
 
