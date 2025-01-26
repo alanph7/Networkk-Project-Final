@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { CreditCard, Clock, Shield, X } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axiosInstance from '../../utils/axios';
 
 const PaymentPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { bookingId, amount } = location.state || { amount: 0 };
   const [paymentMethod, setPaymentMethod] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const service = {
     title: "Service Booking",
@@ -14,10 +18,38 @@ const PaymentPage = () => {
     price: amount // Use the amount passed from Booking page
   };
 
-  const handlePaymentSubmit = (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    setShowModal(false);
-    alert('Payment submitted successfully!');
+    setLoading(true);
+
+    try {
+      const currentDate = new Date();
+      
+      const paymentData = {
+        bookingId: bookingId,
+        paymentStatus: 'paid',
+        paymentMode: paymentMethod, // 'card' or 'upi'
+        paymentAmount: service.price * 1.05,
+        paymentDate: currentDate.toISOString().split('T')[0],
+        paymentTime: currentDate.toTimeString().split(' ')[0],
+        paymentDesc: `Payment for booking ${bookingId}`
+      };
+
+      const response = await axiosInstance.post('/payments/create', paymentData);
+
+      if (response.status === 201) {
+        setShowModal(false);
+        navigate('/user-booking-status', { 
+          state: { success: true, paymentId: response.data.payment.paymentId }
+        });
+      }
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      setError(error.response?.data?.message || 'Payment failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const Modal = ({ onClose, children }) => (
@@ -88,10 +120,12 @@ const PaymentPage = () => {
         </div>
         <button 
           type="submit"
+          disabled={loading}
           className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors mt-6"
         >
-          Pay Rs {(service.price * 1.05).toFixed(2)}
+          {loading ? 'Processing...' : `Pay Rs ${(service.price * 1.05).toFixed(2)}`}
         </button>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </form>
     </>
   );
@@ -116,10 +150,12 @@ const PaymentPage = () => {
         </p>
         <button 
           type="submit"
+          disabled={loading}
           className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors mt-6"
         >
-          Pay Rs {(service.price * 1.05).toFixed(2)}
+          {loading ? 'Processing...' : `Pay Rs ${(service.price * 1.05).toFixed(2)}`}
         </button>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </form>
     </>
   );
