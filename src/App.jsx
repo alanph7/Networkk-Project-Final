@@ -28,6 +28,7 @@ import SellerDetailsForm from "./pages/Seller/SellerDetails";
 import AdminHome from "./pages/Admin/AdminHome";
 import GigAdminDashboard from "./pages/Admin/GigsRequest";
 import MyGigs from "./pages/Seller/MyGigs";
+import EditGig from "./pages/Seller/EditGig";
 
 
 
@@ -58,6 +59,7 @@ function App() {
           <Route path="/admin-dash" element={<GigAdminDashboard />} />
           <Route path="/test" element={<Test />} />
           <Route path="/my-gigs" element={<MyGigs />} />
+          <Route path="/edit-gig/:id" element={<EditGig />} />
         </Routes>
       </div>
     </Router>

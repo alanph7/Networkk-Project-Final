@@ -36,6 +36,17 @@ const MyGigs = () => {
     
       if (loading) return <div className="text-center p-8">Loading...</div>;
       if (error) return <div className="text-center p-8 text-red-500">{error}</div>;
+
+  const handleDelete = async (gigId) => {
+    if (window.confirm('Are you sure you want to delete this service?')) {
+      try {
+        await axiosInstance.delete(`/services/delete/${gigId}`);
+        setGigs(gigs.filter(gig => gig.serviceId !== gigId));
+      } catch (error) {
+        console.error('Error deleting gig:', error);
+      }
+    }
+  };
     
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -57,12 +68,26 @@ const MyGigs = () => {
               <p className="text-gray-600 mb-4">{gig.category}</p>
               <div className="flex justify-between items-center">
                 <span className="text-sky-600 font-medium">₹{gig.basePrice}</span>
-                <Link 
-                  to={`/service/${gig.serviceId}`}
-                  className="text-sky-500 hover:text-sky-600"
-                >
-                  View Details
-                </Link>
+                <div className="space-x-2">
+                  <Link 
+                    to={`/edit-gig/${gig.serviceId}`}
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(gig.serviceId)}
+                    className="text-red-500 hover:text-red-600"
+                  >
+                    Delete
+                  </button>
+                  <Link 
+                    to={`/service/${gig.serviceId}`}
+                    className="text-sky-500 hover:text-sky-600"
+                  >
+                    View
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
