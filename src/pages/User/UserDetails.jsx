@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axios";
 
-export default function UserDetailsForm() {
+const UserDetailsForm = () => {
   const [formData, setFormData] = useState({
     fname: "",
     lname: "",
@@ -16,6 +16,36 @@ export default function UserDetailsForm() {
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axiosInstance.get('/users/d/me');
+        const userData = response.data;
+        setFormData({
+          fname: userData.fname || "",
+          lname: userData.lname || "",
+          address: userData.address || "",
+          latitude: userData.latitude || "",
+          longitude: userData.longitude || "",
+          locality: userData.locality || "",
+          phone: userData.phone || "",
+          username: userData.username || "",
+          aadhaar: userData.aadhaar || "",
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setMessage("Failed to load user data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -47,28 +77,60 @@ export default function UserDetailsForm() {
     return Object.keys(newErrors).length === 0;
   };
   
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
     if (!validateForm()) {
-        console.log("Validation failed:", errors);
-        return;
+      return;
     }
+
     try {
-        const response = await axiosInstance.put("/users/profile", formData);
-        console.log("Response:", response.data); // Debug log
-        setMessage(response.data.message);
-      } catch (error) {
-        console.error("Error:", error.response?.data || error.message); // Debug log
-        setMessage(error.response?.data?.error || "Failed to update profile.");
-      }
+      const response = await axiosInstance.put("/users/profile", formData);
+      setMessage("Profile updated successfully!");
+      setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage(error.response?.data?.error || "Failed to update profile");
+    }
   };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    // Reset form data to original values
+    fetchUserData();
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">
+      <div className="text-xl">Loading...</div>
+    </div>;
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-semibold text-center mb-6">Complete Your Profile</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold">Your Profile</h2>
+        {!isEditing && (
+          <button
+            onClick={handleEditClick}
+            className="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700"
+          >
+            Edit Profile
+          </button>
+        )}
+      </div>
+
+      {message && (
+        <div className={`p-4 mb-4 rounded ${
+          message.includes("success") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+        }`}>
+          {message}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         {/* First Name and Last Name */}
         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -79,7 +141,10 @@ export default function UserDetailsForm() {
               name="fname"
               value={formData.fname}
               onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+              className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+                ${!isEditing ? 'bg-gray-100' : ''} 
+                ${errors.fname ? 'border-red-500' : 'border-gray-300'}`}
+              readOnly={!isEditing}
               placeholder="Enter your first name"
             />
             {errors.fname && <p className="text-red-500 text-sm mt-1">{errors.fname}</p>}
@@ -91,7 +156,10 @@ export default function UserDetailsForm() {
               name="lname"
               value={formData.lname}
               onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+              className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+                ${!isEditing ? 'bg-gray-100' : ''} 
+                ${errors.lname ? 'border-red-500' : 'border-gray-300'}`}
+              readOnly={!isEditing}
               placeholder="Enter your last name"
             />
             {errors.lname && <p className="text-red-500 text-sm mt-1">{errors.lname}</p>}
@@ -106,7 +174,10 @@ export default function UserDetailsForm() {
             name="username"
             value={formData.username}
             onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+              ${!isEditing ? 'bg-gray-100' : ''} 
+              ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
+            readOnly={!isEditing}
             placeholder="Enter your username"
           />
           {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
@@ -120,7 +191,10 @@ export default function UserDetailsForm() {
             name="address"
             value={formData.address}
             onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+              ${!isEditing ? 'bg-gray-100' : ''} 
+              ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+            readOnly={!isEditing}
             placeholder="Enter your address"
           />
           {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
@@ -134,7 +208,10 @@ export default function UserDetailsForm() {
             name="locality"
             value={formData.locality}
             onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+              ${!isEditing ? 'bg-gray-100' : ''} 
+              ${errors.locality ? 'border-red-500' : 'border-gray-300'}`}
+            readOnly={!isEditing}
             placeholder="Enter your locality"
           />
           {errors.locality && <p className="text-red-500 text-sm mt-1">{errors.locality}</p>}
@@ -149,7 +226,10 @@ export default function UserDetailsForm() {
               name="latitude"
               value={formData.latitude}
               onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+              className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+                ${!isEditing ? 'bg-gray-100' : ''} 
+                ${errors.latitude ? 'border-red-500' : 'border-gray-300'}`}
+              readOnly={!isEditing}
               placeholder="Enter latitude"
             />
             {errors.latitude && <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>}
@@ -161,7 +241,10 @@ export default function UserDetailsForm() {
               name="longitude"
               value={formData.longitude}
               onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+              className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+                ${!isEditing ? 'bg-gray-100' : ''} 
+                ${errors.longitude ? 'border-red-500' : 'border-gray-300'}`}
+              readOnly={!isEditing}
               placeholder="Enter longitude"
             />
             {errors.longitude && <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>}
@@ -176,9 +259,10 @@ export default function UserDetailsForm() {
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
-            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none ${
-              errors.phone ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+              ${!isEditing ? 'bg-gray-100' : ''} 
+              ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+            readOnly={!isEditing}
             placeholder="Enter your phone number"
           />
           {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -192,26 +276,36 @@ export default function UserDetailsForm() {
             name="aadhaar"
             value={formData.aadhaar}
             onChange={handleInputChange}
-            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none ${
-              errors.aadhaar ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 
+              ${!isEditing ? 'bg-gray-100' : ''} 
+              ${errors.aadhaar ? 'border-red-500' : 'border-gray-300'}`}
+            readOnly={!isEditing}
             placeholder="Enter your Aadhaar number"
           />
           {errors.aadhaar && <p className="text-red-500 text-sm mt-1">{errors.aadhaar}</p>}
         </div>
 
-        
-
-        <button
-          type="submit"
-          className="w-full bg-sky-700 text-white py-2 px-4 rounded-md hover:bg-sky-800"
-          //onClick={handleSubmit}
-        >
-          Save Details
-        </button>
+        {/* Action Buttons */}
+        {isEditing && (
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="flex-1 bg-sky-600 text-white py-2 px-4 rounded-md hover:bg-sky-700"
+            >
+              Update Details
+            </button>
+            <button
+              type="button"
+              onClick={handleCancelClick}
+              className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );
-}
+};
 
-
+export default UserDetailsForm;
