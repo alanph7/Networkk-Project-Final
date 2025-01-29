@@ -27,6 +27,7 @@ import Test from "./pages/test";
 import SellerDetailsForm from "./pages/Seller/SellerDetails";
 import AdminHome from "./pages/Admin/AdminHome";
 import GigAdminDashboard from "./pages/Admin/GigsRequest";
+import ServiceImages from "./pages/Seller/ServiceImages";
 
 
 
@@ -55,6 +56,7 @@ function App() {
           <Route path="/seller-details" element={<SellerDetailsForm />} />
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-dash" element={<GigAdminDashboard />} />
+          <Route path="/serv-img" element={<ServiceImages />} ></Route>
           <Route path="/test" element={<Test />} />
           
         </Routes>
