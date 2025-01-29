@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import axiosInstance from "../../utils/axios";
+import Autocomplete from 'react-google-autocomplete';
+
+if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+  console.error('Google Maps API key is missing in environment variables');
+}
 
 export default function SellerDetailsForm() {
   const [formData, setFormData] = useState({
@@ -27,6 +32,16 @@ export default function SellerDetailsForm() {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handlePlaceSelected = (place) => {
+    setFormData(prev => ({
+      ...prev,
+      address: place.formatted_address,
+      locality: place.vicinity || place.formatted_address.split(',')[0],
+      latitude: place.geometry.location.lat(),
+      longitude: place.geometry.location.lng()
     }));
   };
 
@@ -131,61 +146,69 @@ export default function SellerDetailsForm() {
         </div>
 
         {/* Address */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-            placeholder="Enter your address"
-          />
-          {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
-        </div>
-
-        {/* Locality */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Locality</label>
-          <input
-            type="text"
-            name="locality"
-            value={formData.locality}
-            onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-            placeholder="Enter your locality"
-          />
-          {errors.locality && <p className="text-red-500 text-sm mt-1">{errors.locality}</p>}
-        </div>
-
-        {/* Latitude and Longitude */}
+<div className="mb-6">
+  <label className="block text-sm font-medium text-gray-700">Search Location</label>
+  <Autocomplete
+    apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+    onPlaceSelected={handlePlaceSelected}
+    options={{
+      componentRestrictions: { country: "in" },
+      types: ["geocode", "establishment"],
+    }}
+    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
+    placeholder="Search for your location"
+/>
+  {(errors.address || errors.locality) && (
+    <p className="text-red-500 text-sm mt-1">
+      {errors.address || errors.locality}
+    </p>
+  )}
+</div>
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Latitude</label>
-            <input
-              type="text"
-              name="latitude"
-              value={formData.latitude}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-              placeholder="Enter latitude"
-            />
-            {errors.latitude && <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Longitude</label>
-            <input
-              type="text"
-              name="longitude"
-              value={formData.longitude}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-              placeholder="Enter longitude"
-            />
-            {errors.longitude && <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>}
-          </div>
-        </div>
+  <div>
+    <label className="block text-sm font-medium text-gray-700">Address</label>
+    <input
+      type="text"
+      name="address"
+      value={formData.address}
+      readOnly
+      className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm py-2 px-3"
+    />
+  </div>
+  <div>
+    <label className="block text-sm font-medium text-gray-700">Locality</label>
+    <input
+      type="text"
+      name="locality" 
+      value={formData.locality}
+      readOnly
+      className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm py-2 px-3"
+    />
+  </div>
+</div>
 
+        <div className="grid grid-cols-2 gap-4 mb-4">
+  <div>
+    <label className="block text-sm font-medium text-gray-700">Latitude</label>
+    <input
+      type="text"
+      name="latitude"
+      value={formData.latitude}
+      readOnly
+      className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm py-2 px-3"
+    />
+  </div>
+  <div>
+    <label className="block text-sm font-medium text-gray-700">Longitude</label>
+    <input
+      type="text"
+      name="longitude"
+      value={formData.longitude}
+      readOnly
+      className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm py-2 px-3"
+    />
+  </div>
+</div>
         {/* Phone Number */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Phone Number</label>

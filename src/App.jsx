@@ -29,6 +29,7 @@ import AdminHome from "./pages/Admin/AdminHome";
 import GigAdminDashboard from "./pages/Admin/GigsRequest";
 import MyGigs from "./pages/Seller/MyGigs";
 import EditGig from "./pages/Seller/EditGig";
+import LocationTest from './pages/Seller/Auto';
 
 
 
@@ -60,6 +61,7 @@ function App() {
           <Route path="/test" element={<Test />} />
           <Route path="/my-gigs" element={<MyGigs />} />
           <Route path="/edit-gig/:id" element={<EditGig />} />
+          <Route path="/location-test" element={<LocationTest />} />
         </Routes>
       </div>
     </Router>
