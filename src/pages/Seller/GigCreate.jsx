@@ -69,7 +69,7 @@ export default function GigCreate() {
         formDataUpload.append(`images`, image);
       });
   
-      await axiosInstance.post('/services/create', formDataUpload, {
+      const response = await axiosInstance.post('/services/create', formDataUpload, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -95,6 +95,7 @@ export default function GigCreate() {
     const previews = validImageFiles.map(file => URL.createObjectURL(file));
     setImagePreview(prev => [...prev, ...previews]);
     setImages(prev => [...prev, ...validImageFiles]);
+    console.log(images);
   };
   
   const removeImage = (indexToRemove) => {
