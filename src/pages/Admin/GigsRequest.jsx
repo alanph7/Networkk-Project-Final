@@ -26,60 +26,6 @@ import {
 } from '@mui/icons-material';
 import axiosInstance from '../../utils/axios';
 
-// Dummy data for gig requests
-const dummyGigRequests = [
-  {
-    id: 1,
-    title: "WordPress Website Development",
-    seller: "John Doe",
-    category: "Web Development",
-    price: 50,
-    description: "I will create a custom WordPress website with responsive design",
-    status: "pending",
-    submittedAt: "2025-01-19T10:30:00",
-  },
-  {
-    id: 2,
-    title: "Logo Design Package",
-    seller: "Jane Smith",
-    category: "Graphics Design",
-    price: 35,
-    description: "Professional logo design with unlimited revisions",
-    status: "approved",
-    submittedAt: "2025-01-18T15:45:00",
-  },
-  {
-    id: 3,
-    title: "Social Media Management",
-    seller: "Mike Johnson",
-    category: "Digital Marketing",
-    price: 75,
-    description: "Complete social media management for your business",
-    status: "rejected",
-    submittedAt: "2025-01-17T09:15:00",
-  },
-  {
-    id: 4,
-    title: "Mobile App Development",
-    seller: "Sarah Williams",
-    category: "App Development",
-    price: 120,
-    description: "Native iOS and Android app development",
-    status: "pending",
-    submittedAt: "2025-01-20T08:00:00",
-  },
-  {
-    id: 5,
-    title: "Content Writing Services",
-    seller: "Alex Brown",
-    category: "Writing & Translation",
-    price: 25,
-    description: "SEO-optimized content writing for your website",
-    status: "approved",
-    submittedAt: "2025-01-19T14:20:00",
-  }
-];
-
 
 const categories = [
   "Cleaning",
@@ -155,8 +101,8 @@ const GigRequestCard = ({ gig, onStatusChange }) => {
           <Box>
             <IconButton
               color="success"
-              onClick={() => onStatusChange(gig.id, "approved")}
-              disabled={gig.status === "approved"}
+              onClick={() => onStatusChange(gig.id, "accepted")}
+              disabled={gig.status === "accepted"}
             >
               <CheckCircleIcon />
             </IconButton>
