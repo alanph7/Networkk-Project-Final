@@ -64,8 +64,7 @@ const UserDetailsForm = () => {
   const handlePlaceSelected = (place) => {
     setFormData(prev => ({
       ...prev,
-      address: place.formatted_address,
-      locality: place.vicinity || place.formatted_address.split(',')[0],
+      locality: place.formatted_address, // Set full address as locality
       latitude: place.geometry.location.lat(),
       longitude: place.geometry.location.lng()
     }));
@@ -213,6 +212,7 @@ const UserDetailsForm = () => {
                 <MapPin className="w-5 h-5 text-gray-400" />
                 <h2 className="text-lg font-semibold text-gray-900">Location Details</h2>
               </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Search Location</label>
@@ -225,31 +225,34 @@ const UserDetailsForm = () => {
                         types: ["geocode", "establishment"],
                       }}
                       className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      defaultValue={formData.address}
+                      defaultValue={formData.locality}
                       placeholder="Search for your location"
                     />
                   ) : (
                     <input
                       type="text"
-                      value={formData.address}
+                      value={formData.locality}
                       readOnly
                       className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
                     />
                   )}
-                  {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
                 </div>
-
+            
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                   <input
                     type="text"
                     name="address"
                     value={formData.address}
-                    readOnly
-                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`w-full px-4 py-2 rounded-md border ${
+                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                    } ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
                   />
+                  {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
                 </div>
-
+            
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Locality</label>
                   <input
@@ -260,7 +263,7 @@ const UserDetailsForm = () => {
                     className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
                   />
                 </div>
-
+            
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
                   <input
@@ -271,7 +274,7 @@ const UserDetailsForm = () => {
                     className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
                   />
                 </div>
-
+            
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
                   <input
