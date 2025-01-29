@@ -11,8 +11,9 @@ import axiosInstance from "../utils/axios";
     useEffect(() => {
         const fetchUser = async () => {
           try {
-            const response = await axiosInstance.get('/users/d/me');
+            const response = await axiosInstance.get('/admins/pending-services');
             setUser(response.data);
+            console.log(response.data);
           } catch (error) {
             setError(error.response?.data?.error || 'Failed to fetch user details');
           }
@@ -26,7 +27,7 @@ import axiosInstance from "../utils/axios";
       }
     
       if (user) {
-        return <p>{user.fname}</p>;
+        return <p>{user[9].address}</p>;
       }
 
  }

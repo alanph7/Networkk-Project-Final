@@ -3,7 +3,7 @@ import axiosInstance from "../../utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
-const AdminLog = () => {
+const AdminAuth = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,11 +22,11 @@ const AdminLog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/admin/signin", formData);
+      const response = await axiosInstance.post("/admins/signin", formData);
       console.log(response.data);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userEmail", formData.email);
-      localStorage.setItem("userType", "user"); // Add userType
+      localStorage.setItem("userType", "admin"); // Add userType
       setIsAuthenticated(true);
       setUserEmail(formData.email);
       setUserType("admin"); // Set userType in context
@@ -106,4 +106,4 @@ const AdminLog = () => {
   );
 };
 
-export default AdminLog;
+export default AdminAuth;

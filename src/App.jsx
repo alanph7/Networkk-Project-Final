@@ -10,7 +10,7 @@ import ServiceDetails from "./pages/ServiceDetails";
 import Service1 from "./pages/Service1";
 import Navbar from "./components/nav";
 
-import AdminLog from "./pages/Admin/AdminLog";
+import AdminAuth from "./pages/Admin/AdminAuth";
 
 import SellerAuth from "./pages/Seller/SellerAuth";
 import GigCreate from "./pages/Seller/GigCreate";
@@ -39,7 +39,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/admin-login" element={<AdminLog />} />
+          <Route path="/admin-auth" element={<AdminAuth />} />
           <Route path="/seller-auth" element={<SellerAuth />} />
           <Route path="/user-auth" element={<UserAuth />} />
           <Route path="/search" element={<Search />} />
