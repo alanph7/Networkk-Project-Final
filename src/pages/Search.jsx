@@ -21,7 +21,7 @@ export default function Search() {
     sortOrder: "desc",
     minPrice: "",
     maxPrice: "",
-    maxDistance: "",
+    maxDistance: 10, // Default 10km radius
     minRating: "",
     name: "",
   });
@@ -108,7 +108,7 @@ export default function Search() {
     }
 
     // Filter by distance if user location is available
-    if (userLocation) {
+    if (userLocation && filters.maxDistance) {
       results = results.filter(provider => {
         if (!provider.serviceProvider.latitude || !provider.serviceProvider.longitude) {
           return false;
@@ -121,8 +121,7 @@ export default function Search() {
           parseFloat(provider.serviceProvider.longitude)
         );
         
-        // Only show providers within 10km radius
-        return distance <= 10;
+        return distance <= filters.maxDistance;
       });
     }
 
@@ -226,6 +225,29 @@ export default function Search() {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="Provider name"
                 />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Distance (km): {filters.maxDistance}
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">1</span>
+                  <input
+                    type="range"
+                    name="maxDistance"
+                    min="1"
+                    max="50"
+                    value={filters.maxDistance}
+                    onChange={handleFilterChange}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                  />
+                  <span className="text-sm text-gray-500">50</span>
+                </div>
+                {userLocation && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Showing services within {filters.maxDistance}km of your location
+                  </p>
+                )}
               </div>
               {/* Add more filter options here */}
             </div>
