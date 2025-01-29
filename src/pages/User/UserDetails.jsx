@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axios";
 import { User, MapPin, Phone, FileText } from 'lucide-react';
+import Autocomplete from 'react-google-autocomplete';
+
+if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+  console.error('Google Maps API key is missing in environment variables');
+}
 
 const UserDetailsForm = () => {
   const [formData, setFormData] = useState({
@@ -53,6 +58,16 @@ const UserDetailsForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handlePlaceSelected = (place) => {
+    setFormData(prev => ({
+      ...prev,
+      address: place.formatted_address,
+      locality: place.vicinity || place.formatted_address.split(',')[0],
+      latitude: place.geometry.location.lat(),
+      longitude: place.geometry.location.lng()
     }));
   };
 
@@ -200,55 +215,71 @@ const UserDetailsForm = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Search Location</label>
+                  {isEditing ? (
+                    <Autocomplete
+                      apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+                      onPlaceSelected={handlePlaceSelected}
+                      options={{
+                        componentRestrictions: { country: "in" },
+                        types: ["geocode", "establishment"],
+                      }}
+                      className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      defaultValue={formData.address}
+                      placeholder="Search for your location"
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={formData.address}
+                      readOnly
+                      className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
+                    />
+                  )}
+                  {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                  <textarea
+                  <input
+                    type="text"
                     name="address"
                     value={formData.address}
-                    onChange={handleInputChange}
-                    readOnly={!isEditing}
-                    rows="3"
-                    className={`w-full px-4 py-2 rounded-md border ${
-                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
-                    } ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+                    readOnly
+                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Locality</label>
                   <input
                     type="text"
                     name="locality"
                     value={formData.locality}
-                    onChange={handleInputChange}
-                    readOnly={!isEditing}
-                    className={`w-full px-4 py-2 rounded-md border ${
-                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
-                    }`}
+                    readOnly
+                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
                   <input
                     type="text"
                     name="latitude"
                     value={formData.latitude}
-                    onChange={handleInputChange}
-                    readOnly={!isEditing}
-                    className={`w-full px-4 py-2 rounded-md border ${
-                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
-                    }`}
+                    readOnly
+                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
                   <input
                     type="text"
                     name="longitude"
                     value={formData.longitude}
-                    onChange={handleInputChange}
-                    readOnly={!isEditing}
-                    className={`w-full px-4 py-2 rounded-md border ${
-                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
-                    }`}
+                    readOnly
+                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
                   />
                 </div>
               </div>
