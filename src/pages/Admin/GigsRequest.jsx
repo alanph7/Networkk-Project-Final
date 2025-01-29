@@ -92,7 +92,7 @@ const categories = [
 const GigRequestCard = ({ gig, onStatusChange }) => {
   const statusColors = {
     pending: "warning",
-    approved: "success",
+    accepted: "success",
     rejected: "error"
   };
 
@@ -190,7 +190,9 @@ const GigAdminDashboard = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axiosInstance.get('/admins/pending-services');
+        //const response = await axiosInstance.get('/admins/pending-services');
+        //const response = await axiosInstance.get('/services/');
+        const response = await axiosInstance.get(`/services/?${activeTab}`);
         
         // Fetch provider details for each service
         const servicesWithProviders = await Promise.all(
@@ -208,7 +210,7 @@ const GigAdminDashboard = () => {
                 category: service.category,
                 price: service.basePrice,
                 description: service.description,
-                status: service.status || "pending",
+                status: service.status,
                 submittedAt: service.createdAt,
                 providerId: service.serviceProviderId
               };
@@ -256,7 +258,8 @@ const GigAdminDashboard = () => {
       const matchesSearch = gig.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            gig.seller.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === "all" || gig.category === categoryFilter;
-      return matchesSearch && matchesCategory;
+      const matchesStatus = gig.status === activeTab; // Add status filter
+      return matchesSearch && matchesCategory && matchesStatus;
     })
     .sort((a, b) => {
       if (dateSort === "newest") {
@@ -353,10 +356,10 @@ const GigAdminDashboard = () => {
           <Tab
             icon={<CheckCircleIcon />}
             iconPosition="start"
-            label={`Approved (${getTabCount("approved")})`}
-            value="approved"
+            label={`Accepted (${getTabCount("accepted")})`}
+            value="accepted"
             onClick={() => {
-              setActiveTab("approved");
+              setActiveTab("accepted");
             }}
           />
           <Tab
