@@ -27,7 +27,13 @@ import Test from "./pages/test";
 import SellerDetailsForm from "./pages/Seller/SellerDetails";
 import AdminHome from "./pages/Admin/AdminHome";
 import GigAdminDashboard from "./pages/Admin/GigsRequest";
+
+import MyGigs from "./pages/Seller/MyGigs";
+import EditGig from "./pages/Seller/EditGig";
+import LocationTest from './pages/Seller/Auto';
+
 import ServiceImages from "./pages/Seller/ServiceImages";
+
 
 
 
@@ -58,7 +64,9 @@ function App() {
           <Route path="/admin-dash" element={<GigAdminDashboard />} />
           <Route path="/serv-img" element={<ServiceImages />} ></Route>
           <Route path="/test" element={<Test />} />
-          
+          <Route path="/my-gigs" element={<MyGigs />} />
+          <Route path="/edit-gig/:id" element={<EditGig />} />
+          <Route path="/location-test" element={<LocationTest />} />
         </Routes>
       </div>
     </Router>

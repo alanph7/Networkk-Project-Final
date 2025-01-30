@@ -54,13 +54,11 @@ export default function GigCreate() {
       // Append service data
       const serviceData = {
         ...formData,
-        serviceProviderId: provider.serviceProviderId,
-        locality: provider.locality,
-        address: provider.address,
-        latitude: provider.latitude,
-        longitude: provider.longitude
+        serviceProviderId: provider.serviceProviderId
       };
-  
+
+      await axiosInstance.post('/services/create', serviceData);
+      navigate('/my-gigs');
       // Convert serviceData to JSON and append
       formDataUpload.append('serviceData', JSON.stringify(serviceData));
   
@@ -74,9 +72,10 @@ export default function GigCreate() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      navigate('/');
+
     } catch (error) {
       console.error('Error creating service:', error);
+      // Show error to user
     }
   };
 

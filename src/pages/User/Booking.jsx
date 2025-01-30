@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   MapPin,
   FileText,
@@ -16,6 +16,9 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
+import { useLocation, useNavigate } from 'react-router-dom';
+import axiosInstance from "../../utils/axios";
+import { AuthContext } from '../../context/AuthContext';
 
 // Create theme for MUI components
 const theme = createTheme({
@@ -27,6 +30,11 @@ const theme = createTheme({
 });
 
 const Booking = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const serviceDetails = location.state || { basePrice: 1000 }; // Default fallback
+  const { userEmail } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({
     date: null,
     time: "",
@@ -39,9 +47,9 @@ const Booking = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [pricing, setPricing] = useState({
-    basePrice: 1000,
-    serviceFee: 10,
-    total: 1010,
+    basePrice: serviceDetails.basePrice,
+    serviceFee: serviceDetails.basePrice * 0.1,
+    total: serviceDetails.basePrice * 1.1
   });
 
   // Time slots generation
@@ -93,7 +101,9 @@ const Booking = () => {
 
   useEffect(() => {
     const calculatePrice = () => {
-      const base = formData.serviceType === "premium" ? 150 : 100;
+      const base = formData.serviceType === "premium" 
+        ? serviceDetails.basePrice * 1.5 
+        : serviceDetails.basePrice;
       const fee = base * 0.1;
       setPricing({
         basePrice: base,
@@ -102,7 +112,7 @@ const Booking = () => {
       });
     };
     calculatePrice();
-  }, [formData.serviceType]);
+  }, [formData.serviceType, serviceDetails.basePrice]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,15 +120,41 @@ const Booking = () => {
 
     setLoading(true);
     try {
-      // Simulated API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Booking submitted:", {
-        ...formData,
-        date: formData.date ? formData.date.format("YYYY-MM-DD") : null,
-      });
-      // Add your API call here
+      // First get the user ID for the logged in user
+      const userResponse = await axiosInstance.get('/users/d/me');
+      const userId = userResponse.data.userId;
+
+      const bookingData = {
+        bookingStatus: "pending",
+        paymentStatus: "pending",
+        basePayment: pricing.basePrice,
+        description: formData.description,
+        extraPayment: 0,
+        isReview: false,
+        serviceId: serviceDetails.serviceId,
+        userId: userId, // Use actual user ID
+        serviceProviderId: serviceDetails.serviceProviderId, // Use provider ID from service
+        bookingDate: formData.date.format("YYYY-MM-DD"),
+        bookingTime: formData.time.format("HH:mm:00")
+      };
+
+      console.log('Sending booking data:', bookingData); // Debug log
+
+      const response = await axiosInstance.post('/bookings/create', bookingData);
+      
+      if (response.data?.booking) {
+        navigate('/payment', { 
+          state: { 
+            bookingId: response.data.booking.bookingId,
+            amount: pricing.total  // This passes the total amount (including service fee)
+          }
+        });
+      }
     } catch (error) {
-      setErrors({ submit: "Failed to submit booking. Please try again." });
+      console.error('Booking error:', error); // Debug log
+      setErrors({ 
+        submit: error.response?.data?.error || "Failed to submit booking. Please try again." 
+      });
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axios";
+import { User, MapPin, Phone, FileText } from 'lucide-react';
+import Autocomplete from 'react-google-autocomplete';
 
-export default function SellerDetailsForm() {
+if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+  console.error('Google Maps API key is missing in environment variables');
+}
+
+const SellerDetailsForm = () => {
   const [formData, setFormData] = useState({
     fname: "",
     lname: "",
@@ -12,21 +18,55 @@ export default function SellerDetailsForm() {
     phone: "",
     username: "",
     aadhaar: "",
-    languages: [],
-    skills: [],
-    experience: "",
   });
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
-  const [newLanguage, setNewLanguage] = useState('');
-  const [newSkill, setNewSkill] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchSellerData = async () => {
+      try {
+        const response = await axiosInstance.get('/serviceProviders/d/me');
+        const SellerData = response.data;
+        setFormData({
+          fname: SellerData.fname || "",
+          lname: SellerData.lname || "",
+          address: SellerData.address || "",
+          latitude: SellerData.latitude || "",
+          longitude: SellerData.longitude || "",
+          locality: SellerData.locality || "",
+          phone: SellerData.phone || "",
+          username: SellerData.username || "",
+          aadhaar: SellerData.aadhaar || "",
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setMessage("Failed to load user data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSellerData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handlePlaceSelected = (place) => {
+    setFormData(prev => ({
+      ...prev,
+      locality: place.formatted_address, // Set full address as locality
+      latitude: place.geometry.location.lat(),
+      longitude: place.geometry.location.lng()
     }));
   };
 
@@ -47,298 +87,266 @@ export default function SellerDetailsForm() {
       newErrors.latitude = "Latitude must be a number.";
     if (formData.longitude && isNaN(parseFloat(formData.longitude)))
       newErrors.longitude = "Longitude must be a number.";
-    if (!formData.languages || formData.languages.length === 0) {
-      newErrors.languages = "Please select at least one language";
-    }
-    
-    if (!formData.skills || formData.skills.length === 0) {
-      newErrors.skills = "Please select at least one skill";
-    }
-    
-    if (!formData.experience) {
-      newErrors.experience = "Experience is required";
-    } else if (isNaN(formData.experience) || formData.experience < 0) {
-      newErrors.experience = "Experience must be a positive number";
-    }
   
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    
     if (!validateForm()) {
-        console.log("Validation failed:", errors);
-        return;
+      return;
     }
+  
     try {
-        const response = await axiosInstance.put("/serviceProviders/profile", formData);
-        console.log("Response:", response.data); // Debug log
-        setMessage(response.data.message);
-      } catch (error) {
-        console.error("Error:", error.response?.data || error.message); // Debug log
-        setMessage(error.response?.data?.error || "Failed to update profile.");
-      }
+      const response = await axiosInstance.put("/serviceProviders/profile", formData);
+      setMessage("Profile updated successfully!");
+      setIsEditing(false); // Toggle back to view mode
+      setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage(error.response?.data?.error || "Failed to update profile");
+    }
+  };
+  
+
+  const handleEditClick = () => {
+    setIsEditing(true);
   };
 
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    // Reset form data to original values
+    fetchSellerData();
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">
+      <div className="text-xl">Loading...</div>
+    </div>;
+  }
+
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-semibold text-center mb-6">Complete Your Profile</h2>
-      <form onSubmit={handleSubmit}>
-        {/* First Name and Last Name */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">First Name</label>
-            <input
-              type="text"
-              name="fname"
-              value={formData.fname}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-              placeholder="Enter your first name"
-            />
-            {errors.fname && <p className="text-red-500 text-sm mt-1">{errors.fname}</p>}
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl shadow-sm">
+          {/* Header */}
+          <div className="border-b border-gray-200 p-6">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+              {!isEditing ? (
+                <button
+                  onClick={handleEditClick}
+                  className="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-md hover:bg-sky-700"
+                >
+                  Edit Profile
+                </button>
+              ) : null}
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Last Name</label>
-            <input
-              type="text"
-              name="lname"
-              value={formData.lname}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-              placeholder="Enter your last name"
-            />
-            {errors.lname && <p className="text-red-500 text-sm mt-1">{errors.lname}</p>}
-          </div>
-        </div>
 
-        {/* Username */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-            placeholder="Enter your username"
-          />
-          {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
-        </div>
+          {/* Form Content */}
+          <form onSubmit={handleSubmit} className="p-6">
+            {message && (
+              <div className={`mb-6 p-4 rounded-md ${
+                message.includes("success") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+              }`}>
+                {message}
+              </div>
+            )}
 
-        {/* Address */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-            placeholder="Enter your address"
-          />
-          {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
-        </div>
+            {/* Personal Information Section */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <User className="w-5 h-5 text-gray-400" />
+                <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                  <input
+                    type="text"
+                    name="fname"
+                    value={formData.fname}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`w-full px-4 py-2 rounded-md border ${
+                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                    } ${errors.fname ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                  {errors.fname && <p className="mt-1 text-sm text-red-500">{errors.fname}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <input
+                    type="text"
+                    name="lname"
+                    value={formData.lname}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`w-full px-4 py-2 rounded-md border ${
+                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                    } ${errors.lname ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`w-full px-4 py-2 rounded-md border ${
+                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                    } ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                </div>
+              </div>
+            </div>
 
-        {/* Locality */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Locality</label>
-          <input
-            type="text"
-            name="locality"
-            value={formData.locality}
-            onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-            placeholder="Enter your locality"
-          />
-          {errors.locality && <p className="text-red-500 text-sm mt-1">{errors.locality}</p>}
-        </div>
+            {/* Location Information */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <MapPin className="w-5 h-5 text-gray-400" />
+                <h2 className="text-lg font-semibold text-gray-900">Location Details</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Search Location</label>
+                  {isEditing ? (
+                    <Autocomplete
+                      apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+                      onPlaceSelected={handlePlaceSelected}
+                      options={{
+                        componentRestrictions: { country: "in" },
+                        types: ["geocode", "establishment"],
+                      }}
+                      className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      defaultValue={formData.locality}
+                      placeholder="Search for your location"
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={formData.locality}
+                      readOnly
+                      className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
+                    />
+                  )}
+                </div>
+            
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`w-full px-4 py-2 rounded-md border ${
+                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                    } ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                  {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
+                </div>
+            
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Locality</label>
+                  <input
+                    type="text"
+                    name="locality"
+                    value={formData.locality}
+                    readOnly
+                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
+                  />
+                </div>
+            
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                  <input
+                    type="text"
+                    name="latitude"
+                    value={formData.latitude}
+                    readOnly
+                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
+                  />
+                </div>
+            
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                  <input
+                    type="text"
+                    name="longitude"
+                    value={formData.longitude}
+                    readOnly
+                    className="w-full px-4 py-2 rounded-md border bg-gray-50 text-gray-500 border-gray-300"
+                  />
+                </div>
+              </div>
+            </div>
 
-        {/* Latitude and Longitude */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Latitude</label>
-            <input
-              type="text"
-              name="latitude"
-              value={formData.latitude}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-              placeholder="Enter latitude"
-            />
-            {errors.latitude && <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Longitude</label>
-            <input
-              type="text"
-              name="longitude"
-              value={formData.longitude}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-              placeholder="Enter longitude"
-            />
-            {errors.longitude && <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>}
-          </div>
-        </div>
+            {/* Contact Information */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Phone className="w-5 h-5 text-gray-400" />
+                <h2 className="text-lg font-semibold text-gray-900">Contact Information</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`w-full px-4 py-2 rounded-md border ${
+                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Aadhaar Number</label>
+                  <input
+                    type="text"
+                    name="aadhaar"
+                    value={formData.aadhaar}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`w-full px-4 py-2 rounded-md border ${
+                      !isEditing ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
 
-        {/* Phone Number */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-          <input
-            type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none ${
-              errors.phone ? "border-red-500" : "border-gray-300"
-            }`}
-            placeholder="Enter your phone number"
-          />
-          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-        </div>
-
-        {/* Aadhaar */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Aadhaar</label>
-          <input
-            type="text"
-            name="aadhaar"
-            value={formData.aadhaar}
-            onChange={handleInputChange}
-            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none ${
-              errors.aadhaar ? "border-red-500" : "border-gray-300"
-            }`}
-            placeholder="Enter your Aadhaar number"
-          />
-          {errors.aadhaar && <p className="text-red-500 text-sm mt-1">{errors.aadhaar}</p>}
-        </div>
-
-        {/* Languages Known */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Languages Known</label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.languages.map((lang, index) => (
-              <span key={index} className="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm flex items-center">
-                {lang}
+            {/* Action Buttons */}
+            {isEditing && (
+              <div className="flex gap-4 pt-6 border-t">
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 font-medium"
+                >
+                  Save Changes
+                </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setFormData(prev => ({
-                      ...prev,
-                      languages: prev.languages.filter((_, i) => i !== index)
-                    }))
-                  }}
-                  className="ml-2 text-sky-600 hover:text-sky-800"
+                  onClick={handleCancelClick}
+                  className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 font-medium"
                 >
-                  ×
+                  Cancel
                 </button>
-              </span>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newLanguage}
-              onChange={(e) => setNewLanguage(e.target.value)}
-              className="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-sky-500"
-              placeholder="Add a language"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                if (newLanguage.trim()) {
-                  setFormData(prev => ({
-                    ...prev,
-                    languages: [...prev.languages, newLanguage.trim()]
-                  }));
-                  setNewLanguage('');
-                }
-              }}
-              className="bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700"
-            >
-              Add
-            </button>
-          </div>
-          {errors.languages && <p className="text-red-500 text-sm mt-1">{errors.languages}</p>}
+              </div>
+            )}
+          </form>
         </div>
-
-        {/* Skills */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Skills</label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.skills.map((skill, index) => (
-              <span key={index} className="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm flex items-center">
-                {skill}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData(prev => ({
-                      ...prev,
-                      skills: prev.skills.filter((_, i) => i !== index)
-                    }))
-                  }}
-                  className="ml-2 text-sky-600 hover:text-sky-800"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              className="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-sky-500"
-              placeholder="Add a skill"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                if (newSkill.trim()) {
-                  setFormData(prev => ({
-                    ...prev,
-                    skills: [...prev.skills, newSkill.trim()]
-                  }));
-                  setNewSkill('');
-                }
-              }}
-              className="bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700"
-            >
-              Add
-            </button>
-          </div>
-          {errors.skills && <p className="text-red-500 text-sm mt-1">{errors.skills}</p>}
-        </div>
-
-        {/* Years of Experience */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Years of Experience</label>
-          <input
-            type="number"
-            name="experience"
-            value={formData.experience}
-            onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none"
-            placeholder="Enter years of experience"
-            min="0"
-          />
-          {errors.experience && <p className="text-red-500 text-sm mt-1">{errors.experience}</p>}
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-sky-700 text-white py-2 px-4 rounded-md hover:bg-sky-800"
-          //onClick={handleSubmit}
-        >
-          Save Details
-        </button>
-      </form>
+      </div>
     </div>
   );
-}
+};
+
+export default SellerDetailsForm;

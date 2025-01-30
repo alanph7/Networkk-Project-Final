@@ -130,7 +130,17 @@ export default function ServiceDetails() {
               </li>
             </ul>
 
-            <button className="w-full bg-sky-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-sky-600 transition duration-300 mb-4">
+            <button 
+              onClick={() => navigate('/user-booking', { 
+                state: { 
+                  basePrice: service.basePrice,
+                  serviceId: service.serviceId,
+                  serviceTitle: service.title,
+                  serviceProviderId: service.serviceProvider.serviceProviderId // Add this
+                }
+              })}
+              className="w-full bg-sky-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-sky-600 transition duration-300 mb-4"
+            >
               Book Now (Rs {service.basePrice})
             </button>
             
