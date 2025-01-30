@@ -83,3 +83,4 @@ input[type="range"]::-moz-range-thumb {
     @apply bg-background text-foreground;
   }
 }
+}
