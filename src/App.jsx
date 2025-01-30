@@ -10,7 +10,7 @@ import ServiceDetails from "./pages/ServiceDetails";
 import Service1 from "./pages/Service1";
 import Navbar from "./components/nav";
 
-import AdminLog from "./pages/Admin/AdminLog";
+import AdminAuth from "./pages/Admin/AdminAuth";
 
 import SellerAuth from "./pages/Seller/SellerAuth";
 import GigCreate from "./pages/Seller/GigCreate";
@@ -27,9 +27,13 @@ import Test from "./pages/test";
 import SellerDetailsForm from "./pages/Seller/SellerDetails";
 import AdminHome from "./pages/Admin/AdminHome";
 import GigAdminDashboard from "./pages/Admin/GigsRequest";
+
 import MyGigs from "./pages/Seller/MyGigs";
 import EditGig from "./pages/Seller/EditGig";
 import LocationTest from './pages/Seller/Auto';
+
+import ServiceImages from "./pages/Seller/ServiceImages";
+
 
 
 
@@ -41,7 +45,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/admin-login" element={<AdminLog />} />
+          <Route path="/admin-auth" element={<AdminAuth />} />
           <Route path="/seller-auth" element={<SellerAuth />} />
           <Route path="/user-auth" element={<UserAuth />} />
           <Route path="/search" element={<Search />} />
@@ -58,6 +62,7 @@ function App() {
           <Route path="/seller-details" element={<SellerDetailsForm />} />
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-dash" element={<GigAdminDashboard />} />
+          <Route path="/serv-img" element={<ServiceImages />} ></Route>
           <Route path="/test" element={<Test />} />
           <Route path="/my-gigs" element={<MyGigs />} />
           <Route path="/edit-gig/:id" element={<EditGig />} />

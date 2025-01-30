@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box,
   Card,
@@ -25,73 +24,21 @@ import {
   PendingActions as PendingIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
+import axiosInstance from '../../utils/axios';
 
-// Dummy data for gig requests
-const dummyGigRequests = [
-  {
-    id: 1,
-    title: "WordPress Website Development",
-    seller: "John Doe",
-    category: "Web Development",
-    price: 50,
-    description: "I will create a custom WordPress website with responsive design",
-    status: "pending",
-    submittedAt: "2025-01-19T10:30:00",
-  },
-  {
-    id: 2,
-    title: "Logo Design Package",
-    seller: "Jane Smith",
-    category: "Graphics Design",
-    price: 35,
-    description: "Professional logo design with unlimited revisions",
-    status: "approved",
-    submittedAt: "2025-01-18T15:45:00",
-  },
-  {
-    id: 3,
-    title: "Social Media Management",
-    seller: "Mike Johnson",
-    category: "Digital Marketing",
-    price: 75,
-    description: "Complete social media management for your business",
-    status: "rejected",
-    submittedAt: "2025-01-17T09:15:00",
-  },
-  {
-    id: 4,
-    title: "Mobile App Development",
-    seller: "Sarah Williams",
-    category: "App Development",
-    price: 120,
-    description: "Native iOS and Android app development",
-    status: "pending",
-    submittedAt: "2025-01-20T08:00:00",
-  },
-  {
-    id: 5,
-    title: "Content Writing Services",
-    seller: "Alex Brown",
-    category: "Writing & Translation",
-    price: 25,
-    description: "SEO-optimized content writing for your website",
-    status: "approved",
-    submittedAt: "2025-01-19T14:20:00",
-  }
-];
 
 const categories = [
-  "Web Development",
-  "App Development",
-  "Graphics Design",
-  "Digital Marketing",
-  "Writing & Translation"
+  "Cleaning",
+  "Plumbing",
+  "Electrical",
+  "Carpentry",
+  "Painting",
 ];
 
 const GigRequestCard = ({ gig, onStatusChange }) => {
   const statusColors = {
     pending: "warning",
-    approved: "success",
+    accepted: "success",
     rejected: "error"
   };
 
@@ -154,8 +101,8 @@ const GigRequestCard = ({ gig, onStatusChange }) => {
           <Box>
             <IconButton
               color="success"
-              onClick={() => onStatusChange(gig.id, "approved")}
-              disabled={gig.status === "approved"}
+              onClick={() => onStatusChange(gig.id, "accepted")}
+              disabled={gig.status === "accepted"}
             >
               <CheckCircleIcon />
             </IconButton>
@@ -177,16 +124,74 @@ const GigRequestCard = ({ gig, onStatusChange }) => {
 };
 
 const GigAdminDashboard = () => {
-  const [gigs, setGigs] = useState(dummyGigRequests);
-  const [activeTab, setActiveTab] = useState("pending");
+  const [gigs, setGigs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateSort, setDateSort] = useState("newest");
+  const [activeTab, setActiveTab] = useState("pending");
 
-  const handleStatusChange = (gigId, newStatus) => {
-    setGigs(gigs.map(gig => 
-      gig.id === gigId ? { ...gig, status: newStatus } : gig
-    ));
+  // Add useEffect to fetch services
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        //const response = await axiosInstance.get('/admins/pending-services');
+        //const response = await axiosInstance.get('/services/');
+        const response = await axiosInstance.get(`/services/?${activeTab}`);
+        
+        // Fetch provider details for each service
+        const servicesWithProviders = await Promise.all(
+          response.data.map(async (service) => {
+            try {
+              const providerResponse = await axiosInstance.get(`/serviceProviders/${service.serviceProviderId}`);
+              const provider = providerResponse.data;
+              
+              return {
+                id: service.serviceId,
+                title: service.title,
+                seller: provider ? 
+                  `${provider.fname || ''} ${provider.lname || ''}`.trim() : 
+                  'Unknown Provider',
+                category: service.category,
+                price: service.basePrice,
+                description: service.description,
+                status: service.status,
+                submittedAt: service.createdAt,
+                providerId: service.serviceProviderId
+              };
+            } catch (error) {
+              console.error(`Error fetching provider ${service.serviceProviderId}:`, error);
+              return {
+                ...service,
+                seller: 'Unknown Provider'
+              };
+            }
+          })
+        );
+  
+        setGigs(servicesWithProviders);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        setError(error.response?.data?.message || 'Failed to fetch services');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchServices();
+  }, []);
+
+  // Rest of your existing functions
+  const handleStatusChange = async (gigId, newStatus) => {
+    try {
+      await axiosInstance.put(`/admins/services/${gigId}/status`, { status: newStatus });
+      setGigs(gigs.map(gig => 
+        gig.id === gigId ? { ...gig, status: newStatus } : gig
+      ));
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
 
   const handleTabChange = (event, newValue) => {
@@ -196,11 +201,11 @@ const GigAdminDashboard = () => {
   // Filter and sort gigs
   const filteredGigs = gigs
     .filter(gig => {
-      const matchesStatus = gig.status === activeTab;
       const matchesSearch = gig.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            gig.seller.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === "all" || gig.category === categoryFilter;
-      return matchesStatus && matchesSearch && matchesCategory;
+      const matchesStatus = gig.status === activeTab; // Add status filter
+      return matchesSearch && matchesCategory && matchesStatus;
     })
     .sort((a, b) => {
       if (dateSort === "newest") {
@@ -210,13 +215,25 @@ const GigAdminDashboard = () => {
       }
     });
 
+  if (loading) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', padding: 3 }}>
+      <Typography>Loading...</Typography>
+    </Box>
+  );
+
+  if (error) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', padding: 3 }}>
+      <Typography color="error">Error: {error}</Typography>
+    </Box>
+  );
+
   const getTabCount = (status) => gigs.filter(gig => gig.status === status).length;
 
   return (
     <Box sx={{ maxWidth: 1000, margin: '0 auto', p: 3 }}>
       <Paper sx={{ mb: 3, p: 3 }}>
         <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
-          Gig Approval Dashboard
+          Service Approval Dashboard
         </Typography>
 
         {/* Search and Filter Section */}
@@ -224,7 +241,7 @@ const GigAdminDashboard = () => {
           <Grid item xs={12} md={4}>
             <TextField
               fullWidth
-              placeholder="Search gigs or sellers..."
+              placeholder="Search services or providers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
@@ -234,6 +251,7 @@ const GigAdminDashboard = () => {
                   </InputAdornment>
                 ),
               }}
+
             />
           </Grid>
           <Grid item xs={12} md={4}>
@@ -277,18 +295,27 @@ const GigAdminDashboard = () => {
             iconPosition="start"
             label={`Pending (${getTabCount("pending")})`}
             value="pending"
+            onClick={() => {
+              setActiveTab("pending");
+            }}
           />
           <Tab
             icon={<CheckCircleIcon />}
             iconPosition="start"
-            label={`Approved (${getTabCount("approved")})`}
-            value="approved"
+            label={`Accepted (${getTabCount("accepted")})`}
+            value="accepted"
+            onClick={() => {
+              setActiveTab("accepted");
+            }}
           />
           <Tab
             icon={<CancelIcon />}
             iconPosition="start"
             label={`Rejected (${getTabCount("rejected")})`}
             value="rejected"
+            onClick={() => {
+              setActiveTab("rejected");
+            }}
           />
         </Tabs>
 
@@ -307,7 +334,7 @@ const GigAdminDashboard = () => {
               color="text.secondary" 
               sx={{ textAlign: 'center', py: 4 }}
             >
-              No {activeTab} requests found
+              No services found
             </Typography>
           )}
         </Box>
