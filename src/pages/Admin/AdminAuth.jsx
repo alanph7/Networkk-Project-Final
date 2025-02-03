@@ -30,7 +30,7 @@ const AdminAuth = () => {
       setIsAuthenticated(true);
       setUserEmail(formData.email);
       setUserType("admin"); // Set userType in context
-      navigate("/admin-home");
+      navigate("/admin-dash");
     } catch (error) {
       console.log(error);
     }

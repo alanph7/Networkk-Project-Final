@@ -21,7 +21,7 @@ export default function Search() {
     sortOrder: "desc",
     minPrice: "",
     maxPrice: "",
-    maxDistance: 10, // Default 10km radius
+    maxDistance:50, // Default 10km radius
     minRating: "",
     name: "",
   });
@@ -33,17 +33,22 @@ export default function Search() {
   const [locationError, setLocationError] = useState("");
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
 
+  // Update useEffect for initial data load
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchProviders = async () => {
       try {
         const response = await axiosInstance.get('/services');
-        setOriginalProviders(response.data);
-        setFilteredProviders(response.data);
-      } catch (err) {
-        setError('Failed to fetch services');
+        // Filter for accepted status immediately after fetching
+        const acceptedServices = response.data.filter(service => service.status === 'accepted');
+        setOriginalProviders(acceptedServices);
+        setFilteredProviders(acceptedServices);
+      } catch (error) {
+        console.error('Error fetching providers:', error);
+        setError('Failed to load services');
       }
     };
-    fetchServices();
+
+    fetchProviders();
   }, []);
 
   // Add useEffect for getting user location
@@ -70,6 +75,8 @@ export default function Search() {
 
   const applyFilters = () => {
     let results = [...originalProviders];
+ // First filter by status
+ results = results.filter(provider => provider.status === 'accepted');
 
     // Filter out providers who have holiday on selected date
     if (filters.date) {
@@ -87,7 +94,8 @@ export default function Search() {
       );
     }
 
-    // Apply price range filter 
+   
+    // Then apply price filters
     if (filters.minPrice) {
       results = results.filter(provider => 
         provider.basePrice >= parseInt(filters.minPrice)

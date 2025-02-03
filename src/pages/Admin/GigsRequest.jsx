@@ -185,12 +185,20 @@ const GigAdminDashboard = () => {
   // Rest of your existing functions
   const handleStatusChange = async (gigId, newStatus) => {
     try {
-      await axiosInstance.put(`/admins/services/${gigId}/status`, { status: newStatus });
-      setGigs(gigs.map(gig => 
-        gig.id === gigId ? { ...gig, status: newStatus } : gig
-      ));
+      const response = await axiosInstance.put(`/admins/services/${gigId}/status`, { 
+        status: newStatus 
+      });
+
+      if (response.data.success) {
+        setGigs(gigs.map(gig => 
+          gig.id === gigId ? { ...gig, status: newStatus } : gig
+        ));
+      } else {
+        console.error('Failed to update status:', response.data.message);
+      }
     } catch (error) {
       console.error('Error updating status:', error);
+      // Add error handling UI feedback here
     }
   };
 

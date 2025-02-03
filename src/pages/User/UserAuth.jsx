@@ -30,7 +30,7 @@ export default function UserAuth() {
       setIsAuthenticated(true);
       setUserEmail(formData.email);
       setUserType('user'); // Set userType in context
-      navigate('/');
+      navigate('/user-details');
     } catch (error) {
       if (error.response) {
         console.error('Error:', error.response.data);

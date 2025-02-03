@@ -30,7 +30,7 @@ export default function SellerAuth() {
       setIsAuthenticated(true);
       setUserEmail(formData.email);
       setUserType('seller');
-      navigate('/');
+      navigate('/seller-details');
     } catch (error) {
       if (error.response) {
         console.error('Error:', error.response.data);
