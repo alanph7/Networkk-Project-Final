@@ -22,7 +22,7 @@ const AdminAuth = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/admins/signin", formData);
+      const response = await axiosInstance.post("/admin/signin", formData);
       console.log(response.data);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userEmail", formData.email);
