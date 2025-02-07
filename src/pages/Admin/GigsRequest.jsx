@@ -185,7 +185,7 @@ const GigAdminDashboard = () => {
   // Rest of your existing functions
   const handleStatusChange = async (gigId, newStatus) => {
     try {
-      const response = await axiosInstance.put(`/admins/services/${gigId}/status`, { 
+      const response = await axiosInstance.put(`/admin/services/${gigId}/status`, { 
         status: newStatus 
       });
 
