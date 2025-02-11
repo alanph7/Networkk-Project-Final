@@ -57,10 +57,11 @@ export default function GigCreate() {
         serviceProviderId: provider.serviceProviderId
       };
 
-      await axiosInstance.post('/services/create', serviceData);
+      //await axiosInstance.post('/services/create', serviceData);
       navigate('/my-gigs');
       // Convert serviceData to JSON and append
       formDataUpload.append('serviceData', JSON.stringify(serviceData));
+      console.log(formData);
   
       // Append images
       images.forEach((image, index) => {
