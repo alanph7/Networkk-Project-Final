@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CreditCard, Clock, Shield, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
+import UserNavbar from '../../components/UserNavbar';
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -169,102 +170,105 @@ const PaymentPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left Column - Order Summary */}
-        <div className="md:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            <div className="space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-medium">{service.title}</h3>
-                  <p className="text-sm text-gray-500">{service.description}</p>
+    <div className="flex min-h-screen bg-gray-50">
+      <UserNavbar />
+      <div className="flex-1 p-4 md:p-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Left Column - Order Summary */}
+          <div className="md:col-span-2 space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+              <div className="space-y-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-medium">{service.title}</h3>
+                    <p className="text-sm text-gray-500">{service.description}</p>
 
+                  </div>
+                  <span className="font-medium">Rs {service.price}</span>
                 </div>
-                <span className="font-medium">Rs {service.price}</span>
+              </div>
+            </div>
+
+            {/* Payment Methods */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
+              <div className="space-y-4">
+                <div
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  }`}
+                  onClick={() => setPaymentMethod('card')}
+                >
+                  <div className="flex items-center">
+                    <CreditCard className="w-5 h-5 mr-3 text-gray-600" />
+                    <div>
+                      <h3 className="font-medium">Credit & Debit Cards</h3>
+                      <p className="text-sm text-gray-500">Visa, Mastercard, RuPay</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'upi' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  }`}
+                  onClick={() => setPaymentMethod('upi')}
+                >
+                  <div className="flex items-center">
+                    <div className="w-5 h-5 mr-3 text-gray-600">U</div>
+                    <div>
+                      <h3 className="font-medium">UPI</h3>
+                      <p className="text-sm text-gray-500">Pay using UPI ID</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Payment Methods */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-            <div className="space-y-4">
-              <div
-                className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                  paymentMethod === 'card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}
-                onClick={() => setPaymentMethod('card')}
-              >
-                <div className="flex items-center">
-                  <CreditCard className="w-5 h-5 mr-3 text-gray-600" />
-                  <div>
-                    <h3 className="font-medium">Credit & Debit Cards</h3>
-                    <p className="text-sm text-gray-500">Visa, Mastercard, RuPay</p>
+          {/* Right Column - Order Details */}
+          <div className="md:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-20">
+              <h2 className="text-xl font-semibold mb-4">Order Details</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span>Subtotal</span>
+                  <span>Rs {service.price}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Service Fee</span>
+                  <span>Rs {(service.price * 0.05).toFixed(2)}</span>
+                </div>
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center font-medium">
+                    <span>Total</span>
+                    <span>Rs {(service.price * 1.05).toFixed(2)}</span>
                   </div>
                 </div>
-              </div>
-
-              <div
-                className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                  paymentMethod === 'upi' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}
-                onClick={() => setPaymentMethod('upi')}
-              >
-                <div className="flex items-center">
-                  <div className="w-5 h-5 mr-3 text-gray-600">U</div>
-                  <div>
-                    <h3 className="font-medium">UPI</h3>
-                    <p className="text-sm text-gray-500">Pay using UPI ID</p>
-                  </div>
+                <button 
+                  onClick={handleProceedToPayment}
+                  className="w-full bg-sky-500 text-white py-3 rounded-lg font-medium hover:bg-sky-600 transition-colors"
+                >
+                  Confirm & Pay
+                </button>
+                <div className="flex items-center justify-center text-sm text-gray-500 mt-4">
+                  <Shield className="w-4 h-4 mr-2" />
+                  SSL Secure Payment
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column - Order Details */}
-        <div className="md:col-span-1">
-          <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-            <h2 className="text-xl font-semibold mb-4">Order Details</h2>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Subtotal</span>
-                <span>Rs {service.price}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Service Fee</span>
-                <span>Rs {(service.price * 0.05).toFixed(2)}</span>
-              </div>
-              <div className="border-t pt-4">
-                <div className="flex justify-between items-center font-medium">
-                  <span>Total</span>
-                  <span>Rs {(service.price * 1.05).toFixed(2)}</span>
-                </div>
-              </div>
-              <button 
-                onClick={handleProceedToPayment}
-                className="w-full bg-sky-500 text-white py-3 rounded-lg font-medium hover:bg-sky-600 transition-colors"
-              >
-                Confirm & Pay
-              </button>
-              <div className="flex items-center justify-center text-sm text-gray-500 mt-4">
-                <Shield className="w-4 h-4 mr-2" />
-                SSL Secure Payment
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Payment Details Modal */}
+        {showModal && (
+          <Modal onClose={() => setShowModal(false)}>
+            {paymentMethod === 'card' && <CreditCardForm />}
+            {paymentMethod === 'upi' && <UPIForm />}
+          </Modal>
+        )}
       </div>
-
-      {/* Payment Details Modal */}
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
-          {paymentMethod === 'card' && <CreditCardForm />}
-          {paymentMethod === 'upi' && <UPIForm />}
-        </Modal>
-      )}
     </div>
   );
 };

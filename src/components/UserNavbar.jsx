@@ -26,7 +26,7 @@ const UserNavbar = () => {
         {isExpanded ? (
           <h2 className="text-xl px-5 mb-6">
             <span className="font-bold">Networkk</span>{' '}
-            <span className="font-light">Production</span>
+            <span className="font-light">Service</span>
           </h2>
         ) : (
           <h2 className="text-xl font-bold px-5 mb-6 text-gray-800">N</h2>
