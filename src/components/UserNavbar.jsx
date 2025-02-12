@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { User, ShoppingBag, Home, Menu, X, Clock } from 'lucide-react';
+import { User, ShoppingBag, Home, Menu, X, Clock, Search } from 'lucide-react';
 
 const UserNavbar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -48,6 +48,21 @@ const UserNavbar = () => {
         </NavLink>
 
         <NavLink 
+          to="/search" 
+          className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+            ${isActive 
+              ? 'bg-sky-50 text-sky-600' 
+              : 'text-gray-700 hover:bg-gray-50'
+            }
+          `}
+          title="Search"
+        >
+          <Search size={20} />
+          {isExpanded && <span>Search</span>}
+        </NavLink>
+
+        <NavLink 
           to="/user-details" 
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
@@ -63,7 +78,7 @@ const UserNavbar = () => {
         </NavLink>
 
         <NavLink 
-          to="/my-bookings" 
+          to="/user-booking-status" 
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
