@@ -25,6 +25,7 @@ import {
   Search as SearchIcon
 } from '@mui/icons-material';
 import axiosInstance from '../../utils/axios';
+import AdminNavbar from '../../components/AdminNav'; // Import AdminNavbar
 
 
 const categories = [
@@ -238,116 +239,119 @@ const GigAdminDashboard = () => {
   const getTabCount = (status) => gigs.filter(gig => gig.status === status).length;
 
   return (
-    <Box sx={{ maxWidth: 1000, margin: '0 auto', p: 3 }}>
-      <Paper sx={{ mb: 3, p: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
-          Service Approval Dashboard
-        </Typography>
+    <>
+      <AdminNavbar /> {/* Include AdminNavbar */}
+      <Box sx={{ maxWidth: 1000, margin: '0 auto', p: 3 }}>
+        <Paper sx={{ mb: 3, p: 3 }}>
+          <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+            Service Approval Dashboard
+          </Typography>
 
-        {/* Search and Filter Section */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              placeholder="Search services or providers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
+          {/* Search and Filter Section */}
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                placeholder="Search services or providers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
 
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Category</InputLabel>
-              <Select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                label="Category"
-              >
-                <MenuItem value="all">All Categories</MenuItem>
-                {categories.map((category) => (
-                  <MenuItem key={category} value={category}>{category}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Date Sort</InputLabel>
-              <Select
-                value={dateSort}
-                onChange={(e) => setDateSort(e.target.value)}
-                label="Date Sort"
-              >
-                <MenuItem value="newest">Newest First</MenuItem>
-                <MenuItem value="oldest">Oldest First</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-        
-        <Tabs
-          value={activeTab}
-          onChange={handleTabChange}
-          variant="fullWidth"
-          sx={{ mb: 3 }}
-        >
-          <Tab 
-            icon={<PendingIcon />}
-            iconPosition="start"
-            label={`Pending (${getTabCount("pending")})`}
-            value="pending"
-            onClick={() => {
-              setActiveTab("pending");
-            }}
-          />
-          <Tab
-            icon={<CheckCircleIcon />}
-            iconPosition="start"
-            label={`Accepted (${getTabCount("accepted")})`}
-            value="accepted"
-            onClick={() => {
-              setActiveTab("accepted");
-            }}
-          />
-          <Tab
-            icon={<CancelIcon />}
-            iconPosition="start"
-            label={`Rejected (${getTabCount("rejected")})`}
-            value="rejected"
-            onClick={() => {
-              setActiveTab("rejected");
-            }}
-          />
-        </Tabs>
-
-        <Box>
-          {filteredGigs.length > 0 ? (
-            filteredGigs.map(gig => (
-              <GigRequestCard 
-                key={gig.id} 
-                gig={gig} 
-                onStatusChange={handleStatusChange}
               />
-            ))
-          ) : (
-            <Typography 
-              variant="body1" 
-              color="text.secondary" 
-              sx={{ textAlign: 'center', py: 4 }}
-            >
-              No services found
-            </Typography>
-          )}
-        </Box>
-      </Paper>
-    </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  label="Category"
+                >
+                  <MenuItem value="all">All Categories</MenuItem>
+                  {categories.map((category) => (
+                    <MenuItem key={category} value={category}>{category}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth>
+                <InputLabel>Date Sort</InputLabel>
+                <Select
+                  value={dateSort}
+                  onChange={(e) => setDateSort(e.target.value)}
+                  label="Date Sort"
+                >
+                  <MenuItem value="newest">Newest First</MenuItem>
+                  <MenuItem value="oldest">Oldest First</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            sx={{ mb: 3 }}
+          >
+            <Tab 
+              icon={<PendingIcon />}
+              iconPosition="start"
+              label={`Pending (${getTabCount("pending")})`}
+              value="pending"
+              onClick={() => {
+                setActiveTab("pending");
+              }}
+            />
+            <Tab
+              icon={<CheckCircleIcon />}
+              iconPosition="start"
+              label={`Accepted (${getTabCount("accepted")})`}
+              value="accepted"
+              onClick={() => {
+                setActiveTab("accepted");
+              }}
+            />
+            <Tab
+              icon={<CancelIcon />}
+              iconPosition="start"
+              label={`Rejected (${getTabCount("rejected")})`}
+              value="rejected"
+              onClick={() => {
+                setActiveTab("rejected");
+              }}
+            />
+          </Tabs>
+
+          <Box>
+            {filteredGigs.length > 0 ? (
+              filteredGigs.map(gig => (
+                <GigRequestCard 
+                  key={gig.id} 
+                  gig={gig} 
+                  onStatusChange={handleStatusChange}
+                />
+              ))
+            ) : (
+              <Typography 
+                variant="body1" 
+                color="text.secondary" 
+                sx={{ textAlign: 'center', py: 4 }}
+              >
+                No services found
+              </Typography>
+            )}
+          </Box>
+        </Paper>
+      </Box>
+    </>
   );
 };
 

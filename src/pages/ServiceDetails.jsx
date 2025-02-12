@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaStar, FaCheck, FaClock, FaRedo, FaThumbsUp, FaHeart } from "react-icons/fa";
 import axiosInstance from "../utils/axios";
+import UserNavbar from "../components/UserNavbar";
 
 export default function ServiceDetails() {
   const { id } = useParams();
@@ -30,6 +31,9 @@ export default function ServiceDetails() {
   if (!service) return <div className="text-center p-8">Service not found</div>;
 
   return (
+    <div className="flex min-h-screen bg-gray-50">
+      {<UserNavbar />}
+      <div className="flex-1"></div>
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -150,6 +154,7 @@ export default function ServiceDetails() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

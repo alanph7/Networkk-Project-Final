@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import axiosInstance from "../../utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import AdminNavbar from '../../components/AdminNav'; // Import AdminNavbar
 
 const AdminAuth = () => {
   const [formData, setFormData] = useState({
@@ -37,7 +38,8 @@ const AdminAuth = () => {
   };
 
   return (
-    
+    <>
+      <AdminNavbar /> {/* Include AdminNavbar */}
 
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -102,7 +104,7 @@ const AdminAuth = () => {
           </div>
         </div>
       </div>
-   
+    </>
   );
 };
 
