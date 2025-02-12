@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axios";
 import { User, MapPin, Phone, FileText } from 'lucide-react';
 import Autocomplete from 'react-google-autocomplete';
+import { Avatar, IconButton, Typography } from '@mui/material';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
   console.error('Google Maps API key is missing in environment variables');
@@ -24,6 +26,8 @@ const SellerDetailsForm = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -94,13 +98,25 @@ const SellerDetailsForm = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
     
-    if (!validateForm()) {
-      return;
+    // Add profile picture to form data if exists
+    if (profilePic) {
+      formData.append('profilePic', profilePic);
     }
   
+    // Add other form data
+    formData.append('sellerData', JSON.stringify({
+      ...formValues,
+      // other form fields
+    }));
+  
     try {
-      const response = await axiosInstance.put("/serviceProviders/profile", formData);
+      const response = await axiosInstance.post('/seller/details', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       setMessage("Profile updated successfully!");
       setIsEditing(false); // Toggle back to view mode
       setTimeout(() => setMessage(""), 3000);
@@ -120,6 +136,22 @@ const SellerDetailsForm = () => {
     // Reset form data to original values
     fetchSellerData();
   };
+
+  const handleProfilePicChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      setProfilePic(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">
@@ -155,6 +187,39 @@ const SellerDetailsForm = () => {
                 {message}
               </div>
             )}
+
+            {/* Profile Picture Section */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Avatar
+                  src={previewUrl}
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    mb: 2
+                  }}
+                />
+                <label htmlFor="profile-pic">
+                  <input
+                    accept="image/*"
+                    id="profile-pic"
+                    type="file"
+                    style={{ display: 'none' }}
+                    onChange={handleProfilePicChange}
+                  />
+                  <IconButton
+                    color="primary"
+                    aria-label="upload profile picture"
+                    component="span"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+                <Typography variant="caption" color="textSecondary">
+                  {profilePic ? profilePic.name : 'Upload Profile Picture'}
+                </Typography>
+              </div>
+            </div>
 
             {/* Personal Information Section */}
             <div className="mb-8">
@@ -205,6 +270,8 @@ const SellerDetailsForm = () => {
                 </div>
               </div>
             </div>
+
+            
 
             {/* Location Information */}
             <div className="mb-8">
