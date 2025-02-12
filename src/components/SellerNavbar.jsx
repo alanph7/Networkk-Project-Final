@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { User, Package, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { User, Package, Plus, Menu, X, Home } from 'lucide-react';
 
 const SellerNavbar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -13,22 +13,40 @@ const SellerNavbar = () => {
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -right-3 top-9 bg-white rounded-full p-1.5 border border-gray-200"
+        className="absolute -left-0 top-6 bg-white rounded-full p-1.5 border border-gray-200 z-10 hover:bg-gray-50"
       >
         {isExpanded ? (
-          <ChevronLeft size={16} className="text-gray-600" />
+          <X size={18} className="text-sky-600" />
         ) : (
-          <ChevronRight size={16} className="text-gray-600" />
+          <Menu size={18} className="text-sky-600" />
         )}
       </button>
 
       <div className="space-y-4">
-        {isExpanded && (
-          <h2 className="text-xl font-bold px-4 mb-6 text-gray-800">
-            Seller Dashboard
+        {isExpanded ? (
+          <h2 className="text-xl px-5 mb-6">
+            <span className="font-bold">Networkk</span>{' '}
+            <span className="font-light">Production</span>
           </h2>
+        ) : (
+          <h2 className="text-xl font-bold px-5 mb-6 text-gray-800">N</h2>
         )}
         
+        <NavLink 
+          to="/" 
+          className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+            ${isActive 
+              ? 'bg-sky-50 text-sky-600' 
+              : 'text-gray-700 hover:bg-gray-50'
+            }
+          `}
+          title="Home"
+        >
+          <Home size={20} />
+          {isExpanded && <span>Home</span>}
+        </NavLink>
+
         <NavLink 
           to="/seller-details" 
           className={({ isActive }) => `
