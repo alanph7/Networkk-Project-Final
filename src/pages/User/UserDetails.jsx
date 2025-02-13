@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axios";
-import { User, MapPin, Phone, FileText } from 'lucide-react';
+import { User, MapPin, Phone, FileText, Camera } from 'lucide-react';
 import Autocomplete from 'react-google-autocomplete';
+import { Avatar, IconButton, Typography } from '@mui/material';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
   console.error('Google Maps API key is missing in environment variables');
@@ -18,12 +20,16 @@ const UserDetailsForm = () => {
     phone: "",
     username: "",
     aadhaar: "",
+    profilePicture: "",
   });
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -31,6 +37,7 @@ const UserDetailsForm = () => {
       try {
         const response = await axiosInstance.get('/users/d/me');
         const userData = response.data;
+        setProfilePicture(userData.profilePicture);
         setFormData({
           fname: userData.fname || "",
           lname: userData.lname || "",
@@ -41,6 +48,7 @@ const UserDetailsForm = () => {
           phone: userData.phone || "",
           username: userData.username || "",
           aadhaar: userData.aadhaar || "",
+          profilePicture: userData.profilePicture || "",
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -98,9 +106,23 @@ const UserDetailsForm = () => {
     if (!validateForm()) {
       return;
     }
+
+    const formData = new FormData();
+    Object.keys(formData).forEach(key => {
+      formData.append(key, formData[key]);
+    });
+    
+    // Add profile picture to form data if exists
+    if (profilePicture) {
+      formData.append('profilePicture', profilePicture);
+    }
   
     try {
-      const response = await axiosInstance.put("/users/profile", formData);
+      const response = await axiosInstance.put("/users/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       setMessage("Profile updated successfully!");
       setIsEditing(false); // Toggle back to view mode
       setTimeout(() => setMessage(""), 3000);
@@ -120,6 +142,22 @@ const UserDetailsForm = () => {
     // Reset form data to original values
     fetchUserData();
   };
+
+  const handleProfilePicChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setProfilePicture(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+    useEffect(() => {
+      return () => {
+        if (previewUrl && previewUrl !== formData.profilePicture) {
+          URL.revokeObjectURL(previewUrl);
+        }
+      };
+    }, [previewUrl, formData.profilePicture]);
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">
@@ -155,6 +193,43 @@ const UserDetailsForm = () => {
                 {message}
               </div>
             )}
+
+            {/* Profile Picture Section */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Camera className="w-5 h-5 text-gray-400" />
+                <h2 className="text-lg font-semibold text-gray-900">Profile Picture</h2>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <img
+                    src={previewUrl || profilePicture }
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
+                  />
+                  {isEditing && (
+                    <label 
+                      htmlFor="profilePicture" 
+                      className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-gray-100"
+                    >
+                      <Camera className="w-5 h-5 text-gray-600" />
+                      <input
+                        type="file"
+                        id="profilePicture"
+                        accept="image/*"
+                        onChange={handleProfilePicChange}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+                {isEditing && profilePicture && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    New image selected: {profilePicture.name}
+                  </p>
+                )}
+              </div>
+            </div>
 
             {/* Personal Information Section */}
             <div className="mb-8">
