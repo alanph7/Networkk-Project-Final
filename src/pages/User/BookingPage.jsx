@@ -5,16 +5,68 @@ import Collapsible from '@edonec/collapsible';
 import '@edonec/collapsible/build/index.css';
 import '@edonec/collapsible/build/icons.css';
 import UserNavbar from '../../components/UserNavbar';
+import axiosInstance from '../../utils/axios';
 
 const BookingsPage = () => {
-  //const { user } = useUser();
   const [pendingBookings, setPendingBookings] = useState([]);
   const [acceptedBookings, setAcceptedBookings] = useState([]);
   const [rejectedBookings, setRejectedBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
   const [activeSection, setActiveSection] = useState('pending');
+
+  // Add fetchBookings function
+  const fetchBookings = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.log('No userId found in localStorage');
+        navigate('/login');
+        return;
+      }
+
+      // Change the endpoint to include userId as a query parameter
+      const response = await axiosInstance.get(`/bookings?userId=${userId}`);
+      
+      if (response.data) {
+        // No need to filter here as backend will send only user's bookings
+        setPendingBookings(response.data.filter(booking => booking.bookingStatus === 'pending'));
+        setAcceptedBookings(response.data.filter(booking => booking.bookingStatus === 'accepted'));
+        setRejectedBookings(response.data.filter(booking => booking.bookingStatus === 'rejected'));
+      } else {
+        console.log('No bookings data received');
+        setPendingBookings([]);
+        setAcceptedBookings([]);
+        setRejectedBookings([]);
+      }
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching bookings:', error.response?.data || error.message);
+      setLoading(false);
+      // Add user feedback for error
+      if (error.response?.status === 401) {
+        navigate('/login');
+      }
+    }
+  };
+
+  // Add useEffect to fetch bookings when component mounts
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  // Add loading state handler
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <UserNavbar />
+        <div className="flex-1 p-4 md:p-8 flex items-center justify-center">
+          <div className="text-gray-600">Loading bookings...</div>
+        </div>
+      </div>
+    );
+  }
 
   const sections = {
     pending: 'Pending Bookings',
