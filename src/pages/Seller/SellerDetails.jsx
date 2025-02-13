@@ -106,25 +106,28 @@ const SellerDetailsForm = () => {
     if (!validateForm()) {
       return;
     }
-    const formData = new FormData();
+    const uploadData = new FormData();
+
     Object.keys(formData).forEach(key => {
-      formData.append(key, formData[key]);
+      uploadData.append(key, formData[key]);
     });
     
     // Add profile picture to form data if exists
     if (profilePicture) {
-      formData.append('profilePicture', profilePicture);
+      uploadData.append('profilePicture', profilePicture);
     }
   
     try {
-      const response = await axiosInstance.put("/serviceProviders/profile", formData, {
+      const response = await axiosInstance.put("/serviceProviders/profile", uploadData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+      if (response.data.success) {
       setMessage("Profile updated successfully!");
       setIsEditing(false); // Toggle back to view mode
       setTimeout(() => setMessage(""), 3000);
+      }
     } catch (error) {
       console.error("Error:", error);
       setMessage(error.response?.data?.error || "Failed to update profile");
