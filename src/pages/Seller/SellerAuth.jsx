@@ -25,12 +25,18 @@ export default function SellerAuth() {
     try {
       const endpoint = isLogin ? '/serviceProviders/signin' : '/serviceProviders/signup';
       const response = await axiosInstance.post(endpoint, formData);
+      
+      // Store authentication data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userEmail', formData.email);
       localStorage.setItem('userType', 'seller');
+      localStorage.setItem('userId', response.data.userId); // Add this line
+      
+      // Update context
       setIsAuthenticated(true);
       setUserEmail(formData.email);
       setUserType('seller');
+      
       navigate('/seller-details');
     } catch (error) {
       if (error.response) {

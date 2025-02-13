@@ -14,10 +14,17 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    // Remove all stored authentication data
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userType');
+    localStorage.removeItem('userId'); // Add this line
+    
+    // Reset context
     setIsAuthenticated(false);
+    setUserEmail(null);
+    setUserType(null);
+    
     navigate('/');
   };
 

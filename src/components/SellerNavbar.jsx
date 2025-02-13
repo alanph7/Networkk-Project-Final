@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, Package, Plus, Menu, X, Home, LogOut } from 'lucide-react';
+import { User, Package, Plus, Menu, X, Home, LogOut, Calendar } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 
 const SellerNavbar = () => {
@@ -104,7 +104,21 @@ const SellerNavbar = () => {
           {isExpanded && <span>Create Gig</span>}
         </NavLink>
 
-        {/* Logout button moved below Create Gig */}
+        <NavLink 
+          to="/bookingstatus" 
+          className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+            ${isActive 
+              ? 'bg-sky-50 text-sky-600' 
+              : 'text-gray-700 hover:bg-gray-50'
+            }
+          `}
+          title="Booking Status"
+        >
+          <Calendar size={20} />
+          {isExpanded && <span>Booking Status</span>}
+        </NavLink>
+
         <button
           onClick={handleLogout}
           className={`
