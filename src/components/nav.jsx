@@ -1,12 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaBars, FaUser } from 'react-icons/fa';
 import { AuthContext } from '../context/AuthContext';
+import axiosInstance from '../utils/axios';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
   const { isAuthenticated, setIsAuthenticated, userEmail, userType } = useContext(AuthContext);
+ 
+  
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -17,14 +21,46 @@ const Navbar = () => {
     navigate('/');
   };
 
+  useEffect(() => {
+    const fetchProfilePic = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        const userData = userType === 'user' 
+          ? '/users/d/me' 
+          : '/serviceProviders/d/me';
+        
+        const response = await axiosInstance.get(userData);
+        setProfilePicture(response.data.profilePicture);
+      } catch (error) {
+        console.error('Error fetching profile picture:', error);
+      }
+    };
+  
+    fetchProfilePic();
+  }, [isAuthenticated, userType]);
+
   const getInitial = (email) => {
     return email ? email[0].toUpperCase() : 'U';
   };
 
+
   const UserIcon = () => (
     <div className="relative">
-      <div className="h-8 w-8 rounded-full bg-sky-600 flex items-center justify-center text-white">
-        {getInitial(userEmail)}
+      <div className="h-8 w-8 rounded-full bg-sky-600 flex items-center justify-center text-white overflow-hidden">
+        {profilePicture ? (
+          <img 
+            src={profilePicture} 
+            alt="Profile" 
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              e.target.src = null;
+              e.target.textContent = getInitial(userEmail);
+            }}
+          />
+        ) : (
+          getInitial(userEmail)
+        )}
       </div>
       <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white">
         {userType === 'user' ? 'U' : 'S'}
