@@ -87,6 +87,20 @@ const BookingsPage = () => {
     rejected: 'Rejected Bookings'
   };
 
+  // Add handlePayment function
+  const handlePayment = (booking) => {
+    navigate('/payment', {
+      state: {
+        bookingId: booking.bookingId,
+        amount: booking.basePayment,
+        service: {
+          title: booking.service?.serviceName || 'Service Booking',
+          description: booking.description || 'Service payment'
+        }
+      }
+    });
+  };
+
   // Update the content section to handle all booking statuses
   const renderBookings = (status) => (
     <div className="space-y-6">
@@ -175,7 +189,7 @@ const BookingsPage = () => {
               </div>
 
               {/* Payment Button */}
-              {status === 'confirmed' && (
+              {status === 'confirmed' && booking.paymentStatus !== 'paid' && (
                 <button
                   className="mt-6 w-full bg-sky-600 text-white py-3 px-4 rounded-lg hover:bg-sky-700 transition duration-300 flex items-center justify-center font-medium"
                   onClick={() => handlePayment(booking)}
