@@ -8,14 +8,17 @@ import UserNavbar from '../../components/UserNavbar';
 import axiosInstance from '../../utils/axios';
 
 const BookingsPage = () => {
-  const [pendingBookings, setPendingBookings] = useState([]);
-  const [acceptedBookings, setAcceptedBookings] = useState([]);
-  const [rejectedBookings, setRejectedBookings] = useState([]);
+  const [bookings, setBookings] = useState({
+    pending: [],
+    confirmed: [],
+    completed: [],
+    cancelled: [],
+    rejected: []
+  });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('pending');
 
-  // Add fetchBookings function
   const fetchBookings = async () => {
     try {
       const userId = localStorage.getItem('userId');
@@ -25,26 +28,33 @@ const BookingsPage = () => {
         return;
       }
 
-      // Change the endpoint to include userId as a query parameter
       const response = await axiosInstance.get(`/bookings?userId=${userId}`);
       
       if (response.data) {
-        // No need to filter here as backend will send only user's bookings
-        setPendingBookings(response.data.filter(booking => booking.bookingStatus === 'pending'));
-        setAcceptedBookings(response.data.filter(booking => booking.bookingStatus === 'accepted'));
-        setRejectedBookings(response.data.filter(booking => booking.bookingStatus === 'rejected'));
+        // Categorize bookings by status
+        const categorizedBookings = {
+          pending: response.data.filter(booking => booking.bookingStatus === 'pending'),
+          confirmed: response.data.filter(booking => booking.bookingStatus === 'confirmed'),
+          completed: response.data.filter(booking => booking.bookingStatus === 'completed'),
+          cancelled: response.data.filter(booking => booking.bookingStatus === 'cancelled'),
+          rejected: response.data.filter(booking => booking.bookingStatus === 'rejected')
+        };
+        
+        setBookings(categorizedBookings);
       } else {
-        console.log('No bookings data received');
-        setPendingBookings([]);
-        setAcceptedBookings([]);
-        setRejectedBookings([]);
+        setBookings({
+          pending: [],
+          confirmed: [],
+          completed: [],
+          cancelled: [],
+          rejected: []
+        });
       }
       
       setLoading(false);
     } catch (error) {
       console.error('Error fetching bookings:', error.response?.data || error.message);
       setLoading(false);
-      // Add user feedback for error
       if (error.response?.status === 401) {
         navigate('/login');
       }
@@ -68,11 +78,41 @@ const BookingsPage = () => {
     );
   }
 
+  // Update the sections object to include all statuses
   const sections = {
     pending: 'Pending Bookings',
-    accepted: 'Accepted Bookings',
+    confirmed: 'Confirmed Bookings',
+    completed: 'Completed Bookings',
+    cancelled: 'Cancelled Bookings',
     rejected: 'Rejected Bookings'
   };
+
+  // Update the content section to handle all booking statuses
+  const renderBookings = (status) => (
+    <div className="space-y-4">
+      {bookings[status].length > 0 ? (
+        bookings[status].map((booking) => (
+          <div key={booking.bookingId} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+            <p className="font-semibold">Service: {booking.service?.serviceName || 'N/A'}</p>
+            <p>Date: {new Date(booking.bookingDate).toLocaleDateString()}</p>
+            <p>Time: {booking.bookingTime}</p>
+            <p>Description: {booking.description}</p>
+            <p>Base Payment: ${booking.basePayment}</p>
+            {status === 'confirmed' && (
+              <button
+                className="mt-2 bg-sky-500 text-white py-2 px-4 rounded-lg hover:bg-sky-600 transition duration-300"
+                onClick={() => handlePayment(booking)}
+              >
+                Pay Now
+              </button>
+            )}
+          </div>
+        ))
+      ) : (
+        <p className="text-gray-500">No {status} bookings found.</p>
+      )}
+    </div>
+  );
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -85,7 +125,7 @@ const BookingsPage = () => {
             <p className="text-gray-600 mt-2">Manage all your service bookings</p>
           </div>
 
-          {/* Navigation Pills */}
+          {/* Updated Navigation Pills */}
           <div className="flex space-x-2 mb-8 overflow-x-auto">
             {Object.entries(sections).map(([key, value]) => (
               <button
@@ -93,78 +133,18 @@ const BookingsPage = () => {
                 onClick={() => setActiveSection(key)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap ${
                   activeSection === key
-                  ? 'bg-sky-700 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                    ? 'bg-sky-700 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                <div className="flex items-center">
-                  {key === 'pending' && <FiClock className="mr-2" />}
-                  {key === 'accepted' && <FiCheckCircle className="mr-2" />}
-                  {key === 'rejected' && <FiXCircle className="mr-2" />}
-                  {value}
-                </div>
+                {value}
               </button>
             ))}
           </div>
 
-          {/* Content Section */}
+          {/* Updated Content Section */}
           <div className="bg-white rounded-lg shadow-sm p-6">
-            {activeSection === 'pending' && (
-              <div className="space-y-4">
-                {pendingBookings.length > 0 ? (
-                  pendingBookings.map((booking) => (
-                    <div key={booking.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <p className="font-semibold">Address: {booking.address}</p>
-                      <p>Date: {new Date(booking.date).toLocaleDateString()}</p>
-                      <p>Description: {booking.description}</p>
-                      <p>Base Payment: ${booking.basePayment}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500">No pending bookings found.</p>
-                )}
-              </div>
-            )}
-
-            {activeSection === 'accepted' && (
-              <div className="space-y-4">
-                {acceptedBookings.length > 0 ? (
-                  acceptedBookings.map((booking) => (
-                    <div key={booking.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <p className="font-semibold">Address: {booking.address}</p>
-                      <p>Date: {new Date(booking.date).toLocaleDateString()}</p>
-                      <p>Description: {booking.description}</p>
-                      <p className="mb-2">Base Payment: ${booking.basePayment}</p>
-                      <button
-                        className="bg-sky-500 text-white py-2 px-4 rounded-lg hover:bg-sky-600 transition duration-300"
-                        onClick={() => handlePayment(booking)}
-                      >
-                        Pay Now
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500">No accepted bookings found.</p>
-                )}
-              </div>
-            )}
-
-            {activeSection === 'rejected' && (
-              <div className="space-y-4">
-                {rejectedBookings.length > 0 ? (
-                  rejectedBookings.map((booking) => (
-                    <div key={booking.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <p className="font-semibold">Address: {booking.address}</p>
-                      <p>Date: {new Date(booking.date).toLocaleDateString()}</p>
-                      <p>Description: {booking.description}</p>
-                      <p>Base Payment: ${booking.basePayment}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500">No rejected bookings found.</p>
-                )}
-              </div>
-            )}
+            {renderBookings(activeSection)}
           </div>
         </div>
       </div>
