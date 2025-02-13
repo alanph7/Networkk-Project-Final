@@ -305,7 +305,16 @@ export default function Search() {
                       >
                         <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl bg-white">
                           <img
-                            src={`https://picsum.photos/seed/${provider.serviceId}/300/200`}
+                            //src={`https://picsum.photos/seed/${provider.serviceId}/300/200`}
+                            src={(() => {
+                              try {
+                                const pics = JSON.parse(provider.demoPics || '[]');
+                                return pics[0] || 'https://picsum.photos/seed/${provider.serviceId}/300/200';
+                              } catch (error) {
+                                console.error('Error parsing demoPics:', error);
+                                return 'https://picsum.photos/seed/${provider.serviceId}/300/200';
+                              }
+                            })()}
                             alt={provider.title}
                             className="w-full h-48 object-cover"
                           />
