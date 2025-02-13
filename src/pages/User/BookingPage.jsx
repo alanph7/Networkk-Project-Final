@@ -92,7 +92,11 @@ const BookingsPage = () => {
     <div className="space-y-4">
       {bookings[status].length > 0 ? (
         bookings[status].map((booking) => (
-          <div key={booking.bookingId} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+          // Add unique key using bookingId
+          <div 
+            key={`booking-${booking.bookingId}`} 
+            className="p-4 border rounded-lg hover:shadow-md transition-shadow"
+          >
             <p className="font-semibold">Service: {booking.service?.serviceName || 'N/A'}</p>
             <p>Date: {new Date(booking.bookingDate).toLocaleDateString()}</p>
             <p>Time: {booking.bookingTime}</p>
@@ -100,6 +104,7 @@ const BookingsPage = () => {
             <p>Base Payment: ${booking.basePayment}</p>
             {status === 'confirmed' && (
               <button
+                key={`pay-button-${booking.bookingId}`}
                 className="mt-2 bg-sky-500 text-white py-2 px-4 rounded-lg hover:bg-sky-600 transition duration-300"
                 onClick={() => handlePayment(booking)}
               >
@@ -129,7 +134,7 @@ const BookingsPage = () => {
           <div className="flex space-x-2 mb-8 overflow-x-auto">
             {Object.entries(sections).map(([key, value]) => (
               <button
-                key={key}
+                key={`nav-${key}`}  // Added unique key prefix
                 onClick={() => setActiveSection(key)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap ${
                   activeSection === key
