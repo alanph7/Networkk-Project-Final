@@ -7,8 +7,10 @@ import axiosInstance from '../utils/axios';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { isAuthenticated, setIsAuthenticated, userEmail, userType } = useContext(AuthContext);
   const [profilePicture, setProfilePicture] = useState(null);
+  const { isAuthenticated, setIsAuthenticated, userEmail, userType } = useContext(AuthContext);
+ 
+  
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -41,6 +43,7 @@ const Navbar = () => {
   const getInitial = (email) => {
     return email ? email[0].toUpperCase() : 'U';
   };
+
 
   const UserIcon = () => (
     <div className="relative">
