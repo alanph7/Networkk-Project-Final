@@ -108,18 +108,19 @@ const UserDetailsForm = () => {
       return;
     }
 
-    const formData = new FormData();
+    const uploadData = new FormData();
+
     Object.keys(formData).forEach(key => {
-      formData.append(key, formData[key]);
+      uploadData.append(key, formData[key]);
     });
     
     // Add profile picture to form data if exists
     if (profilePicture) {
-      formData.append('profilePicture', profilePicture);
+      uploadData.append('profilePicture', profilePicture);
     }
   
     try {
-      const response = await axiosInstance.put("/users/profile", formData, {
+      const response = await axiosInstance.put("/users/profile", uploadData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
