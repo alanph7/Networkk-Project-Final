@@ -80,9 +80,9 @@ const ProviderBookingPage = () => {
   const renderBookings = (status) => (
     <div className="space-y-6">
       {bookings[status].length > 0 ? (
-        bookings[status].map((booking) => (
+        bookings[status].map((booking, index) => (
           <div 
-            key={`booking-${booking.bookingId}`} 
+            key={`${status}-${booking.bookingId}-${index}`} // Added index to ensure uniqueness
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
           >
             {/* Status Badge */}
@@ -199,7 +199,7 @@ const ProviderBookingPage = () => {
           <div className="flex space-x-2 mb-8 overflow-x-auto">
             {Object.entries(sections).map(([key, value]) => (
               <button
-                key={`nav-${key}`}
+                key={`booking-nav-${key}`}
                 onClick={() => setActiveSection(key)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap ${
                   activeSection === key

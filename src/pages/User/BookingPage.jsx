@@ -105,9 +105,9 @@ const BookingsPage = () => {
   const renderBookings = (status) => (
     <div className="space-y-6">
       {bookings[status].length > 0 ? (
-        bookings[status].map((booking) => (
+        bookings[status].map((booking, index) => (
           <div 
-            key={`booking-${booking.bookingId}`} 
+            key={`${status}-booking-${booking.bookingId}-${index}`} 
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
           >
             {/* Status Badge */}
