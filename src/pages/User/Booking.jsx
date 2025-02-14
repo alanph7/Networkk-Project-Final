@@ -133,26 +133,20 @@ const Booking = () => {
         extraPayment: 0,
         isReview: false,
         serviceId: serviceDetails.serviceId,
-        userId: userId, // Use actual user ID
-        serviceProviderId: serviceDetails.serviceProviderId, // Use provider ID from service
+        userId: userId,
+        serviceProviderId: serviceDetails.serviceProviderId,
         bookingDate: formData.date.format("YYYY-MM-DD"),
         bookingTime: formData.time.format("HH:mm:00")
       };
 
-      console.log('Sending booking data:', bookingData); // Debug log
-
       const response = await axiosInstance.post('/bookings/create', bookingData);
       
       if (response.data?.booking) {
-        navigate('/payment', { 
-          state: { 
-            bookingId: response.data.booking.bookingId,
-            amount: pricing.total  // This passes the total amount (including service fee)
-          }
-        });
+        // Change navigation to booking status page
+        navigate('/user-booking-status'); // Make sure this matches your route path
       }
     } catch (error) {
-      console.error('Booking error:', error); // Debug log
+      console.error('Booking error:', error);
       setErrors({ 
         submit: error.response?.data?.error || "Failed to submit booking. Please try again." 
       });

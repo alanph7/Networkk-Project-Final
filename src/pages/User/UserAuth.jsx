@@ -25,14 +25,21 @@ export default function UserAuth() {
     try {
       const endpoint = isLogin ? '/users/signin' : '/users/signup';
       const response = await axiosInstance.post(endpoint, formData);
+      
+      // Store authentication data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userEmail', formData.email);
-      localStorage.setItem('userType', 'user'); // Add userType
+      localStorage.setItem('userType', 'user');
+      localStorage.setItem('userId', response.data.userId);
+      
+      // Update context
       setIsAuthenticated(true);
       setUserEmail(formData.email);
-      setUserType('user'); // Set userType in context
+      setUserType('user');
+      
       navigate('/user-details');
     } catch (error) {
+      // ...existing error handling code...
       if (error.response) {
         console.error('Error:', error.response.data);
       } else if (error.request) {
@@ -41,6 +48,21 @@ export default function UserAuth() {
         console.error('Error:', error.message);
       }
     }
+  };
+
+  const handleLogout = () => {
+    // Remove all stored authentication data
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userType');
+    localStorage.removeItem('userId');
+    
+    // Reset context
+    setIsAuthenticated(false);
+    setUserEmail(null);
+    setUserType(null);
+    
+    navigate('/');
   };
 
   return (

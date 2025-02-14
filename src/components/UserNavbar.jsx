@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { User, ShoppingBag, Home, Menu, X, Clock, Search } from 'lucide-react';
+import React, { useState, useContext } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { User, ShoppingBag, Home, Menu, X, LogOut, Search } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const UserNavbar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userType');
+    localStorage.removeItem('userId');
+    setIsAuthenticated(false);
+    navigate('/');
+  };
 
   return (
     <div 
@@ -92,20 +104,17 @@ const UserNavbar = () => {
           {isExpanded && <span>My Bookings</span>}
         </NavLink>
 
-        <NavLink 
-          to="/booking-history" 
-          className={({ isActive }) => `
-            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-            ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
-            }
+        <button
+          onClick={handleLogout}
+          className={`
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full
+            text-red-600 hover:bg-red-50
           `}
-          title="Booking History"
+          title="Logout"
         >
-          <Clock size={20} />
-          {isExpanded && <span>Booking History</span>}
-        </NavLink>
+          <LogOut size={20} />
+          {isExpanded && <span>Logout</span>}
+        </button>
       </div>
     </div>
   );
