@@ -49,8 +49,7 @@ const Booking = () => {
   const [errors, setErrors] = useState({});
   const [pricing, setPricing] = useState({
     basePrice: serviceDetails.basePrice,
-    serviceFee: serviceDetails.basePrice * 0.1,
-    total: serviceDetails.basePrice * 1.1
+    total: serviceDetails.basePrice // Remove serviceFee
   });
 
   // Time slots generation
@@ -105,11 +104,9 @@ const Booking = () => {
       const base = formData.serviceType === "premium" 
         ? serviceDetails.basePrice * 1.5 
         : serviceDetails.basePrice;
-      const fee = base * 0.1;
       setPricing({
         basePrice: base,
-        serviceFee: fee,
-        total: base + fee,
+        total: base // Remove service fee calculation
       });
     };
     calculatePrice();
@@ -128,7 +125,7 @@ const Booking = () => {
       const bookingData = {
         bookingStatus: "pending",
         paymentStatus: "pending",
-        basePayment: pricing.basePrice,
+        basePayment: pricing.basePrice, // Use basePrice directly as total
         description: formData.description,
         extraPayment: 0,
         isReview: false,
@@ -340,21 +337,11 @@ const Booking = () => {
                       </h2>
 
                       <div className="space-y-4">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center font-bold">
                           <span className="flex items-center">
-                            Base Price
+                            Total Price
                           </span>
-                          <span>Rs {pricing.basePrice}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-600">
-                          <span>Service Fee</span>
-                          <span>Rs {pricing.serviceFee}</span>
-                        </div>
-                        <div className="border-t pt-4">
-                          <div className="flex justify-between font-bold">
-                            <span>Total</span>
-                            <span>Rs {pricing.total}</span>
-                          </div>
+                          <span>Rs {pricing.total}</span>
                         </div>
 
                         {errors.submit && (
