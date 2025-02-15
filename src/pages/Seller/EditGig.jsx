@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Camera, DollarSign, Clock, ChevronDown, MapPin, Phone } from 'lucide-react';
+import { Camera, DollarSign, ChevronDown, X, Calendar } from 'lucide-react';
 import axiosInstance from '../../utils/axios';
 import SellerNavbar from '../../components/SellerNavbar';
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import dayjs from "dayjs";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#0ea5e9",
+    },
+  },
+});
 
 const EditGig = () => {
   const { id } = useParams();
@@ -11,12 +23,16 @@ const EditGig = () => {
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [images, setImages] = useState([]);
+  const [imagePreview, setImagePreview] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
   const sections = {
     overview: 'Basic Info',
     pricing: 'Service Rates',
     description: 'Description',
-    requirements: 'Requirements'
+    requirements: 'Requirements',
+    availability: 'Availability'
   };
 
   const [formData, setFormData] = useState({
@@ -26,22 +42,54 @@ const EditGig = () => {
     basePrice: '',
     experience: '',
     specialSkills: '',
-    requirementInfo: '',
     tools: '',
-    holidays: {
-      dates: []
-    }
+    isOpen: true,
+    holidays: []
   });
 
+  // Fetch existing data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [providerRes, gigRes] = await Promise.all([
+        const [providerRes, gigRes, imagesRes] = await Promise.all([
           axiosInstance.get('/serviceProviders/profile'),
-          axiosInstance.get(`/services/${id}`)
+          axiosInstance.get(`/services/${id}`),
+          axiosInstance.get(`/services/images/${id}`)
         ]);
+
         setProvider(providerRes.data);
-        setFormData(gigRes.data);
+        
+        const gigData = gigRes.data;
+        // Parse holidays from JSON
+        let parsedHolidays = [];
+        if (gigData.holidays) {
+          try {
+            // If it's a string, parse it, otherwise use the array
+            parsedHolidays = typeof gigData.holidays === 'string' 
+              ? JSON.parse(gigData.holidays)
+              : gigData.holidays;
+          } catch (e) {
+            console.error('Error parsing holidays:', e);
+            parsedHolidays = [];
+          }
+        }
+
+        setFormData({
+          title: gigData.title || '',
+          description: gigData.description || '',
+          category: gigData.category || '',
+          basePrice: gigData.basePrice || '',
+          experience: gigData.experience || '',
+          specialSkills: gigData.specialSkills || '',
+          tools: gigData.tools || '',
+          isOpen: gigData.isOpen ?? true,
+          holidays: Array.isArray(parsedHolidays) ? parsedHolidays : [] // Ensure it's an array
+        });
+
+        if (imagesRes.data.imageUrls) {
+          setExistingImages(imagesRes.data.imageUrls);
+        }
+
       } catch (error) {
         setError('Failed to fetch data');
         console.error('Error:', error);
@@ -52,10 +100,58 @@ const EditGig = () => {
     fetchData();
   }, [id]);
 
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const validImageFiles = files.filter(file => 
+      ['image/jpeg', 'image/png', 'image/gif'].includes(file.type)
+    );
+  
+    if (validImageFiles.length + images.length + existingImages.length > 5) {
+      alert('You can have a maximum of 5 images total');
+      return;
+    }
+  
+    const previews = validImageFiles.map(file => URL.createObjectURL(file));
+    setImagePreview(prev => [...prev, ...previews]);
+    setImages(prev => [...prev, ...validImageFiles]);
+  };
+  
+  const removeImage = (indexToRemove, isExisting = false) => {
+    if (isExisting) {
+      setExistingImages(prev => prev.filter((_, index) => index !== indexToRemove));
+    } else {
+      setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+      setImagePreview(prev => prev.filter((_, index) => index !== indexToRemove));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.put(`/services/update/${id}`, formData);
+      const formDataUpload = new FormData();
+      
+      const serviceData = {
+        ...formData,
+        serviceProviderId: provider.serviceProviderId,
+        holidays: Array.isArray(formData.holidays) ? formData.holidays : [] // Ensure it's an array
+      };
+
+      formDataUpload.append('serviceData', JSON.stringify(serviceData));
+      
+      // Append new images
+      images.forEach((image) => {
+        formDataUpload.append('images', image);
+      });
+
+      // Add existing images to be kept
+      formDataUpload.append('existingImages', JSON.stringify(existingImages));
+
+      await axiosInstance.put(`/services/update/${id}`, formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
       navigate('/my-gigs');
     } catch (error) {
       setError('Failed to update service');
@@ -99,7 +195,6 @@ const EditGig = () => {
             {/* Overview Section */}
             {activeSection === 'overview' && (
               <div className="space-y-6">
-                {/* Provider Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -109,27 +204,33 @@ const EditGig = () => {
                     <label className="block text-sm font-medium text-gray-700">Location</label>
                     <p className="mt-1">{provider?.locality}</p>
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Contact</label>
+                    <p className="mt-1">{provider?.phone}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <p className="mt-1">{provider?.email}</p>
+                  </div>
                 </div>
 
-                {/* Service Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Service Title</label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   />
                 </div>
 
-                {/* Category Selection */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                   <div className="relative">
                     <select 
                       value={formData.category}
                       onChange={(e) => setFormData({...formData, category: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                     >
                       <option value="">Select Category</option>
                       <option value="Plumbing">Plumbing</option>
@@ -148,14 +249,19 @@ const EditGig = () => {
             {activeSection === 'pricing' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Base Price (₹)</label>
-                  <input
-                    type="number"
-                    value={formData.basePrice}
-                    onChange={(e) => setFormData({...formData, basePrice: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
-                    min="0"
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Service Rates</label>
+                  <div className="flex items-center space-x-4">
+                    <div className="relative flex-1">
+                      <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                      <input
+                        type="number"
+                        value={formData.basePrice}
+                        onChange={(e) => setFormData({...formData, basePrice: e.target.value})}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      />
+                    </div>
+                    <span className="text-gray-500">per visit</span>
+                  </div>
                 </div>
               </div>
             )}
@@ -164,41 +270,165 @@ const EditGig = () => {
             {activeSection === 'description' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Service Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">About Your Service</label>
                   <textarea
+                    rows="6"
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    rows="6"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
-                    placeholder="Describe your service in detail..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Special Skills</label>
-                  <textarea
-                    value={formData.specialSkills}
-                    onChange={(e) => setFormData({...formData, specialSkills: e.target.value})}
-                    rows="4"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
-                    placeholder="List your special skills..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Experience</label>
-                  <textarea
-                    value={formData.experience}
-                    onChange={(e) => setFormData({...formData, experience: e.target.value})}
-                    rows="4"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
-                    placeholder="Describe your experience..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   />
                 </div>
               </div>
             )}
 
-            {/* Other sections remain similar to GigCreate.jsx */}
-            {/* ... */}
+            {/* Requirements Section */}
+            {activeSection === 'requirements' && (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Work Samples (Max 5 images)
+                  </label>
+                  <div className="grid grid-cols-5 gap-4">
+                    {existingImages.map((url, index) => (
+                      <div key={`existing-${index}`} className="relative">
+                        <img 
+                          src={url} 
+                          alt={`Existing ${index + 1}`} 
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                        <button 
+                          onClick={() => removeImage(index, true)}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    {imagePreview.map((preview, index) => (
+                      <div key={`new-${index}`} className="relative">
+                        <img 
+                          src={preview} 
+                          alt={`Preview ${index + 1}`} 
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                        <button 
+                          onClick={() => removeImage(index)}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    {(existingImages.length + imagePreview.length) < 5 && (
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center h-24">
+                        <label className="cursor-pointer">
+                          <input 
+                            type="file" 
+                            multiple 
+                            accept="image/jpeg,image/png,image/gif"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+                          <Camera className="text-gray-400" />
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
+            {/* Availability Section */}
+            {activeSection === 'availability' && (
+              <div className="space-y-6">
+                <ThemeProvider theme={theme}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    {/* Service Status Toggle */}
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <h3 className="font-medium text-gray-900">Service Status</h3>
+                        <p className="text-sm text-gray-500">Enable or disable your service listing</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.isOpen}
+                          onChange={(e) => setFormData({...formData, isOpen: e.target.checked})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                      </label>
+                    </div>
+
+                    {/* Holiday Management */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <Calendar className="inline-block w-4 h-4 mr-2" />
+                          Add Holiday Dates
+                        </label>
+                        <DatePicker
+                          label="Select Holiday Date"
+                          value={null}
+                          onChange={(newDate) => {
+                            if (newDate) {
+                              const dateStr = dayjs(newDate).format('YYYY-MM-DD');
+                              const currentHolidays = Array.isArray(formData.holidays) ? formData.holidays : [];
+                              if (!currentHolidays.includes(dateStr)) {
+                                setFormData({
+                                  ...formData,
+                                  holidays: [...currentHolidays, dateStr]
+                                });
+                              }
+                            }
+                          }}
+                          minDate={dayjs()}
+                          className="w-full"
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              sx: { marginBottom: 2 }
+                            },
+                          }}
+                        />
+                      </div>
+
+                      {/* Display Selected Holidays */}
+                      {Array.isArray(formData.holidays) && formData.holidays.length > 0 && (
+                        <div className="mt-4">
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Selected Holidays</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {formData.holidays.map((date, index) => (
+                              <div
+                                key={index}
+                                className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full"
+                              >
+                                <span className="text-sm">
+                                  {dayjs(date).format('DD MMM YYYY')}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updatedHolidays = formData.holidays.filter((_, i) => i !== index);
+                                    setFormData({
+                                      ...formData,
+                                      holidays: updatedHolidays
+                                    });
+                                  }}
+                                  className="text-gray-500 hover:text-red-500"
+                                >
+                                  <X size={16} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </LocalizationProvider>
+                </ThemeProvider>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
