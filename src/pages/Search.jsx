@@ -4,19 +4,22 @@ import axiosInstance from "../utils/axios";
 import { Link } from 'react-router-dom';
 import { haversineDistance } from "../components/Haversine";
 import UserNavbar from '../components/UserNavbar';
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import dayjs from "dayjs";
 
-// Add this helper function at the top level
-const formatDate = (date) => {
-  return date ? new Date(date).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }).split('/').join('-') : '';
-};
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#0ea5e9", // matches Tailwind's sky-500
+    },
+  },
+});
 
 export default function Search() {
   const [filters, setFilters] = useState({
-    date: "",
+    date: null, // Changed from "" to null
     type: "",
     sortBy: "rating",
     sortOrder: "desc",
@@ -81,10 +84,19 @@ export default function Search() {
 
     // Filter out providers who have holiday on selected date
     if (filters.date) {
-      const formattedSelectedDate = formatDate(filters.date);
+      const selectedDate = filters.date; // Already in YYYY-MM-DD format
       results = results.filter(provider => {
-        const holidays = provider.holidays?.dates || [];
-        return !holidays.includes(formattedSelectedDate);
+        if (!provider.holidays) return true;
+        let holidayDates;
+        try {
+          holidayDates = Array.isArray(provider.holidays) 
+            ? provider.holidays 
+            : JSON.parse(provider.holidays);
+        } catch (e) {
+          console.error('Error parsing holidays:', e);
+          return true;
+        }
+        return !holidayDates.includes(selectedDate);
       });
     }
 
@@ -193,13 +205,29 @@ export default function Search() {
                     <label className="block text-sm font-medium text-gray-700">
                       Date
                     </label>
-                    <input
-                      type="date"
-                      name="date"
-                      value={filters.date}
-                      onChange={handleFilterChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
+                    <ThemeProvider theme={theme}>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          label="Select Date"
+                          value={filters.date ? dayjs(filters.date) : null}
+                          onChange={(newDate) => {
+                            setFilters(prev => ({
+                              ...prev,
+                              date: newDate ? dayjs(newDate).format('YYYY-MM-DD') : null
+                            }));
+                          }}
+                          minDate={dayjs()}
+                          className="w-full"
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              size: "small",
+                              sx: { marginTop: 1 }
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
+                    </ThemeProvider>
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">

@@ -3,6 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Camera, DollarSign, Clock, ChevronDown, MapPin, Phone, X } from 'lucide-react';
 import axiosInstance from '../../utils/axios';
 import SellerNavbar from '../../components/SellerNavbar';
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import dayjs from "dayjs";
+import { Calendar } from 'lucide-react';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#0ea5e9", // matches Tailwind's sky-500
+    },
+  },
+});
 
 export default function GigCreate() {
   const navigate = useNavigate();
@@ -16,7 +29,8 @@ export default function GigCreate() {
     overview: 'Basic Info',
     pricing: 'Service Rates',
     description: 'Description',
-    requirements: 'Requirements'
+    requirements: 'Requirements',
+    availability: 'Availability' // Add this new section
   };
 
   const [formData, setFormData] = useState({
@@ -29,7 +43,9 @@ export default function GigCreate() {
     tools: '',
     holidays: {
       dates: []
-    }
+    },
+    isOpen: true,
+    holidays: []
   });
 
   // Fetch provider details
@@ -55,26 +71,26 @@ export default function GigCreate() {
       // Append service data
       const serviceData = {
         ...formData,
-        serviceProviderId: provider.serviceProviderId
+        serviceProviderId: provider.serviceProviderId,
+        holidays: formData.holidays, // Add holidays array
+        isOpen: formData.isOpen // Add service status
       };
 
-      //await axiosInstance.post('/services/create', serviceData);
-      navigate('/my-gigs');
       // Convert serviceData to JSON and append
       formDataUpload.append('serviceData', JSON.stringify(serviceData));
-      console.log(formData);
-  
+      
       // Append images
-      images.forEach((image, index) => {
-        formDataUpload.append(`images`, image);
+      images.forEach((image) => {
+        formDataUpload.append('images', image);
       });
-  
+
       const response = await axiosInstance.post('/services/create', formDataUpload, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
+      navigate('/my-gigs');
     } catch (error) {
       console.error('Error creating service:', error);
       // Show error to user
@@ -275,6 +291,96 @@ export default function GigCreate() {
                     )}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Availability Section */}
+            {activeSection === 'availability' && (
+              <div className="space-y-6">
+                <ThemeProvider theme={theme}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    {/* Service Status Toggle */}
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <h3 className="font-medium text-gray-900">Service Status</h3>
+                        <p className="text-sm text-gray-500">Enable or disable your service listing</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.isOpen}
+                          onChange={(e) => setFormData({...formData, isOpen: e.target.checked})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                      </label>
+                    </div>
+
+                    {/* Holiday Management */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <Calendar className="inline-block w-4 h-4 mr-2" />
+                          Add Holiday Dates
+                        </label>
+                        <DatePicker
+                          label="Select Holiday Date"
+                          value={null}
+                          onChange={(newDate) => {
+                            if (newDate) {
+                              const dateStr = dayjs(newDate).format('YYYY-MM-DD');
+                              if (!formData.holidays.includes(dateStr)) {
+                                setFormData({
+                                  ...formData,
+                                  holidays: [...formData.holidays, dateStr]
+                                });
+                              }
+                            }
+                          }}
+                          minDate={dayjs()}
+                          className="w-full"
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              sx: { marginBottom: 2 }
+                            },
+                          }}
+                        />
+                      </div>
+
+                      {/* Display Selected Holidays */}
+                      {formData.holidays.length > 0 && (
+                        <div className="mt-4">
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Selected Holidays</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {formData.holidays.map((date, index) => (
+                              <div
+                                key={index}
+                                className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full"
+                              >
+                                <span className="text-sm">
+                                  {dayjs(date).format('DD MMM YYYY')}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFormData({
+                                      ...formData,
+                                      holidays: formData.holidays.filter((_, i) => i !== index)
+                                    });
+                                  }}
+                                  className="text-gray-500 hover:text-red-500"
+                                >
+                                  <X size={16} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </LocalizationProvider>
+                </ThemeProvider>
               </div>
             )}
           </div>
