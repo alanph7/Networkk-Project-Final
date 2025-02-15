@@ -28,6 +28,7 @@ export default function Search() {
     maxDistance:50, // Default 10km radius
     minRating: "",
     name: "",
+    isOpen: true // Add this line
   });
 
   const [filteredProviders, setFilteredProviders] = useState([]);
@@ -37,14 +38,16 @@ export default function Search() {
   const [locationError, setLocationError] = useState("");
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
 
-  // Update useEffect for initial data load
+  // Update the initial data load useEffect
   useEffect(() => {
     const fetchProviders = async () => {
       try {
         const response = await axiosInstance.get('/services');
-        // Filter for accepted status immediately after fetching
-        const acceptedServices = response.data.filter(service => service.status === 'accepted');
-        setOriginalProviders(acceptedServices);
+        // Filter for accepted status and open services immediately after fetching
+        const acceptedServices = response.data.filter(service => 
+          service.status === 'accepted' && service.isOpen
+        );
+        setOriginalProviders(response.data.filter(service => service.status === 'accepted'));
         setFilteredProviders(acceptedServices);
       } catch (error) {
         console.error('Error fetching providers:', error);
@@ -79,8 +82,11 @@ export default function Search() {
 
   const applyFilters = () => {
     let results = [...originalProviders];
- // First filter by status
- results = results.filter(provider => provider.status === 'accepted');
+ // First filter by status and isOpen
+ results = results.filter(provider => 
+  provider.status === 'accepted' && 
+  (filters.isOpen ? provider.isOpen : true)
+);
 
     // Filter out providers who have holiday on selected date
     if (filters.date) {
@@ -289,6 +295,24 @@ export default function Search() {
                       </p>
                     )}
                   </div>
+                  <div className="mb-4">
+                    <label className="flex items-center justify-between text-sm font-medium text-gray-700">
+                      <span>Show only open services</span>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name="isOpen"
+                          checked={filters.isOpen}
+                          onChange={(e) => setFilters(prev => ({ 
+                            ...prev, 
+                            isOpen: e.target.checked 
+                          }))}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                      </label>
+                    </label>
+                  </div>
                   {/* Add more filter options here */}
                 </div>
 
@@ -326,57 +350,121 @@ export default function Search() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredProviders.map((provider) => (
-                      <Link 
-                        to={`/service/${provider.serviceId}`} 
+                      <div 
                         key={provider.serviceId}
-                        className="block transition duration-300 ease-in-out transform hover:-translate-y-1"
+                        className={`block transition duration-300 ease-in-out ${
+                          provider.isOpen ? 'transform hover:-translate-y-1 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                        }`}
                       >
-                        <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl bg-white">
-                          <img
-                            //src={`https://picsum.photos/seed/${provider.serviceId}/300/200`}
-                            src={(() => {
-                              try {
-                                const pics = JSON.parse(provider.demoPics || '[]');
-                                return pics[0] || 'https://picsum.photos/seed/${provider.serviceId}/300/200';
-                              } catch (error) {
-                                console.error('Error parsing demoPics:', error);
-                                return 'https://picsum.photos/seed/${provider.serviceId}/300/200';
-                              }
-                            })()}
-                            alt={provider.title}
-                            className="w-full h-48 object-cover"
-                          />
-                          <div className="p-4">
-                            <h3 className="font-bold text-lg mb-2">
-                              {provider.serviceProvider.fname} {provider.serviceProvider.lname}
-                            </h3>
-                            <p className="text-sm font-bold text-gray-600 mb-2">{provider.category}</p>
-                            
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                              {provider.description || "No description available"}
-                            </p>
+                        <div className="border rounded-lg overflow-hidden shadow-lg bg-white relative">
+                          {provider.isOpen ? (
+                            <Link to={`/service/${provider.serviceId}`}>
+                              <img
+                                //src={`https://picsum.photos/seed/${provider.serviceId}/300/200`}
+                                src={(() => {
+                                  try {
+                                    const pics = JSON.parse(provider.demoPics || '[]');
+                                    return pics[0] || 'https://picsum.photos/seed/${provider.serviceId}/300/200';
+                                  } catch (error) {
+                                    console.error('Error parsing demoPics:', error);
+                                    return 'https://picsum.photos/seed/${provider.serviceId}/300/200';
+                                  }
+                                })()}
+                                alt={provider.title}
+                                className="w-full h-48 object-cover"
+                              />
+                              <div className="p-4">
+                                <h3 className="font-bold text-lg mb-2">
+                                  {provider.serviceProvider.fname} {provider.serviceProvider.lname}
+                                </h3>
+                                <p className="text-sm font-bold text-gray-600 mb-2">{provider.category}</p>
+                                
+                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                  {provider.description || "No description available"}
+                                </p>
 
-                            <div className="flex items-center mb-2">
-                              <FaStar className="text-yellow-400 mr-1" />
-                              <span>{provider.avgRating}</span>
-                              <span className="mx-2">|</span>
-                              <FaMapMarkerAlt className="text-gray-400 mr-1" />
-                              <span>{provider.locality}</span>
-                            </div>
-                            {userLocation && provider.serviceProvider.latitude && provider.serviceProvider.longitude && (
-                              <p className="text-sm text-gray-600">
-                                Distance: {haversineDistance(
-                                  userLocation.latitude,
-                                  userLocation.longitude,
-                                  parseFloat(provider.serviceProvider.latitude),
-                                  parseFloat(provider.serviceProvider.longitude)
-                                ).toFixed(1)} km
-                              </p>
-                            )}
-                            <p className="font-bold text-lg text-sky-600">Rs {provider.basePrice}</p>
-                          </div>
+                                <div className="flex items-center mb-2">
+                                  <FaStar className="text-yellow-400 mr-1" />
+                                  <span>{provider.avgRating}</span>
+                                  <span className="mx-2">|</span>
+                                  <FaMapMarkerAlt className="text-gray-400 mr-1" />
+                                  <span>{provider.locality}</span>
+                                </div>
+                                {userLocation && provider.serviceProvider.latitude && provider.serviceProvider.longitude && (
+                                  <p className="text-sm text-gray-600">
+                                    Distance: {haversineDistance(
+                                      userLocation.latitude,
+                                      userLocation.longitude,
+                                      parseFloat(provider.serviceProvider.latitude),
+                                      parseFloat(provider.serviceProvider.longitude)
+                                    ).toFixed(1)} km
+                                  </p>
+                                )}
+                                <div className="flex items-center justify-between mt-2">
+                                  <p className="font-bold text-lg text-sky-600">Rs {provider.basePrice}</p>
+                                  <span className={`text-sm ${provider.isOpen ? 'text-green-500' : 'text-red-500'}`}>
+                                    {provider.isOpen ? 'Open' : 'Closed'}
+                                  </span>
+                                </div>
+                              </div>
+                            </Link>
+                          ) : (
+                            <>
+                              <img
+                                //src={`https://picsum.photos/seed/${provider.serviceId}/300/200`}
+                                src={(() => {
+                                  try {
+                                    const pics = JSON.parse(provider.demoPics || '[]');
+                                    return pics[0] || 'https://picsum.photos/seed/${provider.serviceId}/300/200';
+                                  } catch (error) {
+                                    console.error('Error parsing demoPics:', error);
+                                    return 'https://picsum.photos/seed/${provider.serviceId}/300/200';
+                                  }
+                                })()}
+                                alt={provider.title}
+                                className="w-full h-48 object-cover"
+                              />
+                              <div className="p-4">
+                                <h3 className="font-bold text-lg mb-2">
+                                  {provider.serviceProvider.fname} {provider.serviceProvider.lname}
+                                </h3>
+                                <p className="text-sm font-bold text-gray-600 mb-2">{provider.category}</p>
+                                
+                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                  {provider.description || "No description available"}
+                                </p>
+
+                                <div className="flex items-center mb-2">
+                                  <FaStar className="text-yellow-400 mr-1" />
+                                  <span>{provider.avgRating}</span>
+                                  <span className="mx-2">|</span>
+                                  <FaMapMarkerAlt className="text-gray-400 mr-1" />
+                                  <span>{provider.locality}</span>
+                                </div>
+                                {userLocation && provider.serviceProvider.latitude && provider.serviceProvider.longitude && (
+                                  <p className="text-sm text-gray-600">
+                                    Distance: {haversineDistance(
+                                      userLocation.latitude,
+                                      userLocation.longitude,
+                                      parseFloat(provider.serviceProvider.latitude),
+                                      parseFloat(provider.serviceProvider.longitude)
+                                    ).toFixed(1)} km
+                                  </p>
+                                )}
+                                <div className="flex items-center justify-between mt-2">
+                                  <p className="font-bold text-lg text-sky-600">Rs {provider.basePrice}</p>
+                                  <span className={`text-sm ${provider.isOpen ? 'text-green-500' : 'text-red-500'}`}>
+                                    {provider.isOpen ? 'Open' : 'Closed'}
+                                  </span>
+                                </div>
+                                <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+                                  <span className="text-white font-bold text-lg">Currently Unavailable</span>
+                                </div>
+                              </div>
+                            </>
+                          )}
                         </div>
-                      </Link>
+                      </div>
                     ))}
                   </div>
                 </div>
