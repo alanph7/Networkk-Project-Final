@@ -87,16 +87,45 @@ const BookingsPage = () => {
     rejected: 'Rejected Bookings'
   };
 
-  // Update the handlePayment function to use the service provider's link
-  const handlePayment = (booking) => {
-    if (booking.serviceProvider?.link) {
-      // Open the payment link in a new tab
-      window.open(booking.serviceProvider.link, '_blank');
-    } else {
-      // Handle case when no payment link is available
-      console.error('No payment link available for this service provider');
-      // Optionally show a notification to the user
+  // Update the handlePayment function
+  const handlePayment = async (booking) => {
+    if (!booking.serviceProvider?.link) {
       alert('Payment link not available. Please contact the service provider.');
+      return;
+    }
+  
+    try {
+      // First create the payment record
+      const paymentData = {
+        bookingId: booking.bookingId,
+        paymentStatus: 'pending', // Initial status
+        paymentMode: 'upi', // Default payment mode
+        paymentAmount: booking.basePayment,
+        paymentDate: new Date().toISOString().split('T')[0],
+        paymentTime: new Date().toTimeString().split(' ')[0],
+        paymentDesc: `Payment for booking ${booking.bookingId}`
+      };
+  
+      // Create payment record
+      const paymentResponse = await axiosInstance.post('/payments/create', paymentData);
+  
+      if (paymentResponse.status === 201) {
+        // Update booking payment status
+        const bookingUpdateData = {
+          paymentStatus: 'pending'
+        };
+  
+        await axiosInstance.put(`/bookings/${booking.bookingId}`, bookingUpdateData);
+  
+        // If everything is successful, redirect to payment link
+        window.open(booking.serviceProvider.link, '_blank');
+        
+        // Refresh bookings list
+        fetchBookings();
+      }
+    } catch (error) {
+      console.error('Payment creation failed:', error);
+      alert('Failed to initialize payment. Please try again.');
     }
   };
 
