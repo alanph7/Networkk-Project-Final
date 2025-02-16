@@ -141,7 +141,7 @@ export default function GigCreate() {
                 onClick={() => setActiveSection(key)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap ${
                   activeSection === key
-                  ? 'bg-sky-500 text-white'
+                  ? 'bg-sky-800 text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -395,7 +395,7 @@ export default function GigCreate() {
             </button>
             <button
               onClick={handleSubmit}
-              className="px-6 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600"
+              className="px-6 py-2 bg-sky-800 text-white rounded-lg hover:bg-sky-600"
             >
               Create Service
             </button>
