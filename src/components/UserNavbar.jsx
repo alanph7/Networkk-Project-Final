@@ -21,7 +21,7 @@ const UserNavbar = () => {
     <div 
       className={`${
         isExpanded ? 'w-64' : 'w-20'
-      } min-h-screen bg-white border-r border-gray-200 px-3 py-6 transition-all duration-300 relative`}
+      } min-h-screen bg-gray-900 border-r border-gray-800 px-3 py-6 transition-all duration-300 relative`}
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -36,12 +36,12 @@ const UserNavbar = () => {
 
       <div className="space-y-4">
         {isExpanded ? (
-          <h2 className="text-xl px-5 mb-6">
+          <h2 className="text-xl px-5 mb-6 text-white">
             <span className="font-bold">Networkk</span>{' '}
             <span className="font-light">Service</span>
           </h2>
         ) : (
-          <h2 className="text-xl font-bold px-5 mb-6 text-gray-800">N</h2>
+          <h2 className="text-xl font-bold px-5 mb-6 text-white">N</h2>
         )}
         
         <NavLink 
@@ -49,13 +49,12 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Overview"
         >
-
           <LayoutDashboard size={20} />
           {isExpanded && <span>Overview</span>}
         </NavLink>
@@ -65,8 +64,8 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Home"
@@ -80,8 +79,8 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Search"
@@ -95,8 +94,8 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Profile Details"
@@ -110,8 +109,8 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="My Bookings"
@@ -124,7 +123,7 @@ const UserNavbar = () => {
           onClick={handleLogout}
           className={`
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full
-            text-red-600 hover:bg-red-50
+            text-red-400 hover:bg-gray-700
           `}
           title="Logout"
         >

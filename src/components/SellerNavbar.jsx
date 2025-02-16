@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { User, Package, Plus, Menu, X, Home, LogOut, Calendar, LayoutDashboard } from 'lucide-react';
-
 import { AuthContext } from '../context/AuthContext';
 
 const SellerNavbar = () => {
@@ -22,7 +21,7 @@ const SellerNavbar = () => {
     <div 
       className={`${
         isExpanded ? 'w-64' : 'w-20'
-      } min-h-screen bg-white border-r border-gray-200 px-3 py-6 transition-all duration-300 relative`}
+      } min-h-screen bg-gray-900 border-r border-gray-800 px-3 py-6 transition-all duration-300 relative`}
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -37,12 +36,12 @@ const SellerNavbar = () => {
 
       <div className="space-y-4">
         {isExpanded ? (
-          <h2 className="text-xl px-5 mb-6">
+          <h2 className="text-xl px-5 mb-6 text-white">
             <span className="font-bold">Networkk</span>{' '}
             <span className="font-light">Production</span>
           </h2>
         ) : (
-          <h2 className="text-xl font-bold px-5 mb-6 text-gray-800">N</h2>
+          <h2 className="text-xl font-bold px-5 mb-6 text-white">N</h2>
         )}
         
         <NavLink 
@@ -50,8 +49,8 @@ const SellerNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Overview"
@@ -63,10 +62,10 @@ const SellerNavbar = () => {
         <NavLink 
           to="/" 
           className={({ isActive }) => `
-            flex items-center gap 3 px-4 py-3 rounded-lg transition-colors
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Home"
@@ -75,14 +74,13 @@ const SellerNavbar = () => {
           {isExpanded && <span>Home</span>}
         </NavLink>
 
-
         <NavLink 
           to="/seller-details" 
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Profile Details"
@@ -96,8 +94,8 @@ const SellerNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="My Gigs"
@@ -111,8 +109,8 @@ const SellerNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Create Gig"
@@ -126,8 +124,8 @@ const SellerNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Booking Status"
@@ -140,7 +138,7 @@ const SellerNavbar = () => {
           onClick={handleLogout}
           className={`
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full
-            text-red-600 hover:bg-red-50
+            text-red-400 hover:bg-gray-700
           `}
           title="Logout"
         >
