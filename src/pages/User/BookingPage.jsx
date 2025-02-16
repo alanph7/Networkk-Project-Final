@@ -98,7 +98,7 @@ const BookingsPage = () => {
       // First create the payment record
       const paymentData = {
         bookingId: booking.bookingId,
-        paymentStatus: 'pending', // Initial status
+        paymentStatus: 'paid', // Initial status
         paymentMode: 'upi', // Default payment mode
         paymentAmount: booking.basePayment,
         paymentDate: new Date().toISOString().split('T')[0],
