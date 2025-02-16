@@ -25,6 +25,7 @@ const SellerDetailsForm = () => {
     languages: "",
     skills: "",
     experience: "",
+    link: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -59,6 +60,7 @@ const SellerDetailsForm = () => {
           languages: SellerData.languages || "",
           skills: SellerData.skills || "",
           experience: SellerData.experience || "",
+          link: SellerData.link || "", // Add this line to include the link
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -122,6 +124,9 @@ const SellerDetailsForm = () => {
     if (!formData.experience) newErrors.experience = "Years of experience is required.";
     if (formData.experience && (formData.experience < 0 || formData.experience > 50)) {
       newErrors.experience = "Experience must be between 0 and 50 years.";
+    }
+    if (formData.link && !formData.link.startsWith('https://razorpay.me/')) {
+      newErrors.link = "Please enter a valid Razorpay.me payment link";
     }
   
     setErrors(newErrors);
@@ -458,6 +463,48 @@ const SellerDetailsForm = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Payment Information */}
+<div className="mb-8">
+  <div className="flex items-center gap-2 mb-4">
+    <Phone className="w-5 h-5 text-gray-400" />
+    <h2 className="text-lg font-semibold text-gray-900">Payment Information</h2>
+  </div>
+  <div className="grid grid-cols-1 gap-6">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Payment Link (Razorpay)</label>
+      {isEditing ? (
+        <>
+          <input
+            type="url"
+            name="link"
+            value={formData.link}
+            onChange={handleInputChange}
+            placeholder="https://razorpay.me/@yourname"
+            className={`w-full px-4 py-2 rounded-md border ${
+              errors.link ? 'border-red-500' : 'border-gray-300'
+            }`}
+          />
+          {errors.link && <p className="mt-1 text-sm text-red-500">{errors.link}</p>}
+          <p className="mt-1 text-sm text-gray-500">Enter your Razorpay.me payment link</p>
+        </>
+      ) : (
+        formData.link ? (
+          <a 
+            href={formData.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sky-600 hover:text-sky-700 underline"
+          >
+            {formData.link}
+          </a>
+        ) : (
+          <p className="text-gray-500">No payment link set</p>
+        )
+      )}
+    </div>
+  </div>
+</div>
 
               {/* Skills & Experience Section */}
 <div className="mb-8">
