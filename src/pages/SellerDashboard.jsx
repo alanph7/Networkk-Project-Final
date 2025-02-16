@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
-import { DollarSign, Users, List, Search } from 'lucide-react'; // Import the Search icon
-import Sidebar from '../components/Sidebar';
+import { DollarSign, Users, List, Search } from 'lucide-react';
+import SellerNavbar from '../components/SellerNavbar';
+
 import { useDashboard } from '../context/DashboardContext';
 import StatCard from '../components/StatCard';
 
@@ -22,9 +23,10 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar activePage={activePage} onPageChange={setActivePage} />
+      <SellerNavbar />
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto ml-20">
+
         <div className="p-8">
           {/* Search bar and User greeting */}
           <div className="flex justify-between items-center mb-8">

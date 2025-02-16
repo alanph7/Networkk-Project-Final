@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, Package, Plus, Menu, X, Home, LogOut, Calendar } from 'lucide-react';
+import { User, Package, Plus, Menu, X, Home, LogOut, Calendar, LayoutDashboard } from 'lucide-react';
+
 import { AuthContext } from '../context/AuthContext';
 
 const SellerNavbar = () => {
@@ -45,9 +46,24 @@ const SellerNavbar = () => {
         )}
         
         <NavLink 
-          to="/" 
+          to="/seller-dash" 
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+            ${isActive 
+              ? 'bg-sky-50 text-sky-600' 
+              : 'text-gray-700 hover:bg-gray-50'
+            }
+          `}
+          title="Overview"
+        >
+          <LayoutDashboard size={20} />
+          {isExpanded && <span>Overview</span>}
+        </NavLink>
+
+        <NavLink 
+          to="/" 
+          className={({ isActive }) => `
+            flex items-center gap 3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
               ? 'bg-sky-50 text-sky-600' 
               : 'text-gray-700 hover:bg-gray-50'
@@ -58,6 +74,7 @@ const SellerNavbar = () => {
           <Home size={20} />
           {isExpanded && <span>Home</span>}
         </NavLink>
+
 
         <NavLink 
           to="/seller-details" 
