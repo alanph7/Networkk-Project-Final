@@ -87,18 +87,17 @@ const BookingsPage = () => {
     rejected: 'Rejected Bookings'
   };
 
-  // Add handlePayment function
+  // Update the handlePayment function to use the service provider's link
   const handlePayment = (booking) => {
-    navigate('/payment', {
-      state: {
-        bookingId: booking.bookingId,
-        amount: booking.basePayment,
-        service: {
-          title: booking.service?.serviceName || 'Service Booking',
-          description: booking.description || 'Service payment'
-        }
-      }
-    });
+    if (booking.serviceProvider?.link) {
+      // Open the payment link in a new tab
+      window.open(booking.serviceProvider.link, '_blank');
+    } else {
+      // Handle case when no payment link is available
+      console.error('No payment link available for this service provider');
+      // Optionally show a notification to the user
+      alert('Payment link not available. Please contact the service provider.');
+    }
   };
 
   // Update the content section to handle all booking statuses
@@ -194,10 +193,20 @@ const BookingsPage = () => {
                   className="mt-6 w-full bg-sky-600 text-white py-3 px-4 rounded-lg hover:bg-sky-700 transition duration-300 flex items-center justify-center font-medium"
                   onClick={() => handlePayment(booking)}
                 >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <svg 
+                    className="w-5 h-5 mr-2" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth="2" 
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
                   </svg>
-                  Pay Now
+                  Proceed to Payment
                 </button>
               )}
             </div>
