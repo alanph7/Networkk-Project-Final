@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, ShoppingBag, Home, Menu, X, LogOut, Search } from 'lucide-react';
+import { User, ShoppingBag, Home, Menu, X, LogOut, Search, LayoutDashboard } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 
 const UserNavbar = () => {
@@ -44,6 +44,22 @@ const UserNavbar = () => {
           <h2 className="text-xl font-bold px-5 mb-6 text-gray-800">N</h2>
         )}
         
+        <NavLink 
+          to="/user-dash" 
+          className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+            ${isActive 
+              ? 'bg-sky-50 text-sky-600' 
+              : 'text-gray-700 hover:bg-gray-50'
+            }
+          `}
+          title="Overview"
+        >
+
+          <LayoutDashboard size={20} />
+          {isExpanded && <span>Overview</span>}
+        </NavLink>
+
         <NavLink 
           to="/" 
           className={({ isActive }) => `

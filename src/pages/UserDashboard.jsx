@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Users, List, Search, User2Icon, Wallet } from 'lucide-react'; // Import the Search icon
-import UserSideBar from '../components/UserSideBar';
+import { DollarSign, Users, List, Search, User2Icon, Wallet } from 'lucide-react';
+import UserNavbar from '../components/UserNavbar';
+
 import { useDashboard } from '../context/DashboardContext';
 import StatCard from '../components/StatCard';
 
@@ -49,9 +50,10 @@ const UserDashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <UserSideBar activePage={activePage} onPageChange={setActivePage} />
+      <UserNavbar />
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto ml-20">
+
         <div className="p-8">
           {/* Search bar and User greeting */}
           <div className="flex justify-between items-center mb-8">
