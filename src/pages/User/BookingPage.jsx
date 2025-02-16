@@ -110,9 +110,9 @@ const BookingsPage = () => {
       const paymentResponse = await axiosInstance.post('/payments/create', paymentData);
   
       if (paymentResponse.status === 201) {
-        // Update booking payment status
+        // Update booking payment status to 'paid'
         const bookingUpdateData = {
-          paymentStatus: 'pending'
+          paymentStatus: 'paid'  // Changed from 'pending' to 'paid'
         };
   
         await axiosInstance.put(`/bookings/${booking.bookingId}`, bookingUpdateData);
