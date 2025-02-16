@@ -148,7 +148,7 @@ const BookingsPage = () => {
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-semibold text-gray-900">
-                    {booking.service?.serviceName || 'Service'}
+                    {booking.service?.title || 'Service'}
                   </h3>
                   <span className="text-lg font-bold text-sky-600">
                     ${booking.basePayment}
