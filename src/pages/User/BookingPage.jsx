@@ -6,6 +6,7 @@ import '@edonec/collapsible/build/index.css';
 import '@edonec/collapsible/build/icons.css';
 import UserNavbar from '../../components/UserNavbar';
 import axiosInstance from '../../utils/axios';
+import ReviewModal from '../../components/ReviewModal';
 
 const BookingsPage = () => {
   const [bookings, setBookings] = useState({
@@ -18,6 +19,8 @@ const BookingsPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('pending');
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   const fetchBookings = async () => {
     try {
@@ -126,6 +129,30 @@ const BookingsPage = () => {
     } catch (error) {
       console.error('Payment creation failed:', error);
       alert('Failed to initialize payment. Please try again.');
+    }
+  };
+
+  const handleReviewSubmit = async (reviewData) => {
+    try {
+      const review = {
+        serviceId: selectedBooking.service.serviceId,
+        userId: localStorage.getItem('userId'),
+        bookingId: selectedBooking.bookingId,
+        description: reviewData.description,
+        rating: reviewData.rating
+      };
+
+      const response = await axiosInstance.post('/reviews/create', review);
+      
+      if (response.status === 201) {
+        alert('Review submitted successfully!');
+        setIsReviewModalOpen(false);
+        setSelectedBooking(null);
+        fetchBookings(); // Refresh the bookings list
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Failed to submit review. Please try again.');
     }
   };
 
@@ -242,6 +269,10 @@ const BookingsPage = () => {
                   ) : (
                     <button
                       className="mt-6 w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center font-medium"
+                      onClick={() => {
+                        setSelectedBooking(booking);
+                        setIsReviewModalOpen(true);
+                      }}
                     >
                       <svg 
                         className="w-5 h-5 mr-2" 
@@ -318,6 +349,15 @@ const BookingsPage = () => {
           </div>
         </div>
       </div>
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          setSelectedBooking(null);
+        }}
+        onSubmit={handleReviewSubmit}
+        booking={selectedBooking}
+      />
     </div>
   );
 };
