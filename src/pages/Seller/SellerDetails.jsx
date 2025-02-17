@@ -23,7 +23,7 @@ const SellerDetailsForm = () => {
     aadhaar: "",
     profilePicture: "",
     languages: "",
-    skills: "",
+    skills: "",  // Initialize as empty string
     experience: "",
     link: "",
   });
@@ -74,14 +74,16 @@ const SellerDetailsForm = () => {
   }, []);
 
   useEffect(() => {
-    if (formData.skills) {
-      setSkillsList(formData.skills.split(',').map(skill => skill.trim()));
+    if (formData.skills && typeof formData.skills === 'string') {
+      const skillsArray = formData.skills.split(',').filter(skill => skill.trim());
+      setSkillsList(skillsArray);
     }
   }, [formData.skills]);
 
   useEffect(() => {
-    if (formData.languages) {
-      setLanguagesList(formData.languages.split(',').map(lang => lang.trim()));
+    if (formData.languages && typeof formData.languages === 'string') {
+      const languagesArray = formData.languages.split(',').filter(lang => lang.trim());
+      setLanguagesList(languagesArray);
     }
   }, [formData.languages]);
 
