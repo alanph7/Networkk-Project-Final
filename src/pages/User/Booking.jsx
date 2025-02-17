@@ -125,7 +125,7 @@ const Booking = () => {
       const bookingData = {
         bookingStatus: "pending",
         paymentStatus: "pending",
-        basePayment: pricing.basePrice, // Use basePrice directly as total
+        basePayment: pricing.basePrice,
         description: formData.description,
         extraPayment: 0,
         isReview: false,
@@ -133,14 +133,14 @@ const Booking = () => {
         userId: userId,
         serviceProviderId: serviceDetails.serviceProviderId,
         bookingDate: formData.date.format("YYYY-MM-DD"),
-        bookingTime: formData.time.format("HH:mm:00")
+        bookingTime: formData.time.format("HH:mm:00"),
+        serviceType: formData.serviceType // Add this line
       };
 
       const response = await axiosInstance.post('/bookings/create', bookingData);
       
       if (response.data?.booking) {
-        // Change navigation to booking status page
-        navigate('/user-booking-status'); // Make sure this matches your route path
+        navigate('/user-booking-status');
       }
     } catch (error) {
       console.error('Booking error:', error);
