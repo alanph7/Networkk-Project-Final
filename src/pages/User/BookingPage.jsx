@@ -34,13 +34,23 @@ const BookingsPage = () => {
       const response = await axiosInstance.get(`/bookings?userId=${userId}`);
       
       if (response.data) {
+        // Get all reviews for this user's bookings
+        const reviewsResponse = await axiosInstance.get('/reviews');
+        const reviews = reviewsResponse.data;
+
+        // Add hasReview property to each booking
+        const bookingsWithReviewStatus = response.data.map(booking => ({
+          ...booking,
+          hasReview: reviews.some(review => review.bookingId === booking.bookingId)
+        }));
+
         // Categorize bookings by status
         const categorizedBookings = {
-          pending: response.data.filter(booking => booking.bookingStatus === 'pending'),
-          confirmed: response.data.filter(booking => booking.bookingStatus === 'confirmed'),
-          completed: response.data.filter(booking => booking.bookingStatus === 'completed'),
-          cancelled: response.data.filter(booking => booking.bookingStatus === 'cancelled'),
-          rejected: response.data.filter(booking => booking.bookingStatus === 'rejected')
+          pending: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'pending'),
+          confirmed: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'confirmed'),
+          completed: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'completed'),
+          cancelled: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'cancelled'),
+          rejected: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'rejected')
         };
         
         setBookings(categorizedBookings);
@@ -132,6 +142,7 @@ const BookingsPage = () => {
     }
   };
 
+  // Update the handleReviewSubmit function
   const handleReviewSubmit = async (reviewData) => {
     try {
       const review = {
@@ -145,6 +156,17 @@ const BookingsPage = () => {
       const response = await axiosInstance.post('/reviews/create', review);
       
       if (response.status === 201) {
+        // Update the local booking data to reflect review status
+        const updatedBookings = { ...bookings };
+        const bookingIndex = updatedBookings.completed.findIndex(
+          b => b.bookingId === selectedBooking.bookingId
+        );
+        
+        if (bookingIndex !== -1) {
+          updatedBookings.completed[bookingIndex].hasReview = true;
+        }
+        
+        setBookings(updatedBookings);
         alert('Review submitted successfully!');
         setIsReviewModalOpen(false);
         setSelectedBooking(null);
@@ -266,7 +288,7 @@ const BookingsPage = () => {
                       </svg>
                       Proceed to Payment
                     </button>
-                  ) : (
+                  ) : !booking.hasReview ? ( // Only show review button if no review exists
                     <button
                       className="mt-6 w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center font-medium"
                       onClick={() => {
@@ -289,7 +311,7 @@ const BookingsPage = () => {
                       </svg>
                       Write a Review
                     </button>
-                  )}
+                  ) : null}
                 </>
               )}
             </div>
