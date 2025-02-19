@@ -20,8 +20,7 @@ const MyGigs = () => {
 
       try {
         const providerResponse = await axiosInstance.get(`/serviceProviders/email/${userEmail}`);
-        const providerId = providerResponse.data.serviceProviderId;
-        
+        const providerId = providerResponse.data.seller.serviceProviderId;
         const servicesResponse = await axiosInstance.get(`/services/provider/${providerId}`);
         setGigs(servicesResponse.data);
       } catch (error) {
