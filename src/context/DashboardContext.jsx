@@ -14,38 +14,50 @@ export const DashboardProvider = ({ children }) => {
       month: new Date(2024, i).toLocaleString('default', { month: 'short' }),
       value: Math.floor(Math.random() * 20000)
     })),
-    trafficSource: [
-      { source: 'Carpentry', value: 45, color: 'bg-indigo-500' },
-      { source: 'Plumbing', value: 30, color: 'bg-orange-500' },
-      { source: 'Electrical', value: 25, color: 'bg-emerald-500' }
-    ]
+    trafficSource: []
   });
 
   // Simulate real-time updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      setDashboardData(prev => ({
-        ...prev,
-        stats: {
-          ...prev.stats,
-          budget: {
-            value: prev.stats.budget.value + Math.floor(Math.random() * 1000 - 500),
-            change: Math.floor(Math.random() * 20 - 10)
-          },
-          customers: {
-            value: prev.stats.customers.value + Math.floor(Math.random() * 100 - 50),
-            change: Math.floor(Math.random() * 20 - 10)
-          }
-        },
-        salesData: prev.salesData.map(item => ({
-          ...item,
-          value: item.value + Math.floor(Math.random() * 1000 - 500)
-        }))
-      }));
-    }, 15000); // Update every 15 seconds
+    const fetchTrafficData = async () => {
+      try {
+        const response = await fetch('http://localhost:3002/bookings/categories');
+        const data = await response.json();
+        
+        if (data.success) {
+          const totalBookings = data.categories.reduce((sum, cat) => sum + cat.count, 0);
+          const trafficSource = data.categories.map(cat => ({
+            source: cat.category,
+            value: Math.round((cat.count / totalBookings) * 100),
+            color: getCategoryColor(cat.category)
+          }));
+          
+          setDashboardData(prev => ({
+            ...prev,
+            trafficSource
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching traffic data:', error);
+      }
+    };
 
+    // Initial fetch
+    fetchTrafficData();
+    
+    // Refresh data every 5 minutes
+    const interval = setInterval(fetchTrafficData, 300000);
     return () => clearInterval(interval);
   }, []);
+
+  const getCategoryColor = (category) => {
+    switch(category) {
+      case 'Carpentry': return 'bg-indigo-500';
+      case 'Plumbing': return 'bg-orange-500';
+      case 'Electrical': return 'bg-emerald-500';
+      default: return 'bg-gray-500';
+    }
+  };
 
   const updateTrafficSource = (source, newValue) => {
     setDashboardData(prev => ({
