@@ -77,6 +77,12 @@ const ProviderBookingPage = () => {
     return colors[status.toLowerCase()] || 'bg-gray-100 text-gray-800';
   };
 
+  const getPaymentStatusColor = (status) => {
+    return status === 'paid' 
+      ? 'bg-green-100 text-green-800' 
+      : 'bg-red-100 text-red-800';
+  };
+
   const renderBookings = (status) => (
     <div className="space-y-6">
       {bookings[status].length > 0 ? (
@@ -85,9 +91,16 @@ const ProviderBookingPage = () => {
             key={`${status}-${booking.bookingId}-${index}`} // Added index to ensure uniqueness
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
           >
-            {/* Status Badge */}
-            <div className={`px-4 py-2 ${getStatusColor(booking.bookingStatus)}`}>
-              <span className="text-sm font-medium capitalize">{booking.bookingStatus}</span>
+            {/* Status Badges Container */}
+            <div className="flex justify-between items-center">
+              <div className={`px-4 py-2 ${getStatusColor(booking.bookingStatus)}`}>
+                <span className="text-sm font-medium capitalize">{booking.bookingStatus}</span>
+              </div>
+              <div className={`px-4 py-2 ${getPaymentStatusColor(booking.paymentStatus)}`}>
+                <span className="text-sm font-medium capitalize">
+                  {booking.paymentStatus === 'paid' ? 'Payment Received' : 'Payment Pending'}
+                </span>
+              </div>
             </div>
 
             <div className="p-6">
@@ -95,7 +108,7 @@ const ProviderBookingPage = () => {
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-semibold text-gray-900">
-                    {booking.service?.serviceName || 'Service'}
+                    {booking.service?.title || 'Service'}
                   </h3>
                   <span className="text-lg font-bold text-sky-600">
                     ${booking.basePayment}

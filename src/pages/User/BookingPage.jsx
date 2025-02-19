@@ -6,6 +6,7 @@ import '@edonec/collapsible/build/index.css';
 import '@edonec/collapsible/build/icons.css';
 import UserNavbar from '../../components/UserNavbar';
 import axiosInstance from '../../utils/axios';
+import ReviewModal from '../../components/ReviewModal';
 
 const BookingsPage = () => {
   const [bookings, setBookings] = useState({
@@ -18,6 +19,8 @@ const BookingsPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('pending');
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   const fetchBookings = async () => {
     try {
@@ -31,13 +34,23 @@ const BookingsPage = () => {
       const response = await axiosInstance.get(`/bookings?userId=${userId}`);
       
       if (response.data) {
+        // Get all reviews for this user's bookings
+        const reviewsResponse = await axiosInstance.get('/reviews');
+        const reviews = reviewsResponse.data;
+
+        // Add hasReview property to each booking
+        const bookingsWithReviewStatus = response.data.map(booking => ({
+          ...booking,
+          hasReview: reviews.some(review => review.bookingId === booking.bookingId)
+        }));
+
         // Categorize bookings by status
         const categorizedBookings = {
-          pending: response.data.filter(booking => booking.bookingStatus === 'pending'),
-          confirmed: response.data.filter(booking => booking.bookingStatus === 'confirmed'),
-          completed: response.data.filter(booking => booking.bookingStatus === 'completed'),
-          cancelled: response.data.filter(booking => booking.bookingStatus === 'cancelled'),
-          rejected: response.data.filter(booking => booking.bookingStatus === 'rejected')
+          pending: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'pending'),
+          confirmed: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'confirmed'),
+          completed: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'completed'),
+          cancelled: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'cancelled'),
+          rejected: bookingsWithReviewStatus.filter(booking => booking.bookingStatus === 'rejected')
         };
         
         setBookings(categorizedBookings);
@@ -87,18 +100,82 @@ const BookingsPage = () => {
     rejected: 'Rejected Bookings'
   };
 
-  // Add handlePayment function
-  const handlePayment = (booking) => {
-    navigate('/payment', {
-      state: {
+  // Update the handlePayment function
+  const handlePayment = async (booking) => {
+    if (!booking.serviceProvider?.link) {
+      alert('Payment link not available. Please contact the service provider.');
+      return;
+    }
+  
+    try {
+      // First create the payment record
+      const paymentData = {
         bookingId: booking.bookingId,
-        amount: booking.basePayment,
-        service: {
-          title: booking.service?.serviceName || 'Service Booking',
-          description: booking.description || 'Service payment'
-        }
+        paymentStatus: 'paid', // Initial status
+        paymentMode: 'upi', // Default payment mode
+        paymentAmount: booking.basePayment,
+        paymentDate: new Date().toISOString().split('T')[0],
+        paymentTime: new Date().toTimeString().split(' ')[0],
+        paymentDesc: `Payment for booking ${booking.bookingId}`
+      };
+  
+      // Create payment record
+      const paymentResponse = await axiosInstance.post('/payments/create', paymentData);
+  
+      if (paymentResponse.status === 201) {
+        // Update booking payment status to 'paid'
+        const bookingUpdateData = {
+          paymentStatus: 'paid'  // Changed from 'pending' to 'paid'
+        };
+  
+        await axiosInstance.put(`/bookings/${booking.bookingId}`, bookingUpdateData);
+  
+        // If everything is successful, redirect to payment link
+        window.open(booking.serviceProvider.link, '_blank');
+        
+        // Refresh bookings list
+        fetchBookings();
       }
-    });
+    } catch (error) {
+      console.error('Payment creation failed:', error);
+      alert('Failed to initialize payment. Please try again.');
+    }
+  };
+
+  // Update the handleReviewSubmit function
+  const handleReviewSubmit = async (reviewData) => {
+    try {
+      const review = {
+        serviceId: selectedBooking.service.serviceId,
+        userId: localStorage.getItem('userId'),
+        bookingId: selectedBooking.bookingId,
+        description: reviewData.description,
+        rating: reviewData.rating
+      };
+
+      const response = await axiosInstance.post('/reviews/create', review);
+      
+      if (response.status === 201) {
+        // Update the local booking data to reflect review status
+        const updatedBookings = { ...bookings };
+        const bookingIndex = updatedBookings.completed.findIndex(
+          b => b.bookingId === selectedBooking.bookingId
+        );
+        
+        if (bookingIndex !== -1) {
+          updatedBookings.completed[bookingIndex].hasReview = true;
+        }
+        
+        setBookings(updatedBookings);
+        alert('Review submitted successfully!');
+        setIsReviewModalOpen(false);
+        setSelectedBooking(null);
+        fetchBookings(); // Refresh the bookings list
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Failed to submit review. Please try again.');
+    }
   };
 
   // Update the content section to handle all booking statuses
@@ -120,7 +197,7 @@ const BookingsPage = () => {
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-semibold text-gray-900">
-                    {booking.service?.serviceName || 'Service'}
+                    {booking.service?.title || 'Service'}
                   </h3>
                   <span className="text-lg font-bold text-sky-600">
                     ${booking.basePayment}
@@ -188,17 +265,54 @@ const BookingsPage = () => {
                 </div>
               </div>
 
-              {/* Payment Button */}
-              {status === 'confirmed' && booking.paymentStatus !== 'paid' && (
-                <button
-                  className="mt-6 w-full bg-sky-600 text-white py-3 px-4 rounded-lg hover:bg-sky-700 transition duration-300 flex items-center justify-center font-medium"
-                  onClick={() => handlePayment(booking)}
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Pay Now
-                </button>
+              {/* Payment/Review Button */}
+              {status === 'completed' && (
+                <>
+                  {booking.paymentStatus !== 'paid' ? (
+                    <button
+                      className="mt-6 w-full bg-sky-600 text-white py-3 px-4 rounded-lg hover:bg-sky-700 transition duration-300 flex items-center justify-center font-medium"
+                      onClick={() => handlePayment(booking)}
+                    >
+                      <svg 
+                        className="w-5 h-5 mr-2" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth="2" 
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                      Proceed to Payment
+                    </button>
+                  ) : !booking.hasReview ? ( // Only show review button if no review exists
+                    <button
+                      className="mt-6 w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center font-medium"
+                      onClick={() => {
+                        setSelectedBooking(booking);
+                        setIsReviewModalOpen(true);
+                      }}
+                    >
+                      <svg 
+                        className="w-5 h-5 mr-2" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth="2" 
+                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                        />
+                      </svg>
+                      Write a Review
+                    </button>
+                  ) : null}
+                </>
               )}
             </div>
           </div>
@@ -257,6 +371,15 @@ const BookingsPage = () => {
           </div>
         </div>
       </div>
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          setSelectedBooking(null);
+        }}
+        onSubmit={handleReviewSubmit}
+        booking={selectedBooking}
+      />
     </div>
   );
 };

@@ -33,7 +33,9 @@ import EditGig from "./pages/Seller/EditGig";
 import LocationTest from "./pages/Seller/Auto";
 
 import ServiceImages from "./pages/Seller/ServiceImages";
-import ProviderBookingPage from "./pages/seller/BookingStatus";
+import ProviderBookingPage from "./pages/Seller/BookingStatus";
+
+import Pay from "./pages/User/Pay";
 
 function App() {
   return (
@@ -51,6 +53,8 @@ function App() {
               <Route path="/service/:id" element={<ServiceDetails />} />
 
               <Route path="/bookingstatus" element={<ProviderBookingPage />} />
+
+              <Route path="/pay" element={<Pay />} />
 
               {/* Admin routes */}
               <Route

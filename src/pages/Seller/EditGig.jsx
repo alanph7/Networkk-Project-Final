@@ -181,7 +181,7 @@ const EditGig = () => {
                 onClick={() => setActiveSection(key)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap ${
                   activeSection === key
-                  ? 'bg-sky-500 text-white'
+                  ? 'bg-sky-700 text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -441,7 +441,7 @@ const EditGig = () => {
             </button>
             <button
               onClick={handleSubmit}
-              className="px-6 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600"
+              className="px-6 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-600"
             >
               Update Service
             </button>

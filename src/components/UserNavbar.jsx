@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, ShoppingBag, Home, Menu, X, LogOut, Search } from 'lucide-react';
+import { User, ShoppingBag, Home, Menu, X, LogOut, Search, LayoutDashboard } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 
 const UserNavbar = () => {
@@ -21,36 +21,51 @@ const UserNavbar = () => {
     <div 
       className={`${
         isExpanded ? 'w-64' : 'w-20'
-      } min-h-screen bg-white border-r border-gray-200 px-3 py-6 transition-all duration-300 relative`}
+      } min-h-screen bg-gray-900 border-r border-gray-800 px-3 py-6 transition-all duration-300 relative`}
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -left-0 top-6 bg-white rounded-full p-1.5 border border-gray-200 z-10 hover:bg-gray-50"
+        className="absolute -left-0 top-6  rounded-full p-1.5 z-10 hover:bg-gray-50"
       >
         {isExpanded ? (
-          <X size={18} className="text-sky-600" />
+          <X size={18} className="text-gray-600" />
         ) : (
-          <Menu size={18} className="text-sky-600" />
+          <Menu size={18} className="text-gray-600" />
         )}
       </button>
 
       <div className="space-y-4">
         {isExpanded ? (
-          <h2 className="text-xl px-5 mb-6">
+          <h2 className="text-xl px-5 mb-6 text-white">
             <span className="font-bold">Networkk</span>{' '}
             <span className="font-light">Service</span>
           </h2>
         ) : (
-          <h2 className="text-xl font-bold px-5 mb-6 text-gray-800">N</h2>
+          <h2 className="text-xl font-bold px-5 mb-6 text-white">N</h2>
         )}
         
+        <NavLink 
+          to="/user-dash" 
+          className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+            ${isActive 
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
+            }
+          `}
+          title="Overview"
+        >
+          <LayoutDashboard size={20} />
+          {isExpanded && <span>Overview</span>}
+        </NavLink>
+
         <NavLink 
           to="/" 
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Home"
@@ -64,8 +79,8 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Search"
@@ -79,8 +94,8 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="Profile Details"
@@ -94,8 +109,8 @@ const UserNavbar = () => {
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${isActive 
-              ? 'bg-sky-50 text-sky-600' 
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
             }
           `}
           title="My Bookings"
@@ -108,7 +123,7 @@ const UserNavbar = () => {
           onClick={handleLogout}
           className={`
             flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full
-            text-red-600 hover:bg-red-50
+            text-red-400 hover:bg-gray-700
           `}
           title="Logout"
         >
