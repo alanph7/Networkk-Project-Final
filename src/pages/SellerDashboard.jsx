@@ -4,6 +4,8 @@ import { DollarSign, Users, List, Search } from 'lucide-react';
 import SellerNavbar from '../components/SellerNavbar';
 
 import { useDashboard } from '../context/DashboardContext';
+import { useAuth } from '../context/AuthContext';
+
 import StatCard from '../components/StatCard';
 
 const Dashboard = () => {
@@ -11,15 +13,14 @@ const Dashboard = () => {
   const { dashboardData } = useDashboard();
   const { stats, salesData, trafficSource } = dashboardData;
   
-  // For demo purposes, assuming the user data is fetched from login
-  const [user, setUser] = useState(null); // Replace with actual user data fetch logic
+  console.log('Traffic Source Data:', trafficSource);
+  
+  const { sellerName } = useAuth();
+
   const COLORS = ['#4c51bf', '#f6ad55', '#38b2ac'];
 
-  useEffect(() => {
-    // Simulate fetching user data after login
-    const fetchedUser = { name: "Alan" }; // Replace with actual fetch logic
-    setUser(fetchedUser);
-  }, []);
+
+
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -40,11 +41,12 @@ const Dashboard = () => {
                 <Search size={20} />
               </button>
             </div>
-            {user && (
+            {sellerName && (
               <div className="text-gray-700 font-medium text-lg">
-                Welcome back, {user.name+"!"}
+                Welcome back, {sellerName}!
               </div>
             )}
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

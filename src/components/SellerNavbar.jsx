@@ -25,12 +25,12 @@ const SellerNavbar = () => {
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -left-0 top-6 bg-white rounded-full p-1.5 border border-gray-200 z-10 hover:bg-gray-50"
+        className="absolute -left-0 top-6  rounded-full p-1.5  z-10 hover:bg-gray-50"
       >
         {isExpanded ? (
-          <X size={18} className="text-sky-600" />
+          <X size={18} className="text-gray-600" />
         ) : (
-          <Menu size={18} className="text-sky-600" />
+          <Menu size={18} className="text-gray-600" />
         )}
       </button>
 
