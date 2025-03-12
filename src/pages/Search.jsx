@@ -37,6 +37,7 @@ export default function Search() {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState("");
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [avgRating, setAvgRating] = useState(0);
 
   // Update the initial data load useEffect
   useEffect(() => {
