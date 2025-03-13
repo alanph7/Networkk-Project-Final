@@ -182,8 +182,10 @@ export default function Search() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
+      <div className="fixed top-0 left-0 w-full">
       <UserNavbar />
-      <div className="flex-1">
+    </div>
+      <div className="flex-1 pl-14">
         <div className="container mx-auto p-4">
           {isLoadingLocation ? (
             <LoadingSpinner />
@@ -191,7 +193,8 @@ export default function Search() {
             <div className="text-red-500 text-center py-4">{locationError}</div>
           ) : (
             <>
-              <div className="flex items-center mb-8">
+            <div className=" sticky top-5 z-40 bg-gray-50">
+              <div className="flex items-center">
                 <input
                   type="text"
                   name="type"
@@ -207,9 +210,11 @@ export default function Search() {
                   <FaSearch />
                 </button>
               </div>
+              </div>
 
+              {/* Filter Section */}
               <div className="flex mb-8">
-                <div className="w-1/4 pr-4">
+                <div className="w-1/4 pr-4 pl-3 sticky top-20 self-start max-h-screen overflow-y-auto">
                   <h3 className="font-bold mb-4">Filters</h3>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
@@ -320,8 +325,9 @@ export default function Search() {
                   {/* Add more filter options here */}
                 </div>
 
-                <div className="w-3/4">
-                  <div className="flex justify-between items-center mb-4">
+                {/* service section */}
+                <div className="w-3/4 overflow-y-auto">
+                  <div className="flex justify-between items-center mb-4 mt-6">
                     <h2 className="text-2xl font-bold">Services</h2>
                     <div className="flex items-center">
                       <select
@@ -351,6 +357,7 @@ export default function Search() {
                       )}
                     </div>
                   </div>
+                  
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredProviders.map((provider) => (
