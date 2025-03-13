@@ -20,6 +20,9 @@ export default function ServiceDetails() {
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
 
   useEffect(() => {
     const fetchServiceDetails = async () => {
@@ -47,6 +50,47 @@ export default function ServiceDetails() {
     // Cleanup on unmount
     return () => clearInterval(autoSlide);
   }, [images.length]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!id) return;
+      
+      try {
+        const response = await axiosInstance.get(`/reviews/service/${id}`);
+        if (response.data.success) {
+          setReviews(response.data.reviews);
+          setAverageRating(response.data.averageRating);
+          setReviewCount(response.data.count);
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+  
+    if (service) {
+      fetchReviews();
+    }
+  }, [id, service]);
+
+  const formatTimeToAMPM = (timeString) => {
+    if (!timeString) return '';
+    
+    // Handle various time formats
+    let hours, minutes;
+    
+    if (timeString.includes(':')) {
+      [hours, minutes] = timeString.split(':').map(Number);
+    } else {
+      hours = parseInt(timeString, 10);
+      minutes = 0;
+    }
+    
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+    
+    return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  };
 
   if (loading) return <div className="text-center p-8">Loading...</div>;
   if (error)
@@ -84,10 +128,10 @@ export default function ServiceDetails() {
                   <div className="flex items-center">
                     <FaStar className="text-yellow-400 mr-1" />
                     <span className="font-semibold">
-                      {service.avgRating || 0}
+                      {averageRating || 0}
                     </span>
                     <span className="text-gray-600 ml-1">
-                      ({service.reviewCount || 0})
+                      ({reviewCount || 0})
                     </span>
                   </div>
                 </div>
@@ -205,37 +249,78 @@ export default function ServiceDetails() {
             </div>
 
             {/* Reviews Section */}
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-              {service.Reviews?.map((review) => (
-                <div
-                  key={review.reviewId}
-                  className="mb-6 p-6 bg-white rounded-lg shadow-md"
-                >
-                  <div className="flex items-center mb-2">
-                    <div className="w-10 h-10 bg-sky-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                      {review.user?.fname?.[0]}
-                    </div>
-                    <div>
-                      <p className="font-semibold">{review.user?.fname}</p>
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar
-                            key={i}
-                            className={
-                              i < review.rating
-                                ? "text-yellow-400"
-                                : "text-gray-300"
-                            }
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-gray-700">{review.description}</p>
-                </div>
-              ))}
+
+            <div className="mb-8">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-2xl font-bold">Reviews</h2>
+    <div className="flex items-center">
+      <div className="bg-sky-700 rounded-md px-3 py-1 text-white font-bold flex items-center">
+        <FaStar className="mr-1" />
+        <span>{averageRating}</span>
+      </div>
+      <span className="ml-2 text-gray-600">({reviewCount} reviews)</span>
+    </div>
+  </div>
+
+  {reviews.length > 0 ? (
+    reviews.map((review) => (
+      <div
+        key={review}
+        className="mb-6 p-6 bg-white rounded-lg shadow-md"
+      >
+        <div className="flex items-center mb-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
+            {review.user?.profilePicture ? (
+              <img
+                src={review.user.profilePicture}
+                alt={`${review.user.fname}'s profile`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-sky-700 flex items-center justify-center text-white font-bold">
+                {review.user?.fname?.[0]}
+              </div>
+            )}
+          </div>
+          <div>
+            <p className="font-semibold">
+              {review.user?.fname} {review.user?.lname}
+            </p>
+            <div className="flex items-center mt-1">
+              <div className="flex mr-2">
+                {[...Array(5)].map((_, i) => (
+                  <FaStar
+                    key={i}
+                    className={
+                      i < review.rating
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                    }
+                  />
+                ))}
+              </div>
+              {/* <span className="text-sm text-gray-500">
+                {new Date(review.createdAt).toLocaleDateString()}
+              </span> */}
             </div>
+          </div>
+        </div>
+        <p className="text-gray-700">{review.description}</p>
+        {review.booking && (
+          <div className="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-500">
+            <p>
+              Booked on: {new Date(review.booking.bookingDate).toLocaleDateString()} at {formatTimeToAMPM(review.booking.bookingTime)}
+            </p>
+          </div>
+        )}
+      </div>
+    ))
+  ) : (
+    <div className="p-6 bg-gray-50 rounded-lg text-center">
+      <p className="text-gray-500">No reviews yet.</p>
+    </div>
+  )}
+</div>
           </div>
 
           {/* Booking Section */}
