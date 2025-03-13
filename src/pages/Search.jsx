@@ -8,6 +8,7 @@ import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const theme = createTheme({
   palette: {
@@ -177,13 +178,15 @@ export default function Search() {
     applyFilters();
   }, [filters]);
 
+
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <UserNavbar />
       <div className="flex-1">
         <div className="container mx-auto p-4">
           {isLoadingLocation ? (
-            <div className="text-center py-4">Loading your location...</div>
+            <LoadingSpinner />
           ) : locationError ? (
             <div className="text-red-500 text-center py-4">{locationError}</div>
           ) : (

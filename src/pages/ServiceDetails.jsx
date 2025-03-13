@@ -72,6 +72,26 @@ export default function ServiceDetails() {
     }
   }, [id, service]);
 
+  const formatTimeToAMPM = (timeString) => {
+    if (!timeString) return '';
+    
+    // Handle various time formats
+    let hours, minutes;
+    
+    if (timeString.includes(':')) {
+      [hours, minutes] = timeString.split(':').map(Number);
+    } else {
+      hours = parseInt(timeString, 10);
+      minutes = 0;
+    }
+    
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+    
+    return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  };
+
   if (loading) return <div className="text-center p-8">Loading...</div>;
   if (error)
     return <div className="text-center p-8 text-red-500">Error: {error}</div>;
@@ -229,37 +249,7 @@ export default function ServiceDetails() {
             </div>
 
             {/* Reviews Section */}
-            {/* <div>
-              <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-              {service.Reviews?.map((review) => (
-                <div
-                  key={review.reviewId}
-                  className="mb-6 p-6 bg-white rounded-lg shadow-md"
-                >
-                  <div className="flex items-center mb-2">
-                    <div className="w-10 h-10 bg-sky-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                      {review.user?.fname?.[0]}
-                    </div>
-                    <div>
-                      <p className="font-semibold">{review.user?.fname}</p>
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar
-                            key={i}
-                            className={
-                              i < review.rating
-                                ? "text-yellow-400"
-                                : "text-gray-300"
-                            }
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-gray-700">{review.description}</p>
-                </div>
-              ))}
-            </div> */}
+
             <div className="mb-8">
   <div className="flex justify-between items-center mb-4">
     <h2 className="text-2xl font-bold">Reviews</h2>
@@ -319,7 +309,7 @@ export default function ServiceDetails() {
         {review.booking && (
           <div className="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-500">
             <p>
-              Booked on: {new Date(review.booking.bookingDate).toLocaleDateString()} at {review.booking.bookingTime}
+              Booked on: {new Date(review.booking.bookingDate).toLocaleDateString()} at {formatTimeToAMPM(review.booking.bookingTime)}
             </p>
           </div>
         )}
