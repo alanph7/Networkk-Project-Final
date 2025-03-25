@@ -33,9 +33,83 @@ const View = () => {
     fetchServiceDetails();
   }, [gig?.id]);
 
+  useEffect(() => {
+    const autoSlide = setInterval(() => {
+      setCurrentImageIndex((prev) =>
+        prev === images.length - 1 ? 0 : prev + 1
+      );
+    }, 3000);
+
+    // Cleanup on unmount
+    return () => clearInterval(autoSlide);
+  }, [images.length]);
+
   if (loading) return <div className="text-center p-8">Loading...</div>;
   if (error) return <div className="text-center p-8 text-red-500">Error: {error}</div>;
   if (!gig) return <div className="text-center p-8">Service not found</div>;
+
+  const carouselSection = (
+    <div className="mb-8 relative h-[400px] rounded-lg overflow-hidden">
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className="absolute inset-0 w-full h-full"
+          style={{
+            opacity: currentImageIndex === index ? 1 : 0,
+            zIndex: currentImageIndex === index ? 1 : 0,
+            transition: "opacity 0.5s ease-in-out",
+          }}
+        >
+          <img
+            src={image}
+            alt={`${gig.title} - Image ${index + 1}`}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.src = "/default-service.jpg";
+            }}
+          />
+        </div>
+      ))}
+
+      {/* Navigation arrows with higher z-index */}
+      <button
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white hover:bg-black/75 transition-colors duration-200 z-10"
+        onClick={() =>
+          setCurrentImageIndex((prev) =>
+            prev === 0 ? images.length - 1 : prev - 1
+          )
+        }
+      >
+        <ChevronLeft className="w-6 h-6" />
+      </button>
+
+      <button
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white hover:bg-black/75 transition-colors duration-200 z-10"
+        onClick={() =>
+          setCurrentImageIndex((prev) =>
+            prev === images.length - 1 ? 0 : prev + 1
+          )
+        }
+      >
+        <ChevronRight className="w-6 h-6" />
+      </button>
+
+      {/* Indicators with higher z-index */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentImageIndex(index)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === currentImageIndex
+                ? "bg-white scale-125"
+                : "bg-white/50 hover:bg-white/75"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -65,34 +139,7 @@ const View = () => {
             </div>
 
             {/* Image Carousel */}
-            <div className="relative h-[400px] rounded-lg overflow-hidden mb-6 bg-gray-200">
-              {images.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`${gig.title} - Image ${index + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-                    currentImageIndex === index ? "opacity-100" : "opacity-0"
-                  }`}
-                  onError={(e) => {
-                    e.target.src = "/default-service.jpg";
-                  }}
-                />
-              ))}
-              {/* Carousel Navigation */}
-              <button
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 p-3 rounded-full text-white hover:bg-black/75 transition"
-                onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-              <button
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 p-3 rounded-full text-white hover:bg-black/75 transition"
-                onClick={() => setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-            </div>
+            {carouselSection}
 
             {/* About Service */}
             <h2 className="text-2xl font-semibold mb-4 text-gray-700">About This Service</h2>
