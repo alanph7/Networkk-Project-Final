@@ -21,7 +21,7 @@ const UserNavbar = () => {
     <div 
       className={`${
         isExpanded ? 'w-64' : 'w-20'
-      } max-h-full bg-gray-900 border-r border-gray-800 px-3 py-6 transition-all duration-100 relative`}
+      } max-h-full bg-gray-900 border-r border-gray-800 px-3 py-6 transition-all duration-0 relative`}
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
