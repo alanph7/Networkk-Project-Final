@@ -182,10 +182,10 @@ export default function Search() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="fixed top-0 left-0 w-full">
+      <div className=" flex top-0 left-0">
       <UserNavbar />
     </div>
-      <div className="flex-1 pl-14">
+      <div className="flex-1">
         <div className="container mx-auto p-4">
           {isLoadingLocation ? (
             <LoadingSpinner />
@@ -193,7 +193,7 @@ export default function Search() {
             <div className="text-red-500 text-center py-4">{locationError}</div>
           ) : (
             <>
-            <div className=" sticky top-5 z-40 bg-gray-50">
+            <div className=" sticky top-1 z-40 bg-gray-50">
               <div className="flex items-center">
                 <input
                   type="text"

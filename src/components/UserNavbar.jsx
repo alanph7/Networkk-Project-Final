@@ -21,11 +21,11 @@ const UserNavbar = () => {
     <div 
       className={`${
         isExpanded ? 'w-64' : 'w-20'
-      } min-h-screen bg-gray-900 border-r border-gray-800 px-3 py-6 transition-all duration-300 relative`}
+      } max-h-full bg-gray-900 border-r border-gray-800 px-3 py-6 transition-all duration-0 relative`}
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -left-0 top-6  rounded-full p-1.5 z-10 hover:bg-gray-50"
+        className="fixed -left-0 top-6  rounded-full p-1.5 z-10 hover:bg-gray-50"
       >
         {isExpanded ? (
           <X size={18} className="text-gray-600" />
@@ -34,7 +34,7 @@ const UserNavbar = () => {
         )}
       </button>
 
-      <div className="space-y-4">
+      <div className=" fixed space-y-4">
         {isExpanded ? (
           <h2 className="text-xl px-5 mb-6 text-white">
             <span className="font-bold">Networkk</span>{' '}
