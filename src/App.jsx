@@ -37,6 +37,8 @@ import ProviderBookingPage from "./pages/Seller/BookingStatus";
 
 import Pay from "./pages/User/Pay";
 
+import View from "./pages/Seller/View";
+
 function App() {
   return (
     <AuthProvider>
@@ -55,6 +57,8 @@ function App() {
               <Route path="/bookingstatus" element={<ProviderBookingPage />} />
 
               <Route path="/pay" element={<Pay />} />
+
+              <Route path="seller/view" element={<View />} />
 
               {/* Admin routes */}
               <Route

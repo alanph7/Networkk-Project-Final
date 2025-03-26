@@ -24,6 +24,7 @@ import {
   PendingActions as PendingIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
 import AdminNavbar from '../../components/AdminNav'; // Import AdminNavbar
 
@@ -37,6 +38,8 @@ const categories = [
 ];
 
 const GigRequestCard = ({ gig, onStatusChange }) => {
+  const navigate = useNavigate();
+  
   const statusColors = {
     pending: "warning",
     accepted: "success",
@@ -51,6 +54,10 @@ const GigRequestCard = ({ gig, onStatusChange }) => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleView = () => {
+    navigate('/seller/view', { state: { gig } });
   };
 
   return (
@@ -114,7 +121,7 @@ const GigRequestCard = ({ gig, onStatusChange }) => {
             >
               <CancelIcon />
             </IconButton>
-            <IconButton color="primary">
+            <IconButton color="primary" onClick={handleView}>
               <VisibilityIcon />
             </IconButton>
           </Box>
