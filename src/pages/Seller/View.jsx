@@ -13,6 +13,7 @@ const View = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [serviceProvider, setServiceProvider] = useState(null);
 
   useEffect(() => {
     const fetchServiceDetails = async () => {
@@ -22,16 +23,32 @@ const View = () => {
         return;
       }
       try {
-        const response = await axiosInstance.get(`/services/${gig.id}`);
-        setImages(JSON.parse(response.data.demoPics || "[]"));
+        // First fetch the service details
+        const serviceResponse = await axiosInstance.get(`/services/${gig.id}`);
+        const serviceData = serviceResponse.data;
+        
+        // Set images
+        setImages(JSON.parse(serviceData.demoPics || "[]"));
+        
+        // Only fetch provider details if serviceProviderId exists
+        if (serviceData.serviceProviderId) {
+          const providerResponse = await axiosInstance.get(`/serviceProviders/${serviceData.serviceProviderId}`);
+          setServiceProvider(providerResponse.data);
+        } else if (gig.serviceProviderId) {
+          // Fallback to gig's serviceProviderId if available
+          const providerResponse = await axiosInstance.get(`/serviceProviders/${gig.serviceProviderId}`);
+          setServiceProvider(providerResponse.data);
+        }
       } catch (err) {
+        console.error('Error fetching details:', err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
+
     fetchServiceDetails();
-  }, [gig?.id]);
+  }, [gig?.id, gig?.serviceProviderId]);
 
   useEffect(() => {
     const autoSlide = setInterval(() => {
@@ -165,18 +182,106 @@ const View = () => {
             </div>
 
             {/* About the Provider */}
-            <div className=" mt-6 bg-white p-6 rounded-xl shadow-md">
+            <div className="mt-6 bg-white p-6 rounded-xl shadow-md">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">About The Provider</h2>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 mb-4">
                 <div className="w-16 h-16 bg-sky-700 text-white flex items-center justify-center rounded-full text-xl font-bold">
-                  {gig.seller?.[0] || "U"}
+                  {serviceProvider?.fname?.[0] || gig?.seller?.[0] || "U"}
                 </div>
                 <div>
-                  <p className="font-semibold text-lg">{gig.seller}</p>
-                  <p className="text-gray-600">{gig.category}</p>
-                  <p className="text-gray-600">Submitted: {new Date(gig.submittedAt).toLocaleString()}</p>
+                  <p className="font-semibold text-lg">
+                    {serviceProvider 
+                      ? `${serviceProvider.fname || ''} ${serviceProvider.lname || ''}`.trim() 
+                      : gig?.seller || 'Unknown Provider'}
+                  </p>
+                  <p className="text-gray-600">{gig?.category}</p>
+                  {gig?.submittedAt && (
+                    <p className="text-gray-600">
+                      Submitted: {new Date(gig.submittedAt).toLocaleString()}
+                    </p>
+                  )}
                 </div>
               </div>
+
+              {serviceProvider && (
+                <div className="mt-4 space-y-4">
+                  {serviceProvider.experience && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700">Experience</h3>
+                      <p className="text-gray-600">{serviceProvider.experience}</p>
+                    </div>
+                  )}
+
+                  {serviceProvider.skills && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700">Skills</h3>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {serviceProvider.skills.split(',').map((skill, index) => (
+                          <span 
+                            key={index}
+                            className="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm"
+                          >
+                            {skill.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {serviceProvider.languages && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700">Languages</h3>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {serviceProvider.languages.split(',').map((language, index) => (
+                          <span 
+                            key={index}
+                            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                          >
+                            {language.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+
+                  {serviceProvider.locality && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700">Location</h3>
+                      <p className="text-gray-600">{serviceProvider.locality}</p>
+                    </div>
+                  )}
+
+                  {serviceProvider.phone && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700">Contact</h3>
+                      <p className="text-gray-600">{serviceProvider.phone}</p>
+                    </div>
+                  )}
+
+                  
+                  {serviceProvider.email && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700">Email Id</h3>
+                      <p className="text-gray-600">{serviceProvider.email}</p>
+                    </div>
+                  )}
+
+                  {serviceProvider.link && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700">Payment</h3>
+                      <a 
+                        href={serviceProvider.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sky-600 hover:text-sky-800 transition-colors"
+                      >
+                        Payment Link
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
