@@ -194,7 +194,9 @@ const GigAdminDashboard = () => {
   // Rest of your existing functions
   const handleStatusChange = async (gigId, newStatus) => {
     // Create a loading toast
-    const loadingToast = toast.loading("Processing request...");
+    const loadingToast = toast.loading("Processing request...", {
+      type: "info"  // Blue theme
+    });
     
     try {
       const response = await axiosInstance.put(`/admin/services/${gigId}/status`, { 
@@ -205,28 +207,28 @@ const GigAdminDashboard = () => {
         setGigs(gigs.map(gig => 
           gig.id === gigId ? { ...gig, status: newStatus } : gig
          ));
-        // Update toast to success
+        // Update toast to info instead of success
         toast.update(loadingToast, {
           render: `Service ${newStatus === 'accepted' ? 'approved' : 'rejected'} successfully`,
-          type: "success",
+          type: "info",  // Changed from success to info
           isLoading: false,
           autoClose: 3000,
         });
       } else {
-        // Update toast to error
+        // Update toast to info instead of error
         toast.update(loadingToast, {
           render: "Failed to update status: " + response.data.message,
-          type: "error",
+          type: "info",  // Changed from error to info
           isLoading: false,
           autoClose: 3000,
         });
       }
     } catch (error) {
       console.error('Error updating status:', error);
-      // Update toast to error
+      // Update toast to info instead of error
       toast.update(loadingToast, {
         render: "Error updating status. Please try again.",
-        type: "error",
+        type: "info",  // Changed from error to info
         isLoading: false,
         autoClose: 3000,
       });
