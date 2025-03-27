@@ -52,6 +52,9 @@ const Booking = () => {
     total: serviceDetails.basePrice // Remove serviceFee
   });
 
+  // Add this state for holiday dates
+  const [holidayDates, setHolidayDates] = useState([]);
+
   // Time slots generation
   const generateTimeSlots = () => {
     const slots = [];
@@ -111,6 +114,28 @@ const Booking = () => {
     };
     calculatePrice();
   }, [formData.serviceType, serviceDetails.basePrice]);
+
+  // Add this useEffect to fetch holiday dates when component mounts
+  useEffect(() => {
+    const fetchHolidayDates = async () => {
+      try {
+        const response = await axiosInstance.get(`/bookings/holidays/${serviceDetails.serviceId}`);
+        setHolidayDates(response.data.holidays);
+      } catch (error) {
+        console.error('Error fetching holiday dates:', error);
+      }
+    };
+
+    if (serviceDetails.serviceId) {
+      fetchHolidayDates();
+    }
+  }, [serviceDetails.serviceId]);
+
+  // Create a function to check if a date should be disabled
+  const shouldDisableDate = (date) => {
+    const formattedDate = date.format('YYYY-MM-DD');
+    return holidayDates.includes(formattedDate);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -181,6 +206,7 @@ const Booking = () => {
                               value={formData.date}
                               onChange={handleDateChange}
                               minDate={dayjs()}
+                              shouldDisableDate={shouldDisableDate}
                               className="w-full"
                               slotProps={{
                                 textField: {
