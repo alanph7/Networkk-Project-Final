@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext'; // Import useAuth to get seller information
+
 
 const DashboardContext = createContext();
 
@@ -10,12 +12,32 @@ export const DashboardProvider = ({ children }) => {
       taskProgress: { value: 75.5, change: 0 },
       totalProfit: { value: 15000, change: 0 }
     },
-    salesData: Array.from({ length: 12 }, (_, i) => ({
-      month: new Date(2024, i).toLocaleString('default', { month: 'short' }),
-      value: Math.floor(Math.random() * 20000)
-    })),
+    salesData: [], // Initialize salesData as an empty array
     trafficSource: []
   });
+
+  // Fetch cumulative revenue data
+  useEffect(() => {
+    const fetchCumulativeRevenue = async () => {
+      try {
+        const response = await fetch('http://localhost:3002/payments/cumulative-revenue');
+        const data = await response.json(); // Fetch the data from the response
+
+        
+        if (data.success) {
+          setDashboardData(prev => ({
+            ...prev,
+            salesData: data.data // Update salesData with fetched cumulative revenue
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching cumulative revenue:', error);
+      }
+    };
+
+    fetchCumulativeRevenue();
+  }, []);
+
 
   // Simulate real-time updates
   useEffect(() => {

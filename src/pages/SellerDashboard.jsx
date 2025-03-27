@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Legend, PieChart, Pie, Cell } from 'recharts';
 import { DollarSign, Users, List, Search } from 'lucide-react';
 import SellerNavbar from '../components/SellerNavbar';
 
@@ -7,27 +7,36 @@ import { useDashboard } from '../context/DashboardContext';
 import { useAuth } from '../context/AuthContext';
 
 import StatCard from '../components/StatCard';
+import axiosInstance from '../utils/axios';
 
 const Dashboard = () => {
-  const [activePage, setActivePage] = useState('overview');
+  const [cumulativeRevenueData, setCumulativeRevenueData] = useState([]);
   const { dashboardData } = useDashboard();
-  const { stats, salesData, trafficSource } = dashboardData;
-  
-  console.log('Traffic Source Data:', trafficSource);
-  
+  const { stats, trafficSource } = dashboardData;
   const { sellerName } = useAuth();
 
   const COLORS = ['#4c51bf', '#f6ad55', '#38b2ac'];
 
+  useEffect(() => {
+    const fetchCumulativeRevenue = async () => {
+      try {
+        const response = await axiosInstance.get('/payments/cumulative-revenue');
+        if (response.data.success) {
+          setCumulativeRevenueData(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching cumulative revenue:', error);
+      }
+    };
 
-
+    fetchCumulativeRevenue();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
       <SellerNavbar />
 
       <div className="flex-1 overflow-auto ml-20">
-
         <div className="p-8">
           {/* Search bar and User greeting */}
           <div className="flex justify-between items-center mb-8">
@@ -46,7 +55,6 @@ const Dashboard = () => {
                 Welcome back, {sellerName}!
               </div>
             )}
-
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -80,27 +88,44 @@ const Dashboard = () => {
             />
           </div>
 
-          {/* Bar Chart and Traffic Source side by side */}
+          {/* Charts in a grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Cumulative Revenue Chart */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold">Revenue Chart</h2>
-                <button className="flex items-center text-gray-500">
-                  <span className="mr-2">Sync</span>
-                </button>
+                <h2 className="text-lg font-semibold">Total Monthly Revenue</h2>
               </div>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={salesData}>
+                  <BarChart 
+                    data={cumulativeRevenueData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#357cd2" />
+                    <YAxis 
+                      label={{ 
+                        value: 'Cumulative Revenue (₹)', 
+                        angle: -90, 
+                        position: 'insideLeft' 
+                      }} 
+                    />
+                    <Tooltip 
+                      formatter={(value) => [`₹${value.toLocaleString()}`, 'Cumulative Revenue']}
+                      cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                    />
+                    <Legend />
+                    <Bar 
+                      dataKey="value" 
+                      fill="#38b2ac" 
+                      name="Cumulative Revenue"
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
+            {/* Traffic Source Pie Chart */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h2 className="text-lg font-semibold mb-6">Traffic Source</h2>
               <div className="flex justify-between items-center">
