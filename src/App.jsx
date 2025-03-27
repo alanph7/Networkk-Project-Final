@@ -38,6 +38,7 @@ import ProviderBookingPage from "./pages/Seller/BookingStatus";
 import Pay from "./pages/User/Pay";
 
 import View from "./pages/Seller/View";
+import UserFavorites from "./pages/User/Favorites";
 
 function App() {
   return (
@@ -158,6 +159,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={["user"]}>
                     <Payment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/favorites"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <UserFavorites />
                   </ProtectedRoute>
                 }
               />

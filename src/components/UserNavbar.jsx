@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, ShoppingBag, Home, Menu, X, LogOut, Search, LayoutDashboard } from 'lucide-react';
+import { User, ShoppingBag, Home, Menu, X, LogOut, Search, LayoutDashboard, Heart } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 
 const UserNavbar = () => {
@@ -117,6 +117,21 @@ const UserNavbar = () => {
         >
           <ShoppingBag size={20} />
           {isExpanded && <span>My Bookings</span>}
+        </NavLink>
+
+        <NavLink 
+          to="/favorites" 
+          className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+            ${isActive 
+              ? 'bg-blue-800 text-white' 
+              : 'text-gray-400 hover:bg-gray-700'
+            }
+          `}
+          title="Favourites"
+        >
+          <Heart size={20} />
+          {isExpanded && <span>Favorites</span>}
         </NavLink>
 
         <button
