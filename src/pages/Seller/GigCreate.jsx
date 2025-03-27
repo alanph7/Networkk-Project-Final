@@ -41,9 +41,9 @@ export default function GigCreate() {
     experience: '',
     specialSkills: '',
     tools: '',
-    holidays: {
-      dates: []
-    },
+    // holidays: {
+    //   dates: []
+    // },
     isOpen: true,
     holidays: []
   });
