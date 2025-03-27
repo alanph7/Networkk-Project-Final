@@ -1039,11 +1039,14 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
-            <img 
+            {/* <img 
               src="https://firebasestorage.googleapis.com/v0/b/network-c70d4.appspot.com/o/login%2Flogo-text1__1_-removebg-preview.png?alt=media&token=ff8304f7-1b98-4d3d-92dc-af6d60f928dc" 
               alt="Networkk Logo" 
               className="h-12 mb-6"
-            />
+            /> */}
+            <span className="text-6xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 text-transparent bg-clip-text">
+                  Networkk
+                </span>
             <p className="text-gray-400 mb-6">
               Connecting skilled professionals with those who need their services.
             </p>
@@ -1098,7 +1101,7 @@ const Footer = () => {
         </div>
         
         <div className="pt-8 border-t border-gray-800 text-center md:text-left md:flex md:justify-between md:items-center">
-          <p className="text-gray-500">© 2024 Networkk. All rights reserved.</p>
+          <p className="text-gray-500">© 2025 Networkk. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
             <div className="flex flex-wrap justify-center md:justify-end gap-4">
               <a href="#" className="text-gray-500 hover:text-white transition-colors">Privacy Policy</a>
@@ -1123,7 +1126,7 @@ const Home = () => {
       <TestimonialsSection />
       <FAQSection />
       <TeamSection />
-      <NewsletterSection />
+      {/* <NewsletterSection /> */}
       <Footer />
     </div>
   );
