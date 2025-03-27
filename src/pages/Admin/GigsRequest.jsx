@@ -27,7 +27,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
 import AdminNavbar from '../../components/AdminNav'; // Import AdminNavbar
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const categories = [
   "Cleaning",
@@ -192,6 +193,9 @@ const GigAdminDashboard = () => {
 
   // Rest of your existing functions
   const handleStatusChange = async (gigId, newStatus) => {
+    // Create a loading toast
+    const loadingToast = toast.loading("Processing request...");
+    
     try {
       const response = await axiosInstance.put(`/admin/services/${gigId}/status`, { 
         status: newStatus 
@@ -200,13 +204,32 @@ const GigAdminDashboard = () => {
       if (response.data.success) {
         setGigs(gigs.map(gig => 
           gig.id === gigId ? { ...gig, status: newStatus } : gig
-        ));
+         ));
+        // Update toast to success
+        toast.update(loadingToast, {
+          render: `Service ${newStatus === 'accepted' ? 'approved' : 'rejected'} successfully`,
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
       } else {
-        console.error('Failed to update status:', response.data.message);
+        // Update toast to error
+        toast.update(loadingToast, {
+          render: "Failed to update status: " + response.data.message,
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
       }
     } catch (error) {
       console.error('Error updating status:', error);
-      // Add error handling UI feedback here
+      // Update toast to error
+      toast.update(loadingToast, {
+        render: "Error updating status. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
     }
   };
 
@@ -358,6 +381,17 @@ const GigAdminDashboard = () => {
           </Box>
         </Paper>
       </Box>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };
