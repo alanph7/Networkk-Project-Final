@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { FaStar, FaCheck } from "react-icons/fa";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { Chip } from "@mui/material";
 import axiosInstance from "../../utils/axios";
 import AdminNavbar from "../../components/AdminNav";
@@ -33,11 +33,24 @@ const View = () => {
         // Only fetch provider details if serviceProviderId exists
         if (serviceData.serviceProviderId) {
           const providerResponse = await axiosInstance.get(`/serviceProviders/${serviceData.serviceProviderId}`);
-          setServiceProvider(providerResponse.data);
+          const providerData = providerResponse.data;
+          
+          // If profile picture URL is relative, convert to absolute
+          if (providerData.profilePicture && !providerData.profilePicture.startsWith('http')) {
+            providerData.profilePicture = `${import.meta.env.VITE_API_URL}${providerData.profilePicture}`;
+          }
+          
+          setServiceProvider(providerData);
         } else if (gig.serviceProviderId) {
-          // Fallback to gig's serviceProviderId if available
           const providerResponse = await axiosInstance.get(`/serviceProviders/${gig.serviceProviderId}`);
-          setServiceProvider(providerResponse.data);
+          const providerData = providerResponse.data;
+          
+          // If profile picture URL is relative, convert to absolute
+          if (providerData.profilePicture && !providerData.profilePicture.startsWith('http')) {
+            providerData.profilePicture = `${import.meta.env.VITE_API_URL}${providerData.profilePicture}`;
+          }
+          
+          setServiceProvider(providerData);
         }
       } catch (err) {
         console.error('Error fetching details:', err);
@@ -128,6 +141,50 @@ const View = () => {
     </div>
   );
 
+  const providerProfileSection = (
+    <div className="lg:col-span-1">
+      <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-sky-50 to-white rounded-xl border border-sky-100">
+        {/* Profile Picture */}
+        <div className="relative mb-4">
+          {serviceProvider?.profilePicture ? (
+            <img
+              src={serviceProvider.profilePicture}
+              alt={`${serviceProvider.fname} ${serviceProvider.lname}`}
+              className="w-24 h-24 rounded-2xl object-cover shadow-md"
+              onError={(e) => {
+                e.target.src = "/default-avatar.jpg"; // Add a default avatar image
+                e.target.onerror = null;
+              }}
+            />
+          ) : (
+            <div className="w-24 h-24 bg-gradient-to-br from-sky-600 to-sky-800 text-white flex items-center justify-center rounded-2xl text-3xl font-bold shadow-md">
+              {serviceProvider?.fname?.[0] || gig?.seller?.[0] || "U"}
+            </div>
+          )}
+        </div>
+
+        {/* Provider Name */}
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          {serviceProvider 
+            ? `${serviceProvider.fname || ''} ${serviceProvider.lname || ''}`.trim() 
+            : gig?.seller || 'Unknown Provider'}
+        </h3>
+
+        {/* Category Badge */}
+        <span className="px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-medium mb-2">
+          {gig?.category}
+        </span>
+
+        {/* Member Since */}
+        {gig?.submittedAt && (
+          <p className="text-sm text-gray-500">
+            Member since {new Date(gig.submittedAt).toLocaleDateString()}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <AdminNavbar />
@@ -137,28 +194,7 @@ const View = () => {
           <h2 className="text-2xl font-semibold text-gray-800 mb-6 border-b pb-4">Service Provider Details</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Provider Header */}
-            <div className="lg:col-span-1">
-              <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-sky-50 to-white rounded-xl border border-sky-100">
-                <div className="w-24 h-24 bg-gradient-to-br from-sky-600 to-sky-800 text-white flex items-center justify-center rounded-2xl text-3xl font-bold shadow-md mb-4">
-                  {serviceProvider?.fname?.[0] || gig?.seller?.[0] || "U"}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  {serviceProvider 
-                    ? `${serviceProvider.fname || ''} ${serviceProvider.lname || ''}`.trim() 
-                    : gig?.seller || 'Unknown Provider'}
-                </h3>
-                <span className="px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-medium mb-2">
-                  {gig?.category}
-                </span>
-                {gig?.submittedAt && (
-                  <p className="text-sm text-gray-500">
-                    Member since {new Date(gig.submittedAt).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-            </div>
-
+            {providerProfileSection}
             {/* Provider Details */}
             <div className="lg:col-span-2">
               {serviceProvider && (
