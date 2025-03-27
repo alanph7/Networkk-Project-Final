@@ -396,7 +396,10 @@ export default function Search() {
 
                                 <div className="flex items-center mb-2">
                                   <FaStar className="text-yellow-400 mr-1" />
-                                  <span>{provider.avgRating}</span>
+                                  <div className="flex gap-1">                                  
+                                  <span className="font-semibold">{provider.avgRating}</span>
+                                  <span className=" opacity-60">({provider.reviewCount})</span>
+                                  </div>
                                   <span className="mx-2">|</span>
                                   <FaMapMarkerAlt className="text-gray-400 mr-1" />
                                   <span>{provider.locality}</span>

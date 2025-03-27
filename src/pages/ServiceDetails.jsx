@@ -158,8 +158,8 @@ export default function ServiceDetails() {
     <div className="flex min-h-screen bg-gray-50">
       {<UserNavbar />}
       <div className="flex-1"></div>
-      <div className="container mx-auto p-4 max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container mx-auto p-12 max-w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2">
             <h1 className="text-3xl font-bold mb-4">{service.title}</h1>
             <div className="flex justify-between mb-6">
