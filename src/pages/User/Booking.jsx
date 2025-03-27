@@ -20,6 +20,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from "../../utils/axios";
 import { AuthContext } from '../../context/AuthContext';
 import UserNavbar from "../../components/UserNavbar";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Create theme for MUI components
 const theme = createTheme({
@@ -141,6 +143,11 @@ const Booking = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    // Show initial processing toast
+    const processingToast = toast.loading('Processing your booking...', {
+      position: "top-right",
+    });
+
     setLoading(true);
     try {
       // First get the user ID for the logged in user
@@ -159,16 +166,39 @@ const Booking = () => {
         serviceProviderId: serviceDetails.serviceProviderId,
         bookingDate: formData.date.format("YYYY-MM-DD"),
         bookingTime: formData.time.format("HH:mm:00"),
-        serviceType: formData.serviceType // Add this line
+        serviceType: formData.serviceType
       };
 
       const response = await axiosInstance.post('/bookings/create', bookingData);
       
       if (response.data?.booking) {
-        navigate('/user-booking-status');
+        // Update the processing toast to success
+        toast.update(processingToast, {
+          render: "Booking confirmed successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        
+        setTimeout(() => {
+          navigate('/user-booking-status');
+        }, 2000);
       }
     } catch (error) {
       console.error('Booking error:', error);
+      // Update the processing toast to error
+      toast.update(processingToast, {
+        render: error.response?.data?.error || 'Failed to submit booking. Please try again.',
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       setErrors({ 
         submit: error.response?.data?.error || "Failed to submit booking. Please try again." 
       });
@@ -181,6 +211,7 @@ const Booking = () => {
     <div className="flex min-h-screen bg-gray-50">
       <UserNavbar />
       <div className="flex-1">
+        <ToastContainer /> {/* Add this line */}
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div className="py-12 px-4 sm:px-6 lg:px-8">
