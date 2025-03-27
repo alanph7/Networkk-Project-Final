@@ -23,6 +23,18 @@ import UserNavbar from "../../components/UserNavbar";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Add this after your imports
+const toastConfig = {
+  position: "top-right",
+  autoClose: 2000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: "colored",
+};
+
 // Create theme for MUI components
 const theme = createTheme({
   palette: {
@@ -143,9 +155,13 @@ const Booking = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // Show initial processing toast
+    // Show initial processing toast with blue styling
     const processingToast = toast.loading('Processing your booking...', {
       position: "top-right",
+      style: {
+        backgroundColor: '#3b82f6', // Tailwind blue-600
+        color: 'white',
+      },
     });
 
     setLoading(true);
@@ -172,7 +188,6 @@ const Booking = () => {
       const response = await axiosInstance.post('/bookings/create', bookingData);
       
       if (response.data?.booking) {
-        // Update the processing toast to success
         toast.update(processingToast, {
           render: "Booking confirmed successfully!",
           type: "success",
@@ -181,6 +196,10 @@ const Booking = () => {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
+          style: {
+            backgroundColor: '#3b82f6', // Tailwind blue-600
+            color: 'white',
+          },
         });
         
         setTimeout(() => {
@@ -189,7 +208,6 @@ const Booking = () => {
       }
     } catch (error) {
       console.error('Booking error:', error);
-      // Update the processing toast to error
       toast.update(processingToast, {
         render: error.response?.data?.error || 'Failed to submit booking. Please try again.',
         type: "error",
@@ -198,6 +216,10 @@ const Booking = () => {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        style: {
+          backgroundColor: '#ef4444', // Tailwind red-500 for errors
+          color: 'white',
+        },
       });
       setErrors({ 
         submit: error.response?.data?.error || "Failed to submit booking. Please try again." 
@@ -211,7 +233,18 @@ const Booking = () => {
     <div className="flex min-h-screen bg-gray-50">
       <UserNavbar />
       <div className="flex-1">
-        <ToastContainer /> {/* Add this line */}
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div className="py-12 px-4 sm:px-6 lg:px-8">
