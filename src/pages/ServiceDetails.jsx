@@ -413,7 +413,7 @@ export default function ServiceDetails() {
           <div className="lg:col-span-1">
             <div className="sticky top-4 bg-white p-6 border rounded-lg shadow-lg">
               <h2 className="text-3xl font-bold mb-4">
-                Rs {service.basePrice}
+              ₹{service.basePrice}
               </h2>
               <p className="text-gray-600 mb-6">
                 {service.description.substring(0, 100)}...
@@ -445,7 +445,7 @@ export default function ServiceDetails() {
                 }
                 className="w-full bg-sky-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-sky-600 transition duration-300 mb-4"
               >
-                Book Now (Rs {service.basePrice})
+                Book Now (₹{service.basePrice})
               </button>
 
               <p className="text-center mt-4 text-sm text-gray-600">

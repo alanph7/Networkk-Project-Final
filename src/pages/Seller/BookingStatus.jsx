@@ -111,7 +111,7 @@ const ProviderBookingPage = () => {
                     {booking.service?.title || 'Service'}
                   </h3>
                   <span className="text-lg font-bold text-sky-600">
-                    ${booking.basePayment}
+                  ₹{booking.basePayment}
                   </span>
                 </div>
               </div>

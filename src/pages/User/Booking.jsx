@@ -431,7 +431,7 @@ const Booking = () => {
                           <span className="flex items-center">
                             Total Price
                           </span>
-                          <span>Rs {pricing.total}</span>
+                          <span>₹{pricing.total}</span>
                         </div>
 
                         {errors.submit && (
@@ -443,7 +443,7 @@ const Booking = () => {
                         <button
                           onClick={handleSubmit}
                           disabled={loading}
-                          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-300 transition-colors mt-6"
+                          className="w-full bg-sky-700 text-white py-3 rounded-lg font-semibold hover:bg-sky-600 disabled:bg-sky-300 transition-colors duration-300 mt-6"
                         >
                           {loading ? "Processing..." : "Confirm Booking"}
                         </button>

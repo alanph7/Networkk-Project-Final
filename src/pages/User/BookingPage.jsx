@@ -7,6 +7,8 @@ import '@edonec/collapsible/build/icons.css';
 import UserNavbar from '../../components/UserNavbar';
 import axiosInstance from '../../utils/axios';
 import ReviewModal from '../../components/ReviewModal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const BookingsPage = () => {
   const [bookings, setBookings] = useState({
@@ -142,8 +144,17 @@ const BookingsPage = () => {
     }
   };
 
-  // Update the handleReviewSubmit function
+  // Update handleReviewSubmit function
   const handleReviewSubmit = async (reviewData) => {
+    // Show initial processing toast
+    const processingToast = toast.loading('Processing your review...', {
+      position: "top-right",
+      style: {
+        backgroundColor: '#3b82f6',
+        color: 'white',
+      },
+    });
+  
     try {
       const review = {
         serviceId: selectedBooking.service.serviceId,
@@ -152,11 +163,10 @@ const BookingsPage = () => {
         description: reviewData.description,
         rating: reviewData.rating
       };
-
+  
       const response = await axiosInstance.post('/reviews/create', review);
       
       if (response.status === 201) {
-        // Update the local booking data to reflect review status
         const updatedBookings = { ...bookings };
         const bookingIndex = updatedBookings.completed.findIndex(
           b => b.bookingId === selectedBooking.bookingId
@@ -167,14 +177,43 @@ const BookingsPage = () => {
         }
         
         setBookings(updatedBookings);
-        alert('Review submitted successfully!');
+        
+        // Update success toast
+        toast.update(processingToast, {
+          render: "Review submitted successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          style: {
+            backgroundColor: '#3b82f6',
+            color: 'white',
+          },
+        });
+  
         setIsReviewModalOpen(false);
         setSelectedBooking(null);
-        fetchBookings(); // Refresh the bookings list
+        fetchBookings();
       }
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('Failed to submit review. Please try again.');
+      
+      // Update error toast
+      toast.update(processingToast, {
+        render: error.response?.data?.error || 'Failed to submit review. Please try again.',
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        style: {
+          backgroundColor: '#ef4444',
+          color: 'white',
+        },
+      });
     }
   };
 
@@ -200,7 +239,7 @@ const BookingsPage = () => {
                     {booking.service?.title || 'Service'}
                   </h3>
                   <span className="text-lg font-bold text-sky-600">
-                    ${booking.basePayment}
+                  ₹{booking.basePayment}
                   </span>
                 </div>
                 <p className="mt-2 text-gray-600">
@@ -340,6 +379,18 @@ const BookingsPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <UserNavbar />
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="flex-1 p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}

@@ -265,7 +265,7 @@ export default function GigCreate() {
                   </label>
                   <div className="flex items-center space-x-4">
                     <div className="relative flex-1">
-                      <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                    <span className="absolute left-4 top-2 text-gray-400">₹</span>
                       <input
                         type="number"
                         value={formData.basePrice}
