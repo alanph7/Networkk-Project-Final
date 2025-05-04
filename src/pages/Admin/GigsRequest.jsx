@@ -94,7 +94,7 @@ const GigRequestCard = ({ gig, onStatusChange }) => {
               Price
             </Typography>
             <Typography variant="body1">
-              ${gig.price}/hr
+            ₹{gig.price}/hr
             </Typography>
           </Grid>
         </Grid>

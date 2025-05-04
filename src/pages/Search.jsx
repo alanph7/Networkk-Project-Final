@@ -415,7 +415,7 @@ export default function Search() {
                                   </p>
                                 )}
                                 <div className="flex items-center justify-between mt-2">
-                                  <p className="font-bold text-lg text-sky-600">Rs {provider.basePrice}</p>
+                                  <p className="font-bold text-lg text-sky-600">₹{provider.basePrice}</p>
                                   <span className={`text-sm ${provider.isOpen ? 'text-green-500' : 'text-red-500'}`}>
                                     {provider.isOpen ? 'Open' : 'Closed'}
                                   </span>
